@@ -3,9 +3,11 @@ import { Container, Typography } from '@mui/material'
 
 function App() {
     return (
-        <Container>
-            <Typography variant='h1'>Hello Vite + React!</Typography>
-        </Container>
+        <>
+            <Container>
+                <Typography variant='h1'>App</Typography>
+            </Container>
+        </>
     )
 }
 

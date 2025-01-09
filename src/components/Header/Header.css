@@ -1,0 +1,12 @@
+.header-wrapper {
+    background-color: #a52a2a;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1em 2em;
+}
+
+.header-wrapper #title {
+    font-size: 1.6em;
+}

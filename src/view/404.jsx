@@ -9,6 +9,5 @@ export default function NotFound404() {
         <Link to='/'>Retour à l'accueil</Link>
       </Box>
     </Container>
-
   )
 }
