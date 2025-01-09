@@ -8,10 +8,8 @@ export default function DefaultLayout({ children }) {
     return (
         <ThemeProvider theme={theme}>
             <Container className='default-layout'>
-                <Box>
-                    <Header />
-                    {children}
-                </Box>
+                <Header />
+                {children}
             </Container>
         </ThemeProvider>
     )

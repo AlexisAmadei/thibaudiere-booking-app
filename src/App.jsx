@@ -1,13 +1,24 @@
+import 'react-date-range/dist/styles.css'; // main style file
+import 'react-date-range/dist/theme/default.css'; // theme css file
+import dayjs from 'dayjs'
+
+import { useState } from 'react'
+import { Container } from '@mui/material'
+import MainTabs from './components/MainTabs/MainTabs'
+import { addBooking } from './Utils/db'
+
 import './App.css'
-import { Container, Typography } from '@mui/material'
 
 function App() {
+    const [selectedDate, setSelectedDate] = useState(dayjs())
+
     return (
-        <>
-            <Container>
-                <Typography variant='h1'>App</Typography>
-            </Container>
-        </>
+        <Container className='app-wrapper'>
+            <MainTabs
+                selectedDate={selectedDate}
+                setSelectedDate={setSelectedDate}
+            />
+        </Container>
     )
 }
 
