@@ -1,36 +1,29 @@
 import { Box } from '@mui/material'
-import { DateCalendar, LocalizationProvider } from '@mui/x-date-pickers'
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import React, { useEffect } from 'react'
+import React from 'react'
+import { getBookings } from '../../Utils/db';
 
-export default function List({ selectedDate, setSelectedDate }) {
-    const [dateFormated, setDateFormated] = React.useState({
-        day: '',
-        month: '',
-        year: ''
-    })
+export default function List() {
+    const [bookingList, setBookingList] = React.useState([]);
 
-    useEffect(() => {
-        setDateFormated({
-            day: selectedDate.format('DD'),
-            month: selectedDate.format('MM'),
-            year: selectedDate.format('YYYY')
-        })
-    }, [selectedDate])
+    async function fetchData() {
+        const res = await getBookings();
+        setBookingList(res);
+    }
 
-    useEffect(() => {
-
-    }, [dateFormated])
+    React.useEffect(() => {
+        fetchData();
+    }, [])
 
     return (
         <Box>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DateCalendar
-                    showDaysOutsideCurrentMonth
-                    date={selectedDate}
-                    onChange={(newDate) => setSelectedDate(newDate)}
-                />
-            </LocalizationProvider>
+            {bookingList.map((booking, index) => (
+                <Box key={index}>
+                    <p>{booking.booker}</p>
+                    <p>{booking.startDate}</p>
+                    <p>{booking.endDate}</p>
+                    <p>{booking.guests}</p>
+                </Box>
+            ))}
         </Box>
     )
 }

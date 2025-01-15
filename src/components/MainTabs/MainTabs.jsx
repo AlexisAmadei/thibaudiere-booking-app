@@ -10,7 +10,7 @@ import List from './List';
 
 export default function MainTabs({ selectedDate, setSelectedDate }) {
     return (
-        <Tabs defaultValue={0}>
+        <Tabs defaultValue={0} className='tabs-container'>
             <TabsList>
                 <Tab value={0}>Planning</Tab>
                 <Tab value={1}>Liste</Tab>
@@ -87,11 +87,11 @@ const Tab = styled(BaseTab)`
 
 const TabPanel = styled(BaseTabPanel)(
     ({ theme }) => `
-    font-size: 0.875rem;
-    padding: 4px 4px;
-    background: ${theme.palette.mode === 'dark' ? grey[900] : '#fff'};
-    border: 1px solid ${theme.palette.mode === 'dark' ? grey[700] : grey[200]};
-    border-radius: 12px;
+    // font-size: 0.875rem;
+    // background: ${theme.palette.mode === 'dark' ? grey[900] : '#fff'};
+    // border: 1px solid ${theme.palette.mode === 'dark' ? grey[700] : grey[200]};
+    // border-radius: 12px;
+    max-width: 100%;
     `,
 );
 
@@ -100,7 +100,7 @@ const TabsList = styled(BaseTabsList)(
     min-width: 300px;
     background-color: ${blue[500]};
     border-radius: 12px;
-    margin-bottom: 16px;
+    margin-bottom: 32px;
     display: flex;
     align-items: center;
     place-content: space-between center;

@@ -1,4 +1,4 @@
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, getDocs } from "firebase/firestore";
 import { db } from '../firebase/config';
 
 /**
@@ -21,4 +21,17 @@ export async function addBooking(startDate, endDate, booker, guests) {
     } catch (e) {
         console.error("Error adding document: ", e);
     }
+}
+
+/**
+ * Get all bookings from the database
+ * @returns {Promise<void>}
+ */
+export async function getBookings() {
+    const res = [];
+    const querySnapshot = await getDocs(collection(db, "booking"));
+    querySnapshot.forEach((doc) => {
+        res.push(doc.data());
+    });
+    return res;
 }
