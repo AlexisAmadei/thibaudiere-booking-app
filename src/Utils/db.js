@@ -24,14 +24,21 @@ export async function addBooking(startDate, endDate, booker, guests) {
 }
 
 /**
- * Get all bookings from the database
- * @returns {Promise<void>}
+ * Get all bookings from the database and convert Firestore Timestamps to Date objects.
+ * @returns {Promise<Array>} Array of bookings with startDate and endDate as Date objects.
  */
 export async function getBookings() {
     const res = [];
     const querySnapshot = await getDocs(collection(db, "booking"));
+
     querySnapshot.forEach((doc) => {
-        res.push(doc.data());
+        const data = doc.data();
+        res.push({
+            ...data,
+            startDate: data.startDate.toDate(),
+            endDate: data.endDate.toDate()
+        });
     });
+    console.log('GET', res);
     return res;
 }

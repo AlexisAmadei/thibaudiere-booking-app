@@ -6,51 +6,53 @@ import { addBooking } from '../../Utils/db';
 import CustomSlider from '../CustomSlider/CustomSlider';
 
 export default function Planning({ selectedDate, setSelectedDate }) {
-    const [dateFormated, setDateFormated] = React.useState({
-        day: '',
-        month: '',
-        year: ''
-    })
     const [booker, setBooker] = useState('');
-    const [people, setPeople] = useState(0);
-
-    useEffect(() => {
-        setDateFormated({
-            day: selectedDate.format('DD'),
-            month: selectedDate.format('MM'),
-            year: selectedDate.format('YYYY')
-        })
-    }, [selectedDate])
-
+    const [people, setPeople] = useState(1);
     const [state, setState] = useState([
         {
-            startDate: new Date(),
-            endDate: null,
-            key: 'selection'
-        }
+            startDate: selectedDate || new Date(),
+            endDate: selectedDate || new Date(),
+            key: 'selection',
+        },
     ]);
+
+    useEffect(() => {
+        if (selectedDate) {
+            setState([
+                {
+                    startDate: selectedDate,
+                    endDate: selectedDate,
+                    key: 'selection',
+                },
+            ]);
+        }
+    }, [selectedDate]);
 
     const handleBooking = () => {
         if (booker === '' || people === 0) {
             alert('Veuillez remplir tous les champs');
             return;
         }
-        addBooking(state[0].startDate, state[0].endDate, booker, people);
-    }
-
-    useEffect(() => {
-        setState([{ startDate: new Date(), endDate: new Date(), key: 'selection' }])
-    }, [])
+        const startDate = state[0].startDate;
+        const endDate = state[0].endDate;
+        addBooking(startDate, endDate, booker, people);
+    };
 
     const handleChange = (event, newValue) => {
         setPeople(newValue);
-    }
+    };
 
     const clearData = () => {
         setBooker('');
-        setPeople(0);
-        setState([{ startDate: new Date(), endDate: new Date(), key: 'selection' }]);
-    }
+        setPeople(1);
+        setState([
+            {
+                startDate: new Date(),
+                endDate: new Date(),
+                key: 'selection',
+            },
+        ]);
+    };
 
     return (
         <div className='planning-wrapper'>
@@ -87,5 +89,5 @@ export default function Planning({ selectedDate, setSelectedDate }) {
                 </Box>
             </Box>
         </div>
-    )
+    );
 }
