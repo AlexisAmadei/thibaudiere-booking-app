@@ -1,9 +1,17 @@
-import { Box, Button, Slider, TextField, Typography } from '@mui/material'
-import React, { useEffect, useState } from 'react'
-import { Calendar, DateRange } from 'react-date-range';
-import './styles/Planning.css'
+import { Box, Button, Slider, TextField, Typography } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { DateRange } from 'react-date-range';
+import './styles/Planning.css';
 import { addBooking } from '../../Utils/db';
-import CustomSlider from '../CustomSlider/CustomSlider';
+
+const STATIC_RANGE = {
+    startDate: new Date(2025, 5, 7), // 7 juin 2025
+    endDate: new Date(2025, 5, 14), // 14 juin 2025
+    key: 'static',
+    color: '#FF0000',
+    autoFocus: false, // Empêche l'édition
+    disabled: true // Désactive les interactions utilisateur
+};
 
 export default function Planning({ selectedDate, setSelectedDate }) {
     const [booker, setBooker] = useState('');
@@ -13,17 +21,20 @@ export default function Planning({ selectedDate, setSelectedDate }) {
             startDate: selectedDate || new Date(),
             endDate: selectedDate || new Date(),
             key: 'selection',
+            color: '#007FFF',
         },
+        STATIC_RANGE,
     ]);
 
     useEffect(() => {
         if (selectedDate) {
-            setState([
+            setState((prevState) => [
                 {
                     startDate: selectedDate,
                     endDate: selectedDate,
                     key: 'selection',
                 },
+                ...prevState.filter(range => range.key !== 'selection')
             ]);
         }
     }, [selectedDate]);
@@ -51,6 +62,7 @@ export default function Planning({ selectedDate, setSelectedDate }) {
                 endDate: new Date(),
                 key: 'selection',
             },
+            STATIC_RANGE,
         ]);
     };
 
@@ -58,14 +70,18 @@ export default function Planning({ selectedDate, setSelectedDate }) {
         <div className='planning-wrapper'>
             <div className='calendar-box'>
                 <DateRange
-                    editableDateInputs={true}
-                    onChange={(item) => setState([item.selection])}
+                    editableDateInputs={false}
+                    onChange={(item) => setState([item.selection, STATIC_RANGE])}
                     moveRangeOnFirstSelection={false}
-                    ranges={state}
-                    rangeColors={['#007FFF']}
+                    ranges={state.map(range => ({
+                        ...range,
+                        disabled: range.key === 'static' // Rend la plage statique non modifiable
+                    }))}
+                    rangeColors={['#007FFF', '#FF0000']}
                     showPreview={false}
                     className="date-range"
                     fixedHeight={true}
+                    minDate={new Date()}
                 />
             </div>
             <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 2, gap: 1, px: 2 }}>
