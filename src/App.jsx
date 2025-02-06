@@ -7,8 +7,6 @@ import { Container } from '@mui/material'
 import MainTabs from './components/MainTabs/MainTabs'
 import './App.css'
 
-import './App.css'
-
 function App() {
     const [selectedDate, setSelectedDate] = useState(dayjs())
 
@@ -19,7 +17,7 @@ function App() {
                 setSelectedDate={setSelectedDate}
             />
         </Container>
-    )
+    );
 }
 
 export default App

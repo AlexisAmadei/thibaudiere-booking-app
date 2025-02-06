@@ -12,13 +12,16 @@ export default function List() {
             startDate: new Date(booking.startDate), // Ensure Date conversion
             endDate: new Date(booking.endDate), // Ensure Date conversion
         }));
-        console.log('Formatted Bookings:', formattedBookings);
         setBookingList(formattedBookings);
     }
 
     useEffect(() => {
         fetchBookings();
     }, []);
+
+    // useEffect(() => {
+    //     console.log('Booking List:', bookingList);
+    // }, [bookingList]);
 
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 2 }}>

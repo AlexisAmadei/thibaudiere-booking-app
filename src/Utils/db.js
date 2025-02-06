@@ -39,6 +39,5 @@ export async function getBookings() {
             endDate: data.endDate.toDate()
         });
     });
-    console.log('GET', res);
     return res;
 }
