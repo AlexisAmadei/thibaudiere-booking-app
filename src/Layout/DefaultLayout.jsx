@@ -1,8 +1,9 @@
-import { Box, Container, ThemeProvider } from '@mui/material'
-import React from 'react'
-import Header from '../components/Header/Header'
-import { theme } from '../theme/mui'
-import './DefaultLayout.css'
+import Container from '@mui/material/Container';
+import { ThemeProvider } from '@mui/material/styles';
+import React from 'react';
+import Header from '../components/Header/Header';
+import { theme } from '../theme/mui';
+import './DefaultLayout.css';
 
 export default function DefaultLayout({ children }) {
     return (
@@ -12,5 +13,5 @@ export default function DefaultLayout({ children }) {
                 {children}
             </Container>
         </ThemeProvider>
-    )
+    );
 }

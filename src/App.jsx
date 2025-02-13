@@ -1,9 +1,8 @@
+import { useState } from 'react'
+import Container from '@mui/material/Container'
 import 'react-date-range/dist/styles.css'; // main style file
 import 'react-date-range/dist/theme/default.css'; // theme css file
 import dayjs from 'dayjs'
-
-import { useState } from 'react'
-import { Container } from '@mui/material'
 import MainTabs from './components/MainTabs/MainTabs'
 import './App.css'
 

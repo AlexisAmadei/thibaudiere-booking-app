@@ -4,8 +4,6 @@ import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
 import './Header.css'
 
 const MenuElements = [
-    // { name: 'Profil', action: () => console.log('Profil') },
-    // { name: 'Switch user', action: () => console.log('Déconnexion') },
     { name: 'Theme', action: () => console.log('switch theme') },
 ];
 

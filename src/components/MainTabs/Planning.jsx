@@ -1,5 +1,7 @@
-import { Box, Slider, TextField, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
+import Box from '@mui/material/Box';
+import Slider from '@mui/material/Slider';
+import Typography from '@mui/material/Typography';
 import { DateRange } from 'react-date-range';
 import './styles/Planning.css';
 import { addBooking } from '../../Utils/db';
@@ -87,7 +89,7 @@ export default function Planning({ selectedDate, setSelectedDate }) {
                 />
             </div>
             <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 2, gap: 1, px: 2 }}>
-                <Typography variant='h6' sx={{ textAlign: 'center', mb: '16px' }}>Nombre de personnes</Typography>
+                <h6 style={{ marginBottom: '16px'}}>Nombre de personnes</h6>
                 <Slider
                     aria-label="Volume"
                     value={people}
