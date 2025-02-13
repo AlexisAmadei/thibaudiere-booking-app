@@ -7,6 +7,7 @@ import { buttonClasses } from '@mui/base/Button';
 import { Tab as BaseTab, tabClasses } from '@mui/base/Tab';
 import Planning from './Planning';
 import List from './List';
+import './styles/MainTabs.css';
 
 export default function MainTabs({ selectedDate, setSelectedDate }) {
     return (
@@ -18,7 +19,7 @@ export default function MainTabs({ selectedDate, setSelectedDate }) {
             <TabPanel value={0}>
                 <Planning selectedDate={selectedDate} setSelectedDate={setSelectedDate} />
             </TabPanel>
-            <TabPanel value={1}>
+            <TabPanel value={1} className='list-tab'>
                 <List selectedDate={selectedDate} setSelectedDate={setSelectedDate} />
             </TabPanel>
         </Tabs>
@@ -58,7 +59,6 @@ const Tab = styled(BaseTab)`
     font-weight: 600;
     background-color: transparent;
     width: 100%;
-    // padding: 10px 12px;
     margin: 6px;
     border: none;
     border-radius: 7px;
@@ -87,11 +87,9 @@ const Tab = styled(BaseTab)`
 
 const TabPanel = styled(BaseTabPanel)(
     ({ theme }) => `
-    // font-size: 0.875rem;
-    // background: ${theme.palette.mode === 'dark' ? grey[900] : '#fff'};
-    // border: 1px solid ${theme.palette.mode === 'dark' ? grey[700] : grey[200]};
-    // border-radius: 12px;
     max-width: 100%;
+    height: 100%;
+    overflow: hidden;
     `,
 );
 
@@ -100,7 +98,7 @@ const TabsList = styled(BaseTabsList)(
     min-width: 300px;
     background-color: ${blue[500]};
     border-radius: 12px;
-    margin-bottom: 32px;
+    margin-bottom: 16px;
     display: flex;
     align-items: center;
     place-content: space-between center;

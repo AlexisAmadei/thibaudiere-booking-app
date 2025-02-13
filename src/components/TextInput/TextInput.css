@@ -1,0 +1,19 @@
+.kit-text-input {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    outline: none;
+    border: none;
+}
+
+.kit-text-input input {
+    padding: 12px 16px;
+    border-radius: 16px;
+    background: #FFF;
+    border: none;
+    outline: none;
+    /* margin-right: 16px; */
+    border: 2px solid #4136F1;
+    color: #333;
+}
+

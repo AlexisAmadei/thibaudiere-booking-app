@@ -2,8 +2,12 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1em 2em;
+    padding: 0.8em 1em;
     color: white;
     font-size: 1.2em;
     background-color: #a52a2a;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    max-height: 72px;
 }

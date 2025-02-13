@@ -1,6 +1,19 @@
-import { Box, Typography } from '@mui/material';
+import { Box, Divider, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
+import { GroupRounded, RefreshRounded } from '@mui/icons-material';
+import EventRoundedIcon from '@mui/icons-material/EventRounded';
 import { getBookings } from '../../Utils/db';
+import Button from '../Button/Button';
+import './styles/List.css';
+
+/*
+    Booking {
+        booker: string,
+        startDate: Date,
+        endDate: Date,
+        guests: number
+    }
+*/
 
 export default function List() {
     const [bookingList, setBookingList] = useState([]);
@@ -15,42 +28,62 @@ export default function List() {
         setBookingList(formattedBookings);
     }
 
+    const handleRefreshList = () => {
+        fetchBookings();
+        const refreshButton = document.querySelector('.refresh-list-button svg');
+        if (refreshButton) {
+            refreshButton.style.transition = 'transform 0.5s';
+            refreshButton.style.transform = 'rotate(360deg)';
+            setTimeout(() => {
+                refreshButton.style.transform = 'rotate(0deg)';
+            }, 500);
+        }
+    };
+
     useEffect(() => {
         fetchBookings();
     }, []);
 
-    // useEffect(() => {
-    //     console.log('Booking List:', bookingList);
-    // }, [bookingList]);
-
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 2 }}>
-            <Typography variant="h5" gutterBottom>
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 1, height: '100%' }}>
+            <Typography variant="h6" gutterBottom>
                 Liste des réservations
             </Typography>
-            {bookingList.map((booking, index) => (
-                <Box
-                    key={index} // Use index if there's no unique identifier like an ID
-                    sx={{
-                        display: 'flex',
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                        width: '100%',
-                        maxWidth: '600px',
-                        marginBottom: '8px',
-                        padding: '8px',
-                        border: '1px solid #ddd',
-                        borderRadius: '4px',
-                    }}
-                >
-                    <Typography>
-                        {booking.startDate.toLocaleDateString()} - {booking.endDate.toLocaleDateString()}
-                    </Typography>
-                    <Typography>
-                        {booking.booker} - {booking.guests} personne(s)
-                    </Typography>
-                </Box>
-            ))}
+            <Box className="booking-list">
+                {bookingList.map((booking, index) => (
+                    <Box
+                        key={index}
+                        className="booking-card"
+                    >
+                        <Box className="booking-card-title">
+                            <Typography variant='body1'>
+                                {booking.booker}
+                            </Typography>
+                        </Box>
+                        <Divider sx={{ my: 1 }} flexItem />
+                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, padding: 1 }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <EventRoundedIcon />
+                                <Typography>
+                                    {booking.startDate.toLocaleDateString()} - {booking.endDate.toLocaleDateString()}
+                                </Typography>
+                            </Box>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <GroupRounded />
+                                <Typography>
+                                    {booking.guests} personne{booking.guests > 1 && 's'}
+                                </Typography>
+                            </Box>
+                        </Box>
+                    </Box>
+                ))}
+            </Box>
+            <Box className="refresh-list-button">
+                <Button onClick={handleRefreshList} variant="contained">
+                    <RefreshRounded />
+                    Rafraîchir la liste
+                </Button>
+            </Box>
         </Box>
     );
 }

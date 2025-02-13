@@ -8,12 +8,16 @@
 }
 
 .calendar-box {
-    border-radius: 8px;
+    /* border-radius: 8px; */
     width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
+
+/* .date-range {
+    border-radius: 8px;
+} */
 
 .rdrDateDisplayWrapper {
     background-color: transparent;
