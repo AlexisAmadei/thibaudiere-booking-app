@@ -62,6 +62,10 @@ export default function Planning({ selectedDate, setSelectedDate }) {
         const startDate = state[0].startDate;
         const endDate = state[0].endDate;
         addBooking(startDate, endDate, booker, people); // Save booking to database
+        setSelectedDate(null); // Reset selected date
+        fetchBookings(); // Fetch updated bookings
+        setBooker(''); // Clear form inputs
+        setPeople(1);
     };
 
     // Handle change in number of people
@@ -133,6 +137,7 @@ export default function Planning({ selectedDate, setSelectedDate }) {
                         Effacer
                     </Button>
                 </Box>
+                <button onClick={deleteAllBookings} className='clear-bookings'>Effacer toutes les réservations</button>
             </Box>
         </div>
     );
