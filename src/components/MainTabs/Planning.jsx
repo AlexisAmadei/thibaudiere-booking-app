@@ -2,47 +2,44 @@ import { Box, Button, Slider, TextField, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { DateRange } from 'react-date-range';
 import './styles/Planning.css';
-import { addBooking, getBookings } from '../../Utils/db';
-
-// const EXAMPLE_RANGE = {
-//     startDate: new Date(2025, 5, 7), // 7 juin 2025
-//     endDate: new Date(2025, 5, 14), // 14 juin 2025
-//     key: 'static',
-//     color: '#FF0000',
-//     autoFocus: false, // Empêche l'édition
-//     disabled: true // Désactive les interactions utilisateur
-// };
+import { addBooking, deleteAllBookings, getBookings } from '../../Utils/db';
 
 export default function Planning({ selectedDate, setSelectedDate }) {
+    // State for storing user's name
     const [booker, setBooker] = useState('');
+    // State for storing the number of people in the booking
     const [people, setPeople] = useState(1);
+    // State for storing already booked dates
     const [alreadyBooked, setAlreadyBooked] = useState([]);
+    // State for tracking selected date range
     const [state, setState] = useState([
         {
             startDate: selectedDate || new Date(),
             endDate: selectedDate || new Date(),
             key: 'selection',
-            color: '#007FFF',
+            color: '#007FFF', // Highlight color for selected date range
         },
     ]);
 
+    // Fetch already booked dates from database
     async function fetchBookings() {
         const res = await getBookings();
         const formattedBookings = res.map((booking, index) => ({
-            startDate: new Date(booking.startDate),
+            startDate: new Date(booking.startDate), // Convert to Date object
             endDate: new Date(booking.endDate),
-            key: `booked-${index}`,
-            color: '#FF0000',
-            disabled: true,
+            key: `booked-${index}`, // Unique key for booked ranges
+            disabled: true, // Mark booked dates as disabled
         }));
         setAlreadyBooked(formattedBookings);
         setState(prevState => [prevState.find(r => r.key === 'selection'), ...formattedBookings]);
     }
 
+    // Fetch bookings on component mount
     useEffect(() => {
         fetchBookings();
     }, []);
 
+    // Update selected date range when user selects a new date
     useEffect(() => {
         if (selectedDate) {
             setState((prevState) => [
@@ -56,20 +53,23 @@ export default function Planning({ selectedDate, setSelectedDate }) {
         }
     }, [selectedDate, alreadyBooked]);
 
+    // Handle booking submission
     const handleBooking = () => {
         if (booker === '' || people === 0) {
-            alert('Veuillez remplir tous les champs');
+            alert('Veuillez remplir tous les champs'); // Alert if fields are empty
             return;
         }
         const startDate = state[0].startDate;
         const endDate = state[0].endDate;
-        addBooking(startDate, endDate, booker, people);
+        addBooking(startDate, endDate, booker, people); // Save booking to database
     };
 
+    // Handle change in number of people
     const handleChange = (event, newValue) => {
         setPeople(newValue);
     };
 
+    // Clear form inputs
     const clearData = () => {
         setBooker('');
         setPeople(1);
@@ -87,20 +87,36 @@ export default function Planning({ selectedDate, setSelectedDate }) {
         <div className='planning-wrapper'>
             <div className='calendar-box'>
                 <DateRange
-                    editableDateInputs={false}
-                    onChange={(item) => setState([item.selection, ...alreadyBooked])}
+                    editableDateInputs={false} // Prevent user from typing dates
+                    onChange={(item) => setState([item.selection, ...alreadyBooked])} // Handle date selection
                     moveRangeOnFirstSelection={false}
-                    ranges={state}
-                    rangeColors={['#007FFF', '#FF0000']}
+                    ranges={state} // Show selected and booked ranges
+                    rangeColors={['#007FFF']} // Define color for selected range
                     showPreview={false}
                     className="date-range"
                     fixedHeight={true}
-                    minDate={new Date()}
+                    minDate={new Date()} // Prevent selection of past dates
+                    disabledDates={alreadyBooked.flatMap(range => {
+                        let dates = [];
+                        let currentDate = new Date(range.startDate);
+                        while (currentDate <= range.endDate) {
+                            dates.push(new Date(currentDate));
+                            currentDate.setDate(currentDate.getDate() + 1);
+                        }
+                        return dates;
+                    })} // Disable full booked ranges
                 />
             </div>
             <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 2, gap: 1, px: 2 }}>
                 <Typography variant='h6' sx={{ textAlign: 'center', mb: '16px' }}>Nombre de personnes</Typography>
-                <Slider aria-label="Volume" value={people} onChange={handleChange} valueLabelDisplay="on" min={1} max={20} />
+                <Slider
+                    aria-label="Volume"
+                    value={people}
+                    onChange={handleChange}
+                    valueLabelDisplay="on"
+                    min={1}
+                    max={20}
+                />
                 <TextField
                     id="outlined-size-small"
                     size="small"
