@@ -1,8 +1,10 @@
-import { Box, Button, Slider, TextField, Typography } from '@mui/material';
+import { Box, Slider, TextField, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { DateRange } from 'react-date-range';
+import { fr } from 'date-fns/locale';
 import './styles/Planning.css';
 import { addBooking, deleteAllBookings, getBookings } from '../../Utils/db';
+import Button from '../Button/Button';
 
 export default function Planning({ selectedDate, setSelectedDate }) {
     // State for storing user's name
@@ -21,6 +23,12 @@ export default function Planning({ selectedDate, setSelectedDate }) {
         },
     ]);
 
+    const changeInputText = () => {
+        const inputs = document.querySelectorAll('.rdrDateDisplay input');
+        inputs[0].placeholder = 'Début';
+        inputs[1].placeholder = 'Fin';
+    }
+
     // Fetch already booked dates from database
     async function fetchBookings() {
         const res = await getBookings();
@@ -37,6 +45,7 @@ export default function Planning({ selectedDate, setSelectedDate }) {
     // Fetch bookings on component mount
     useEffect(() => {
         fetchBookings();
+        changeInputText();
     }, []);
 
     // Update selected date range when user selects a new date
@@ -109,6 +118,7 @@ export default function Planning({ selectedDate, setSelectedDate }) {
                         }
                         return dates;
                     })} // Disable full booked ranges
+                    locale={fr}
                 />
             </div>
             <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 2, gap: 1, px: 2 }}>
