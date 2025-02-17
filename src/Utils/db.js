@@ -1,4 +1,4 @@
-import { collection, addDoc, getDocs } from "firebase/firestore";
+import { collection, addDoc, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { db } from '../firebase/config';
 
 /**
@@ -40,4 +40,29 @@ export async function getBookings() {
         });
     });
     return res;
+}
+
+/**
+ * Delete a booking from the database
+ * @param {string} id - The ID of the booking to delete
+ * @returns {Promise<void>}
+ */
+export async function deleteBooking(id) {
+    try {
+        await deleteDoc(doc(db, "booking", id));
+        console.log("Document successfully deleted!");
+    } catch (e) {
+        console.error("Error removing document: ", e);
+    }
+}
+
+/**
+ * Delete all the bookings from the database
+ * @returns {Promise<void>}
+ */
+export async function deleteAllBookings() {
+    const querySnapshot = await getDocs(collection(db, "booking"));
+    querySnapshot.forEach((doc) => {
+        deleteBooking(doc.id);
+    });
 }
