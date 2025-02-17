@@ -1,25 +1,22 @@
+import { Box, Button, Slider, TextField, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import Box from '@mui/material/Box';
-import Slider from '@mui/material/Slider';
-import Typography from '@mui/material/Typography';
 import { DateRange } from 'react-date-range';
 import './styles/Planning.css';
-import { addBooking } from '../../Utils/db';
-import Button from '../Button/Button';
-import TextInput from '../TextInput/TextInput';
+import { addBooking, getBookings } from '../../Utils/db';
 
-const STATIC_RANGE = {
-    startDate: new Date(2025, 5, 7), // 7 juin 2025
-    endDate: new Date(2025, 5, 14), // 14 juin 2025
-    key: 'static',
-    color: '#FF0000',
-    autoFocus: false, // Empêche l'édition
-    disabled: true // Désactive les interactions utilisateur
-};
+// const EXAMPLE_RANGE = {
+//     startDate: new Date(2025, 5, 7), // 7 juin 2025
+//     endDate: new Date(2025, 5, 14), // 14 juin 2025
+//     key: 'static',
+//     color: '#FF0000',
+//     autoFocus: false, // Empêche l'édition
+//     disabled: true // Désactive les interactions utilisateur
+// };
 
 export default function Planning({ selectedDate, setSelectedDate }) {
     const [booker, setBooker] = useState('');
     const [people, setPeople] = useState(1);
+    const [alreadyBooked, setAlreadyBooked] = useState([]);
     const [state, setState] = useState([
         {
             startDate: selectedDate || new Date(),
@@ -27,8 +24,24 @@ export default function Planning({ selectedDate, setSelectedDate }) {
             key: 'selection',
             color: '#007FFF',
         },
-        STATIC_RANGE,
     ]);
+
+    async function fetchBookings() {
+        const res = await getBookings();
+        const formattedBookings = res.map((booking, index) => ({
+            startDate: new Date(booking.startDate),
+            endDate: new Date(booking.endDate),
+            key: `booked-${index}`,
+            color: '#FF0000',
+            disabled: true,
+        }));
+        setAlreadyBooked(formattedBookings);
+        setState(prevState => [prevState.find(r => r.key === 'selection'), ...formattedBookings]);
+    }
+
+    useEffect(() => {
+        fetchBookings();
+    }, []);
 
     useEffect(() => {
         if (selectedDate) {
@@ -38,10 +51,10 @@ export default function Planning({ selectedDate, setSelectedDate }) {
                     endDate: selectedDate,
                     key: 'selection',
                 },
-                ...prevState.filter(range => range.key !== 'selection')
+                ...alreadyBooked,
             ]);
         }
-    }, [selectedDate]);
+    }, [selectedDate, alreadyBooked]);
 
     const handleBooking = () => {
         if (booker === '' || people === 0) {
@@ -66,7 +79,7 @@ export default function Planning({ selectedDate, setSelectedDate }) {
                 endDate: new Date(),
                 key: 'selection',
             },
-            STATIC_RANGE,
+            ...alreadyBooked,
         ]);
     };
 
@@ -75,12 +88,9 @@ export default function Planning({ selectedDate, setSelectedDate }) {
             <div className='calendar-box'>
                 <DateRange
                     editableDateInputs={false}
-                    onChange={(item) => setState([item.selection, STATIC_RANGE])}
+                    onChange={(item) => setState([item.selection, ...alreadyBooked])}
                     moveRangeOnFirstSelection={false}
-                    ranges={state.map(range => ({
-                        ...range,
-                        disabled: range.key === 'static' // Rend la plage statique non modifiable
-                    }))}
+                    ranges={state}
                     rangeColors={['#007FFF', '#FF0000']}
                     showPreview={false}
                     className="date-range"
@@ -89,27 +99,21 @@ export default function Planning({ selectedDate, setSelectedDate }) {
                 />
             </div>
             <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 2, gap: 1, px: 2 }}>
-                <h6 style={{ marginBottom: '16px'}}>Nombre de personnes</h6>
-                <Slider
-                    aria-label="Volume"
-                    value={people}
-                    onChange={handleChange}
-                    valueLabelDisplay="on"
-                    min={1}
-                    max={20}
-                    sx={{ color: '#4136F1' }}
-                />
-                <TextInput
-                    label='Nom'
+                <Typography variant='h6' sx={{ textAlign: 'center', mb: '16px' }}>Nombre de personnes</Typography>
+                <Slider aria-label="Volume" value={people} onChange={handleChange} valueLabelDisplay="on" min={1} max={20} />
+                <TextField
+                    id="outlined-size-small"
+                    size="small"
+                    placeholder='Votre nom'
                     value={booker}
                     onChange={(e) => setBooker(e.target.value)}
-                    placeholder='Votre nom'
+                    sx={{ width: '100%' }}
                 />
-                <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1, width: '100%', justifyContent: 'center', mt: 1 }}>
-                    <Button variant="contained" onClick={handleBooking} fullWidth={true}>
+                <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1, width: '100%', justifyContent: 'center' }}>
+                    <Button variant="contained" color="primary" onClick={handleBooking} fullWidth>
                         Valider
                     </Button>
-                    <Button variant="outlined" onClick={clearData} fullWidth={true}>
+                    <Button variant="outlined" color="info" onClick={clearData} fullWidth>
                         Effacer
                     </Button>
                 </Box>
