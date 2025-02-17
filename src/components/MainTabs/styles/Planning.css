@@ -19,6 +19,10 @@
     border-radius: 8px;
 } */
 
+button.rdrDay {
+    border-radius: 0;
+}
+
 .rdrDateDisplayWrapper {
     background-color: transparent;
 }
