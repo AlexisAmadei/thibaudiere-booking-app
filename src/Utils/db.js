@@ -1,4 +1,4 @@
-import { collection, addDoc, getDocs, deleteDoc, doc } from "firebase/firestore";
+import { collection, addDoc, getDocs, deleteDoc, doc, query, where, getDoc, updateDoc } from "firebase/firestore";
 import { db } from '../firebase/config';
 
 /**
@@ -17,7 +17,7 @@ export async function addBooking(startDate, endDate, booker, guests) {
             booker,
             guests
         });
-        console.log("Document written with ID: ", docRef.id);
+        console.info("Document written with ID: ", docRef.id);
     } catch (e) {
         console.error("Error adding document: ", e);
     }
@@ -50,7 +50,7 @@ export async function getBookings() {
 export async function deleteBooking(id) {
     try {
         await deleteDoc(doc(db, "booking", id));
-        console.log("Document successfully deleted!");
+        console.info("Document successfully deleted!");
     } catch (e) {
         console.error("Error removing document: ", e);
     }
@@ -65,4 +65,71 @@ export async function deleteAllBookings() {
     querySnapshot.forEach((doc) => {
         deleteBooking(doc.id);
     });
+}
+
+/**
+ * Create user document on users collection on sign in if it doesn't exist
+ * @param {string} uid - The user's UID
+ * @param {string} email - The user's email
+ * @returns {Promise<void>}
+ */
+export async function createUserDocument(uid, email) {
+    const q = query(collection(db, "users"), where('uid', '==', uid));
+    const querySnapshot = await getDocs(q);
+    if (querySnapshot.empty) {
+        await addDoc(collection(db, "users"), {
+            uid,
+            email
+        });
+        console.info('User document created');
+    } else {
+        console.info('User already exists');
+    }
+};
+
+/**
+ * Get user document from users collection
+ * @param {string} uid - The user's UID
+ * @returns {Promise<Object>} The user document
+ */
+export async function getUserDocument(uid) {
+    const q = query(collection(db, "users"), where('uid', '==', uid));
+    const querySnapshot = await getDocs(q);
+    if (!querySnapshot.empty) {
+        return querySnapshot.docs[0].data();
+    } else {
+        console.error("No such document!");
+    }
+};
+
+/**
+ * Get all user documents from the users collection
+ * @returns {Promise<Array>} Array of user documents
+ */
+export async function getAllUsers() {
+    const res = [];
+    const querySnapshot = await getDocs(collection(db, "users"));
+
+    querySnapshot.forEach((doc) => {
+        res.push(doc.data());
+    });
+    return res;
+}
+
+/**
+ * Update user document in users collection
+ * @param {string} uid - The user's UID
+ * @param {Object} updatedData - The updated user data
+ * @returns {Promise<void>}
+ */
+export async function updateUserDocument(uid, updatedData) {
+    const q = query(collection(db, "users"), where('uid', '==', uid));
+    const querySnapshot = await getDocs(q);
+    if (!querySnapshot.empty) {
+        const userDoc = querySnapshot.docs[0];
+        await updateDoc(doc(db, "users", userDoc.id), updatedData);
+        console.info('User document updated');
+    } else {
+        console.error("No such document!");
+    }
 }

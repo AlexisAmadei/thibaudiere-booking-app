@@ -2,18 +2,24 @@ import React from 'react'
 import { Box, IconButton, Menu, MenuItem } from '@mui/material'
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
 import './Header.css'
+import { logout } from '../../Utils/auth';
+import { useNavigate } from 'react-router-dom';
 
-const MenuElements = [
-    { name: 'Theme', action: () => console.log('switch theme') },
-];
 
 export default function Header() {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
+    const navigate = useNavigate();
 
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
     };
+
+    const MenuElements = [
+        // { name: 'Theme', action: () => console.log('switch theme') },
+        { name: 'Déconnexion', action: () => logout() },
+        { name: 'Paramètres', action: () => navigate('/settings') },
+    ];
 
     return (
         <div className="header-wrapper">
