@@ -17,14 +17,14 @@ export default function Header() {
 
     const MenuElements = [
         // { name: 'Theme', action: () => console.log('switch theme') },
-        { name: 'Déconnexion', action: () => logout() },
         { name: 'Paramètres', action: () => navigate('/settings') },
+        { name: 'Déconnexion', action: () => logout() },
     ];
 
     return (
         <div className="header-wrapper">
             <Box>
-                <span id='title'>Thibaudière</span>
+                <span id='title' onClick={() => navigate('/')}>Thibaudière</span>
             </Box>
             <Box>
                 <IconButton
