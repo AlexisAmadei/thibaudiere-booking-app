@@ -10,13 +10,14 @@ import { db } from '../firebase/config';
  * @returns {Promise<void>}
  */
 export async function addBooking(startDate, endDate, booker, guests) {
+    const id = Date.now().toString().slice(Date.now().toString().length - 9);
     try {
         const docRef = await addDoc(collection(db, "booking"), {
             startDate,
             endDate,
             booker,
             guests,
-            id: docRef.id
+            id: id
         });
         console.info("Document written with ID: ", docRef.id);
     } catch (e) {

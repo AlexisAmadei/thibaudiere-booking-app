@@ -147,7 +147,7 @@ export default function Planning({ selectedDate, setSelectedDate }) {
                         Effacer
                     </Button>
                 </Box>
-                <button onClick={deleteAllBookings} className='clear-bookings'>Effacer toutes les réservations</button>
+                {/* <button onClick={deleteAllBookings} className='clear-bookings'>Effacer toutes les réservations</button> */}
             </Box>
         </div>
     );
