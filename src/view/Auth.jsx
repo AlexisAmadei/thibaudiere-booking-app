@@ -24,10 +24,10 @@ export default function Auth() {
         event.preventDefault();
         if (validateCredentials()) {
             const signin = await signIn(username, password);
-            if (signin === 'Invalid email address') {
-                setError('Invalid credentials');
-            } else {
-                setError('');
+            if (signin === 'Identifiants invalides') {
+                setError('Identifiants invalides');
+            } else if (signin === 'Erreur inconnue') {
+                setError('Erreur inconnue');
             }
         }
     }

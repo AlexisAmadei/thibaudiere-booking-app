@@ -21,8 +21,11 @@ export const signIn = async (email, password) => {
         const createDB = await createUserDocument(user.uid, user.email);
         return user;
     } catch (error) {
-        if (error.code === 'auth/invalid-email') {
-            return 'Invalid email address';
+        switch (error.code) {
+            case 'auth/invalid-credential':
+                return 'Identifiants invalides';
+            default:
+                return 'Erreur inconnue';
         }
     }
 };
