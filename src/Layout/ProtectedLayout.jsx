@@ -9,6 +9,8 @@ export default function ProtectedLayout({ children }) {
     useEffect(() => {
         if (!user) {
             navigate('/auth');
+        } else {
+            navigate('/');
         }
     }, [user])
 

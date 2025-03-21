@@ -117,7 +117,7 @@ export default function Planning({ selectedDate, setSelectedDate }) {
                             currentDate.setDate(currentDate.getDate() + 1);
                         }
                         return dates;
-                    })} // Disable full booked ranges
+                    })}
                     locale={fr}
                 />
             </div>
@@ -140,7 +140,7 @@ export default function Planning({ selectedDate, setSelectedDate }) {
                     sx={{ width: '100%' }}
                 />
                 <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1, width: '100%', justifyContent: 'center' }}>
-                    <Button variant="contained" color="primary" onClick={handleBooking} fullWidth>
+                    <Button variant="contained" color="white" onClick={handleBooking} fullWidth>
                         Valider
                     </Button>
                     <Button variant="outlined" color="info" onClick={clearData} fullWidth>
