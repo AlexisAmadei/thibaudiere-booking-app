@@ -46,21 +46,24 @@ export default function List() {
 
     // Update filtered bookings when either bookings or filter selection changes
     useEffect(() => {
+        let filtered = [];
         // If default is selected (or nothing), show all bookings
         if (
             monthFilter.length === 0 ||
             (monthFilter.length === 1 && monthFilter[0].value === 'tous')
         ) {
-            setFilteredBookingList(bookingList);
+            filtered = bookingList;
         } else {
             const filters = monthFilter.map(option => option.value);
-            const filtered = bookingList.filter(booking => {
+            filtered = bookingList.filter(booking => {
                 // Get booking month in full text in French
                 const bookingMonth = booking.startDate.toLocaleString('fr-FR', { month: 'long' });
                 return filters.includes(bookingMonth);
             });
-            setFilteredBookingList(filtered);
         }
+        // Sort filtered bookings by startDate in ascending order
+        filtered.sort((a, b) => a.startDate - b.startDate);
+        setFilteredBookingList(filtered);
     }, [bookingList, monthFilter]);
 
     const handleFilterSelect = (selectedOptions) => {
