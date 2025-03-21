@@ -32,3 +32,9 @@
 .filter-list {
     width: 100%;
 }
+
+.booking-card-title {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}

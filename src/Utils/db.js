@@ -15,7 +15,8 @@ export async function addBooking(startDate, endDate, booker, guests) {
             startDate,
             endDate,
             booker,
-            guests
+            guests,
+            id: docRef.id
         });
         console.info("Document written with ID: ", docRef.id);
     } catch (e) {
@@ -132,4 +133,12 @@ export async function updateUserDocument(uid, updatedData) {
     } else {
         console.error("No such document!");
     }
+}
+
+export async function syncBookingId() {
+    const collectionRef = collection(db, "booking");
+    const querySnapshot = await getDocs(collectionRef);
+    querySnapshot.forEach(async (doc) => {
+        await updateDoc(doc.ref, { id: doc.id });
+    });
 }

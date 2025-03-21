@@ -1,9 +1,9 @@
-import { Box, Divider, Typography } from '@mui/material';
+import { Box, Dialog, Divider, IconButton, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import { GroupRounded, RefreshRounded } from '@mui/icons-material';
+import { DeleteRounded, GroupRounded, RefreshRounded } from '@mui/icons-material';
 import EventRoundedIcon from '@mui/icons-material/EventRounded';
 import Select from 'react-select';
-import { getBookings } from '../../Utils/db';
+import { deleteBooking, getBookings, syncBookingId } from '../../Utils/db';
 import Button from '../Button/Button';
 import './styles/List.css';
 
@@ -26,8 +26,9 @@ const monthFilterOptions = [
 export default function List() {
     const [bookingList, setBookingList] = useState([]);
     const [filteredBookingList, setFilteredBookingList] = useState([]);
-    // Start with the default filter 'tous'
     const [monthFilter, setMonthFilter] = useState([monthFilterOptions[0]]);
+    const [confirmDelete, setConfirmDelete] = useState(false);
+    const [idToDelete, setIdToDelete] = useState('');
 
     async function fetchBookings() {
         const res = await getBookings();
@@ -38,11 +39,6 @@ export default function List() {
         }));
         setBookingList(formattedBookings);
     }
-
-    // Fetch bookings on mount
-    useEffect(() => {
-        fetchBookings();
-    }, []);
 
     // Update filtered bookings when either bookings or filter selection changes
     useEffect(() => {
@@ -97,6 +93,28 @@ export default function List() {
         }
     };
 
+    const handleDeleteBooking = (id) => {
+        console.log('Deleting booking with id:', id);
+        setIdToDelete(id);
+        setConfirmDelete(true);
+    };
+
+    async function confirmedDelete() {
+        try {
+            await deleteBooking(idToDelete);
+        } catch {
+            alert('Erreur lors de la suppression de la réservation.');
+        } finally {
+            fetchBookings();
+            setConfirmDelete(false);
+        }
+    }
+
+    // Fetch bookings on mount
+    useEffect(() => {
+        fetchBookings();
+    }, []);
+
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 1, height: '100%' }}>
             <Typography variant="h6" gutterBottom>
@@ -120,6 +138,12 @@ export default function List() {
                             <Typography variant='body1'>
                                 {booking.booker}
                             </Typography>
+                            <IconButton
+                                onClick={() => handleDeleteBooking(booking.id)}
+                                sx={{ padding: 0, color: 'red' }}
+                            >
+                                <DeleteRounded />
+                            </IconButton>
                         </Box>
                         <Divider sx={{ my: 1 }} flexItem />
                         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, padding: 1 }}>
@@ -145,6 +169,21 @@ export default function List() {
                     Rafraîchir la liste
                 </Button>
             </Box>
+            <Dialog open={confirmDelete} onClose={() => setConfirmDelete(false)}>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, padding: 2 }}>
+                    <Typography variant="h6" gutterBottom>
+                        Êtes-vous sûr de vouloir supprimer cette réservation ?
+                    </Typography>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-around' }}>
+                        <Button onClick={() => setConfirmDelete(false)} variant="outlined">
+                            Annuler
+                        </Button>
+                        <Button onClick={confirmedDelete} variant="contained">
+                            Confirmer
+                        </Button>
+                    </Box>
+                </Box>
+            </Dialog>
         </Box>
     );
 }
