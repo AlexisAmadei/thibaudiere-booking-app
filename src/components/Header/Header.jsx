@@ -17,7 +17,7 @@ export default function Header() {
 
     const MenuElements = [
         // { name: 'Theme', action: () => console.log('switch theme') },
-        { name: 'Paramètres', action: () => navigate('/settings') },
+        // { name: 'Paramètres', action: () => navigate('/settings') },
         { name: 'Déconnexion', action: () => logout() },
     ];
 
