@@ -134,7 +134,7 @@ export default function Planning({ selectedDate, setSelectedDate }) {
                 <TextField
                     id="outlined-size-small"
                     size="small"
-                    placeholder='Votre nom'
+                    placeholder='Titre'
                     value={booker}
                     onChange={(e) => setBooker(e.target.value)}
                     sx={{ width: '100%' }}
