@@ -68,12 +68,14 @@ export async function getBookings() {
  * @returns {Promise<void>}
  */
 export async function deleteBooking(id) {
-    try {
-        await deleteDoc(doc(db, "booking", id));
-        console.info("Document successfully deleted!");
-    } catch (e) {
-        console.error("Error removing document: ", e);
-    }
+    const collectionRef = collection(db, "booking");
+    const querySnapshot = await getDocs(collectionRef);
+    querySnapshot.forEach(async (doc) => {
+        if (doc.data().id === id) {
+            await deleteDoc(doc.ref);
+        }
+    });
+    console.info("Document deleted with ID: ", id);
 }
 
 /**
