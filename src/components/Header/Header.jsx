@@ -1,10 +1,9 @@
 import React from 'react'
-import { Box, IconButton, Menu, MenuItem } from '@mui/material'
+import { Box, IconButton, Menu, MenuItem, Typography } from '@mui/material'
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
 import './Header.css'
 import { logout } from '../../Utils/auth';
 import { useNavigate } from 'react-router-dom';
-
 
 export default function Header() {
     const [anchorEl, setAnchorEl] = React.useState(null);
@@ -16,16 +15,16 @@ export default function Header() {
     };
 
     const MenuElements = [
+        { name: 'Déconnexion', action: () => logout() },
         // { name: 'Theme', action: () => console.log('switch theme') },
         // { name: 'Paramètres', action: () => navigate('/settings') },
-        { name: 'Déconnexion', action: () => logout() },
     ];
 
     return (
         <div className="header-wrapper">
-            <Box>
-                <span id='title' onClick={() => navigate('/')}>Thibaudière</span>
-            </Box>
+            <Typography variant="h7" sx={{ flexGrow: 1 }}>
+                La Thibaudière
+            </Typography>
             <Box>
                 <IconButton
                     onClick={handleClick}

@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 
 export default function NotFound404() {
   const navigate = useNavigate();
+
   useEffect(() => {
     setTimeout(() => {
       navigate('/');

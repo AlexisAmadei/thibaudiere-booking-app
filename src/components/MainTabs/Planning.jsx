@@ -2,18 +2,15 @@ import { Box, Slider, TextField, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { DateRange } from 'react-date-range';
 import { fr } from 'date-fns/locale';
-import './styles/Planning.css';
-import { addBooking, deleteAllBookings, getBookings } from '../../Utils/db';
+import { addBooking, getBookings } from '../../Utils/booking';
 import Button from '../Button/Button';
+import './styles/Planning.css';
 
 export default function Planning({ selectedDate, setSelectedDate }) {
-    // State for storing user's name
     const [booker, setBooker] = useState('');
-    // State for storing the number of people in the booking
     const [people, setPeople] = useState(1);
-    // State for storing already booked dates
     const [alreadyBooked, setAlreadyBooked] = useState([]);
-    // State for tracking selected date range
+
     const [state, setState] = useState([
         {
             startDate: selectedDate || new Date(),
@@ -41,26 +38,6 @@ export default function Planning({ selectedDate, setSelectedDate }) {
         setAlreadyBooked(formattedBookings);
         setState(prevState => [prevState.find(r => r.key === 'selection'), ...formattedBookings]);
     }
-
-    // Fetch bookings on component mount
-    useEffect(() => {
-        fetchBookings();
-        changeInputText();
-    }, []);
-
-    // Update selected date range when user selects a new date
-    useEffect(() => {
-        if (selectedDate) {
-            setState((prevState) => [
-                {
-                    startDate: selectedDate,
-                    endDate: selectedDate,
-                    key: 'selection',
-                },
-                ...alreadyBooked,
-            ]);
-        }
-    }, [selectedDate, alreadyBooked]);
 
     // Handle booking submission
     const handleBooking = () => {
@@ -95,6 +72,26 @@ export default function Planning({ selectedDate, setSelectedDate }) {
             ...alreadyBooked,
         ]);
     };
+
+    // Fetch bookings on component mount
+    useEffect(() => {
+        fetchBookings();
+        changeInputText();
+    }, []);
+
+    // Update selected date range when user selects a new date
+    useEffect(() => {
+        if (selectedDate) {
+            setState((prevState) => [
+                {
+                    startDate: selectedDate,
+                    endDate: selectedDate,
+                    key: 'selection',
+                },
+                ...alreadyBooked,
+            ]);
+        }
+    }, [selectedDate, alreadyBooked]);
 
     return (
         <div className='planning-wrapper'>

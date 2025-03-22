@@ -1,15 +1,11 @@
 import { Box, Container, Typography } from '@mui/material'
 import React, { useEffect } from 'react'
-import { getUserDocument, updateUserDocument } from '../Utils/db';
+import { getUserDocument, updateUserDocument } from '../Utils/users';
 import './styles/Settings.css';
 
 export default function Settings() {
     const userUID = localStorage.getItem('userUID');
     const [userSettings, setUserSettings] = React.useState({});
-
-    const settingGroups = [
-        
-    ];
 
     const fetchUserSettings = async () => {
         const res = await getUserDocument(userUID);
@@ -21,12 +17,12 @@ export default function Settings() {
     };
 
     useEffect(() => {
-        fetchUserSettings();
-    }, []);
-
-    useEffect(() => {
         console.log(userSettings);
     }, [userSettings]);
+
+    useEffect(() => {
+        fetchUserSettings();
+    }, []);
 
     return (
         <Container>
@@ -34,7 +30,6 @@ export default function Settings() {
                 <Typography variant="h6" sx={{ textAlign: 'center' }} gutterBottom>Paramètres</Typography>
                 <Box className="settings-wrapper">
                     <Typography variant="body1" gutterBottom>Couleur sur le calendrier:</Typography>
-
                     <Typography variant="body1" gutterBottom>Langue</Typography>
                 </Box>
             </Box>

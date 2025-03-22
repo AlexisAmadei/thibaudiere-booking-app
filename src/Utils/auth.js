@@ -1,5 +1,5 @@
 import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword } from "firebase/auth"
-import { createUserDocument } from "./db";
+import { createUserDocument } from "./users";
 
 const auth = getAuth();
 
