@@ -1,11 +1,12 @@
 import { Box, Dialog, Divider, IconButton, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import { DeleteRounded, GroupRounded, RefreshRounded } from '@mui/icons-material';
+import { DeleteRounded, EditRounded, GroupRounded, RefreshRounded } from '@mui/icons-material';
 import EventRoundedIcon from '@mui/icons-material/EventRounded';
 import Select from 'react-select';
-import { deleteBooking, getBookings, syncBookingId } from '../../Utils/db';
+import { deleteBooking, getBookings, updateBooking } from '../../Utils/db';
 import Button from '../Button/Button';
 import './styles/List.css';
+import { set } from 'date-fns';
 
 const monthFilterOptions = [
     { value: 'tous', label: 'Tous' },
@@ -29,6 +30,9 @@ export default function List() {
     const [monthFilter, setMonthFilter] = useState([monthFilterOptions[0]]);
     const [confirmDelete, setConfirmDelete] = useState(false);
     const [idToDelete, setIdToDelete] = useState('');
+    const [openEdit, setOpenEdit] = useState(false);
+    const [idToEdit, setIdToEdit] = useState('');
+    const [updateBookingData, setUpdateBookingData] = useState({});
 
     async function fetchBookings() {
         const res = await getBookings();
@@ -110,6 +114,21 @@ export default function List() {
         }
     }
 
+    async function handleUpdateBooking() {
+        console.log('Updating booking with id:', idToEdit);
+        console.log('data to update:', updateBookingData);
+        try {
+            const up = await updateBooking(idToEdit, updateBookingData);
+        } catch (e) {
+            console.error('Error updating booking:', e);
+        } finally {
+            fetchBookings();
+            setOpenEdit(false);
+            setUpdateBookingData({});
+            setIdToEdit('');
+        }
+    };
+
     // Fetch bookings on mount
     useEffect(() => {
         fetchBookings();
@@ -138,12 +157,23 @@ export default function List() {
                             <Typography variant='body1'>
                                 {booking.booker}
                             </Typography>
-                            <IconButton
-                                onClick={() => handleDeleteBooking(booking.id)}
-                                sx={{ padding: 0, color: 'red' }}
-                            >
-                                <DeleteRounded />
-                            </IconButton>
+                            <Box sx={{ display: 'flex', gap: 1 }}>
+                                <IconButton
+                                    onClick={() => {
+                                        setIdToEdit(booking.id);
+                                        setOpenEdit(true);
+                                    }}
+                                    sx={{ padding: 0 }}
+                                >
+                                    <EditRounded />
+                                </IconButton>
+                                <IconButton
+                                    onClick={() => handleDeleteBooking(booking.id)}
+                                    sx={{ padding: 0, color: 'red' }}
+                                >
+                                    <DeleteRounded />
+                                </IconButton>
+                            </Box>
                         </Box>
                         <Divider sx={{ my: 1 }} flexItem />
                         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, padding: 1 }}>
@@ -179,6 +209,35 @@ export default function List() {
                             Annuler
                         </Button>
                         <Button onClick={confirmedDelete} variant="contained">
+                            Confirmer
+                        </Button>
+                    </Box>
+                </Box>
+            </Dialog>
+            <Dialog open={openEdit} onClose={() => setOpenEdit(false)}>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, padding: 2 }}>
+                    <Typography variant="h6" gutterBottom>
+                        Modifier la réservation
+                    </Typography>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                        <Typography variant="body1">
+                            Modifier le titre
+                        </Typography>
+                        <input type="text" name='edit-title' id='edit-title' onChange={
+                            (e) => setUpdateBookingData({ ...updateBookingData, booker: e.target.value })
+                        } />
+                        <Typography variant="body1">
+                            Modifier le nombre de personnes
+                        </Typography>
+                        <input type="number" id='edit-people' name='edit-people' min={1} max={20} onChange={
+                            (e) => setUpdateBookingData({ ...updateBookingData, guests: e.target.value })
+                        } />
+                    </Box>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-around' }}>
+                        <Button onClick={() => setOpenEdit(false)} variant="outlined">
+                            Annuler
+                        </Button>
+                        <Button onClick={handleUpdateBooking} variant="contained">
                             Confirmer
                         </Button>
                     </Box>

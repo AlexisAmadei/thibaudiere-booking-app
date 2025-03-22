@@ -26,6 +26,24 @@ export async function addBooking(startDate, endDate, booker, guests) {
 }
 
 /**
+ * Update bookin from the database
+ * @param {string} id - The ID of the booking to update
+ * @param {Object} updatedData - The updated booking data
+ * @returns {Promise<void>}
+ */
+export async function updateBooking(id, updatedData) {
+    const collectionRef = collection(db, "booking");
+    // loop through all the documents in the collection to find booker.id
+    const querySnapshot = await getDocs(collectionRef);
+    querySnapshot.forEach(async (doc) => {
+        if (doc.data().id === id) {
+            await updateDoc(doc.ref, updatedData);
+        }
+    });
+};
+
+
+/**
  * Get all bookings from the database and convert Firestore Timestamps to Date objects.
  * @returns {Promise<Array>} Array of bookings with startDate and endDate as Date objects.
  */
@@ -136,6 +154,10 @@ export async function updateUserDocument(uid, updatedData) {
     }
 }
 
+/**
+ * One time function to sync booking id with document id
+ * @returns {Promise<void>}
+ */
 export async function syncBookingId() {
     const collectionRef = collection(db, "booking");
     const querySnapshot = await getDocs(collectionRef);
