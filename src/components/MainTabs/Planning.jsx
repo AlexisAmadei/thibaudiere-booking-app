@@ -1,4 +1,6 @@
-import { Box, Slider, TextField, Typography } from '@mui/material';
+import Box from '@mui/material/Box';
+import Slider from '@mui/material/Slider';
+import TextField from '@mui/material/TextField';
 import React, { useEffect, useState } from 'react';
 import { DateRange } from 'react-date-range';
 import { fr } from 'date-fns/locale';
@@ -119,7 +121,7 @@ export default function Planning({ selectedDate, setSelectedDate }) {
                 />
             </div>
             <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 2, gap: 1, px: 2 }}>
-                <Typography variant='h6' sx={{ textAlign: 'center', mb: '16px' }}>Nombre de personnes</Typography>
+                <h3 style={{ textAlign: 'center', marginBottom: '16px' }}>Nombre de personnes</h3>
                 <Slider
                     aria-label="Volume"
                     value={people}
@@ -144,7 +146,6 @@ export default function Planning({ selectedDate, setSelectedDate }) {
                         Effacer
                     </Button>
                 </Box>
-                {/* <button onClick={deleteAllBookings} className='clear-bookings'>Effacer toutes les réservations</button> */}
             </Box>
         </div>
     );
