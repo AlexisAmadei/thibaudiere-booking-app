@@ -36,3 +36,9 @@ button.rdrDay {
         font-size: 0.8em !important;
     }
 }
+
+.kiwi-dev {
+    bottom: 8px;
+    position: fixed;
+    font-size: 0.8em;
+}
