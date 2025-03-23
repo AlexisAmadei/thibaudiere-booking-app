@@ -17,7 +17,7 @@ export default function DialogConfirmDelete({ confirmDelete, setConfirmDelete, f
     }
 
     return (
-        <Dialog open={confirmDelete} onClose={() => setConfirmDelete(false)}>
+        <Dialog open={confirmDelete} onClose={() => setConfirmDelete(false)} fullWidth>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, padding: 2 }}>
                 <Typography variant="h6" gutterBottom>
                     Êtes-vous sûr de vouloir supprimer cette réservation ?

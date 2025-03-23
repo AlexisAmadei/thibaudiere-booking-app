@@ -17,6 +17,7 @@ export default function List() {
     const [idToDelete, setIdToDelete] = useState('');
     const [openEdit, setOpenEdit] = useState(false);
     const [idToEdit, setIdToEdit] = useState('');
+    const [dataToEdit, setDataToEdit] = useState({});
 
     async function fetchBookings() {
         const res = await getBookings();
@@ -55,7 +56,6 @@ export default function List() {
     };
 
     const handleDeleteBooking = (id) => {
-        console.log('Deleting booking with id:', id);
         setIdToDelete(id);
         setConfirmDelete(true);
     };
@@ -81,6 +81,15 @@ export default function List() {
     }, [bookingList, monthFilter]);
 
     useEffect(() => {
+        if (idToEdit) {
+            setDataToEdit({
+                booker: bookingList.find(booking => booking.id === idToEdit).booker,
+                guests: bookingList.find(booking => booking.id === idToEdit).guests,
+            });
+        }
+    }, [idToEdit]);
+
+    useEffect(() => {
         fetchBookings();
     }, []);
 
@@ -95,7 +104,7 @@ export default function List() {
             <RefreshButton handleRefreshList={handleRefreshList} />
 
             <DialogConfirmDelete confirmDelete={confirmDelete} setConfirmDelete={setConfirmDelete} fetchBookings={fetchBookings} idToDelete={idToDelete} />
-            <DialogUpdateBooking openEdit={openEdit} setOpenEdit={setOpenEdit} idToEdit={idToEdit} setIdToEdit={setIdToEdit} fetchBookings={fetchBookings} />
+            <DialogUpdateBooking openEdit={openEdit} setOpenEdit={setOpenEdit} idToEdit={idToEdit} setIdToEdit={setIdToEdit} fetchBookings={fetchBookings} dataToEdit={dataToEdit} />
         </Box>
     );
 }

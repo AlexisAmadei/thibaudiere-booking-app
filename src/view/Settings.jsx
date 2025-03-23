@@ -17,10 +17,6 @@ export default function Settings() {
     };
 
     useEffect(() => {
-        console.log(userSettings);
-    }, [userSettings]);
-
-    useEffect(() => {
         fetchUserSettings();
     }, []);
 

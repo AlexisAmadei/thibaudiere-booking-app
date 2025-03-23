@@ -77,3 +77,20 @@ export async function deleteBooking(id) {
     });
     console.info("Document deleted with ID: ", id);
 }
+
+/**
+ * Get a booking from the database
+ * @param {string} id - The ID of the booking to get
+ * @returns {Promise<Object>} The booking object
+ */
+export async function getBooking(id) {
+    const collectionRef = collection(db, "booking");
+    const querySnapshot = await getDocs(collectionRef);
+    let res = {};
+    querySnapshot.forEach((doc) => {
+        if (doc.data().id === id) {
+            res = doc.data();
+        }
+    });
+    return res;
+}
