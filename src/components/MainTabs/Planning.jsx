@@ -146,9 +146,6 @@ export default function Planning({ selectedDate, setSelectedDate }) {
                         Effacer
                     </Button>
                 </Box>
-                <Box className='kiwi-dev'>
-                    <p>by <a href="https://github.com/AlexisAmadei">Kiwi Dev</a></p>
-                </Box>
             </Box>
         </div>
     );

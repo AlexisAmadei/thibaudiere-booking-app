@@ -41,4 +41,5 @@ button.rdrDay {
     bottom: 8px;
     position: fixed;
     font-size: 0.8em;
+    right: calc(50% - 50px);
 }
