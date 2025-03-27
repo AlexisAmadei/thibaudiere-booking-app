@@ -68,3 +68,25 @@ export async function createUserDocument(uid, email) {
     }
 };
 
+/**
+ * Retrun if user is admin or not
+ * @param {string} uid - The user's UID
+ * @param {string} email - The user's email
+ * @returns {Promise<boolean>} - True if user is admin, false otherwise
+ */
+export async function isAdmin(uid, email) {
+    if (!uid || !email) {
+        console.error('UID or email is missing');
+        return false;
+    }
+    const q = query(collection(db, "users"), where('uid', '==', uid), where('email', '==', email));
+    const querySnapshot = await getDocs(q);
+    if (!querySnapshot.empty) {
+        const userDoc = querySnapshot.docs[0].data();
+        // console.log(userDoc.admin);
+        return userDoc.admin;
+    } else {
+        console.error("No such document!");
+        return false;
+    }
+}

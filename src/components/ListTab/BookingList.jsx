@@ -3,33 +3,37 @@ import { Box, Divider, IconButton, Typography } from '@mui/material';
 import EventRoundedIcon from '@mui/icons-material/EventRounded';
 import GroupRounded from '@mui/icons-material/GroupRounded';
 import React from 'react'
+import { AuthContext } from '../../Context/AuthContext';
 
 export default function BookingList({ filteredBookingList, handleDeleteBooking, setOpenEdit, setIdToEdit }) {
+    const { isUserAdmin } = React.useContext(AuthContext);
     return (
         <Box className="booking-list">
             {filteredBookingList.map((booking, index) => (
                 <Box key={index} className="booking-card">
                     <Box className="booking-card-title">
                         <Typography variant='body1'>
-                            {booking.booker}
+                            {isUserAdmin ? booking.booker : '****'}
                         </Typography>
-                        <Box sx={{ display: 'flex', gap: 1 }}>
-                            <IconButton
-                                onClick={() => {
-                                    setIdToEdit(booking.id);
-                                    setOpenEdit(true);
-                                }}
-                                sx={{ padding: 0 }}
-                            >
-                                <EditRounded />
-                            </IconButton>
-                            <IconButton
-                                onClick={() => handleDeleteBooking(booking.id)}
-                                sx={{ padding: 0, color: 'red' }}
-                            >
-                                <DeleteRounded />
-                            </IconButton>
-                        </Box>
+                        {isUserAdmin && (
+                            <Box sx={{ display: 'flex', gap: 1 }}>
+                                <IconButton
+                                    onClick={() => {
+                                        setIdToEdit(booking.id);
+                                        setOpenEdit(true);
+                                    }}
+                                    sx={{ padding: 0 }}
+                                >
+                                    <EditRounded />
+                                </IconButton>
+                                <IconButton
+                                    onClick={() => handleDeleteBooking(booking.id)}
+                                    sx={{ padding: 0, color: 'red' }}
+                                >
+                                    <DeleteRounded />
+                                </IconButton>
+                            </Box>
+                        )}
                     </Box>
                     <Divider sx={{ my: 1 }} flexItem />
                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, padding: 1 }}>
@@ -42,7 +46,7 @@ export default function BookingList({ filteredBookingList, handleDeleteBooking, 
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                             <GroupRounded />
                             <Typography>
-                                {booking.guests} personne{booking.guests > 1 && 's'}
+                                {isUserAdmin ? booking.guests : '*' } personne{booking.guests > 1 && 's'}
                             </Typography>
                         </Box>
                     </Box>

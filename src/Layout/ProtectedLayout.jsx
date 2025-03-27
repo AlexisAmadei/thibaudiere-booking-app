@@ -14,5 +14,5 @@ export default function ProtectedLayout({ children }) {
         }
     }, [user])
 
-    return children
+    return children;
 }

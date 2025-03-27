@@ -15,10 +15,6 @@
     align-items: center;
 }
 
-/* .date-range {
-    border-radius: 8px;
-} */
-
 button.rdrDay {
     border-radius: 0;
 }
@@ -42,4 +38,5 @@ button.rdrDay {
     position: fixed;
     font-size: 0.8em;
     right: calc(50% - 50px);
+    z-index: -9999;
 }

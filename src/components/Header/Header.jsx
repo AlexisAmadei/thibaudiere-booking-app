@@ -3,12 +3,12 @@ import { Box, IconButton, Menu, MenuItem, Typography } from '@mui/material'
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
 import './Header.css'
 import { logout } from '../../Utils/auth';
-import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../../Context/AuthContext';
 
 export default function Header() {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
-    const navigate = useNavigate();
+    const { isUserAdmin } = React.useContext(AuthContext);
 
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -23,7 +23,7 @@ export default function Header() {
     return (
         <div className="header-wrapper">
             <Typography variant="h7" sx={{ flexGrow: 1 }}>
-                La Thibaudière
+                {isUserAdmin ? 'La Thibaudière' : 'LTH'}
             </Typography>
             <Box>
                 <IconButton

@@ -18,15 +18,21 @@ export default function Auth() {
         return true;
     }
 
-    const handleSignIn = async (event) => {
+    /**
+     * @param {*} event # event triggered by the form submit
+     * @param {boolean} isReadOnly # if the user must log in as read-only
+     * @returns {Promise<void>} # sign in the user
+     */
+    const handleSignIn = async (event, isReadOnly) => {
         event.preventDefault();
-        if (validateCredentials()) {
-            const signin = await signIn(username, password);
-            if (signin === 'Identifiants invalides') {
-                setError('Identifiants invalides');
-            } else if (signin === 'Erreur inconnue') {
-                setError('Erreur inconnue');
-            }
+        const ro_email = import.meta.env.VITE_READONLY_EMAIL;
+        const ro_password = import.meta.env.VITE_READONLY_PASSWORD;
+
+        const signin = await signIn(isReadOnly ? ro_email : username, isReadOnly ? ro_password : password);
+        if (signin === 'Identifiants invalides') {
+            setError('Identifiants invalides');
+        } else if (signin === 'Erreur inconnue') {
+            setError('Erreur inconnue');
         }
     }
 

@@ -8,6 +8,7 @@ import BookingList from '../ListTab/BookingList';
 import RefreshButton from '../Button/RefreshButton';
 import DialogConfirmDelete from '../Dialog/DialogConfirmDelete';
 import DialogUpdateBooking from '../Dialog/DialogUpdateBooking';
+import { AuthContext } from '../../Context/AuthContext';
 
 export default function List() {
     const [bookingList, setBookingList] = useState([]);
@@ -18,6 +19,7 @@ export default function List() {
     const [openEdit, setOpenEdit] = useState(false);
     const [idToEdit, setIdToEdit] = useState('');
     const [dataToEdit, setDataToEdit] = useState({});
+    const { isUserAdmin } = React.useContext(AuthContext);
 
     async function fetchBookings() {
         const res = await getBookings();
@@ -101,7 +103,9 @@ export default function List() {
 
             <FilterSelect handleFilterSelect={handleFilterSelect} monthFilter={monthFilter} />
             <BookingList filteredBookingList={filteredBookingList} handleDeleteBooking={handleDeleteBooking} setOpenEdit={setOpenEdit} setIdToEdit={setIdToEdit} />
-            <RefreshButton handleRefreshList={handleRefreshList} />
+            {isUserAdmin && (
+                <RefreshButton handleRefreshList={handleRefreshList} />
+            )}
 
             <DialogConfirmDelete confirmDelete={confirmDelete} setConfirmDelete={setConfirmDelete} fetchBookings={fetchBookings} idToDelete={idToDelete} />
             <DialogUpdateBooking openEdit={openEdit} setOpenEdit={setOpenEdit} idToEdit={idToEdit} setIdToEdit={setIdToEdit} fetchBookings={fetchBookings} dataToEdit={dataToEdit} />

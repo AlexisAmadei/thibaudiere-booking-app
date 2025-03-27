@@ -1,18 +1,19 @@
 import Box from '@mui/material/Box';
 import Slider from '@mui/material/Slider';
 import TextField from '@mui/material/TextField';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { DateRange } from 'react-date-range';
 import { fr } from 'date-fns/locale';
 import { addBooking, getBookings } from '../../Utils/booking';
 import Button from '../Button/Button';
 import './styles/Planning.css';
+import { AuthContext } from '../../Context/AuthContext';
 
 export default function Planning({ selectedDate, setSelectedDate }) {
     const [booker, setBooker] = useState('');
     const [people, setPeople] = useState(1);
     const [alreadyBooked, setAlreadyBooked] = useState([]);
-
+    const { isUserAdmin } = useContext(AuthContext);
     const [state, setState] = useState([
         {
             startDate: selectedDate || new Date(),
@@ -120,33 +121,35 @@ export default function Planning({ selectedDate, setSelectedDate }) {
                     locale={fr}
                 />
             </div>
-            <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 2, gap: 1, px: 2 }}>
-                <h3 style={{ textAlign: 'center', marginBottom: '16px' }}>Nombre de personnes</h3>
-                <Slider
-                    aria-label="Volume"
-                    value={people}
-                    onChange={handleChange}
-                    valueLabelDisplay="on"
-                    min={1}
-                    max={20}
-                />
-                <TextField
-                    id="outlined-size-small"
-                    size="small"
-                    placeholder='Titre'
-                    value={booker}
-                    onChange={(e) => setBooker(e.target.value)}
-                    sx={{ width: '100%' }}
-                />
-                <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1, width: '100%', justifyContent: 'center' }}>
-                    <Button variant="contained" color="white" onClick={handleBooking} fullWidth>
-                        Valider
-                    </Button>
-                    <Button variant="outlined" color="info" onClick={clearData} fullWidth>
-                        Effacer
-                    </Button>
+            {isUserAdmin && (
+                <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 2, gap: 1, px: 2 }}>
+                    <h3 style={{ textAlign: 'center', marginBottom: '16px' }}>Nombre de personnes</h3>
+                    <Slider
+                        aria-label="Volume"
+                        value={people}
+                        onChange={handleChange}
+                        valueLabelDisplay="on"
+                        min={1}
+                        max={20}
+                    />
+                    <TextField
+                        id="outlined-size-small"
+                        size="small"
+                        placeholder='Titre'
+                        value={booker}
+                        onChange={(e) => setBooker(e.target.value)}
+                        sx={{ width: '100%' }}
+                    />
+                    <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1, width: '100%', justifyContent: 'center' }}>
+                        <Button variant="contained" color="white" onClick={handleBooking} fullWidth>
+                            Valider
+                        </Button>
+                        <Button variant="outlined" color="info" onClick={clearData} fullWidth>
+                            Effacer
+                        </Button>
+                    </Box>
                 </Box>
-            </Box>
+            )}
         </div>
     );
 }
