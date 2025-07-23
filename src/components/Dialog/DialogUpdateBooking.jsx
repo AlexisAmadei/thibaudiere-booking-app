@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { Box, Dialog, Slider, Typography } from '@mui/material';
+import { useState, useEffect } from 'react';
+import { Box, Dialog, Typography } from '@mui/material';
 import { updateBooking } from '../../Utils/booking';
 import Button from '../Button/Button';
+import EditBooking from './EditBooking';
 
 export default function DialogUpdateBooking({ openEdit, setOpenEdit, idToEdit, setIdToEdit, fetchBookings, currentBooking, dataToEdit }) {
     const [updateBookingData, setUpdateBookingData] = useState({});
@@ -43,28 +44,7 @@ export default function DialogUpdateBooking({ openEdit, setOpenEdit, idToEdit, s
                 <Typography variant="h6" gutterBottom>
                     Modifier la réservation
                 </Typography>
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                    <p style={{ margin: 0, marginTop: '4px' }}>Modifier le titre</p>
-                    <input
-                        type="text"
-                        name='edit-title'
-                        id='edit-title'
-                        className='form-control'
-                        value={updateBookingData.booker}
-                        onChange={(e) => setUpdateBookingData({ ...updateBookingData, booker: e.target.value })}
-                    />
-                    <p style={{ margin: 0, marginTop: '4px' }}>Modifier le nombre de personnes</p>
-                    <Slider
-                        value={updateBookingData.guests || 1}
-                        aria-labelledby="discrete-slider"
-                        valueLabelDisplay="auto"
-                        step={1}
-                        marks
-                        min={1}
-                        max={20}
-                        onChange={(e, value) => setUpdateBookingData({ ...updateBookingData, guests: value })}
-                    />
-                </Box>
+                <EditBooking updateBookingData={updateBookingData} setUpdateBookingData={setUpdateBookingData} />
                 <Box sx={{ display: 'flex', justifyContent: 'space-around' }}>
                     <Button onClick={() => setOpenEdit(false)} variant="outlined">
                         Annuler

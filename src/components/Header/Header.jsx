@@ -1,4 +1,4 @@
-import React from 'react'
+import { useState, useContext } from 'react'
 import { Box, IconButton, Menu, MenuItem, Typography } from '@mui/material'
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
 import './Header.css'
@@ -6,9 +6,9 @@ import { logout } from '../../Utils/auth';
 import { AuthContext } from '../../Context/AuthContext';
 
 export default function Header() {
-    const [anchorEl, setAnchorEl] = React.useState(null);
+    const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
-    const { isUserAdmin } = React.useContext(AuthContext);
+    const { isUserAdmin } = useContext(AuthContext);
 
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);

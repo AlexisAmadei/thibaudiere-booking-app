@@ -4,6 +4,8 @@ import EventRoundedIcon from '@mui/icons-material/EventRounded';
 import GroupRounded from '@mui/icons-material/GroupRounded';
 import React from 'react'
 import { AuthContext } from '../../Context/AuthContext';
+import BookingDetails from '../BookingItem/BookingDetails';
+import BookingHeader from '../BookingItem/BookingHeader';
 
 export default function BookingList({ filteredBookingList, handleDeleteBooking, setOpenEdit, setIdToEdit }) {
     const { isUserAdmin } = React.useContext(AuthContext);
@@ -11,45 +13,14 @@ export default function BookingList({ filteredBookingList, handleDeleteBooking, 
         <Box className="booking-list">
             {filteredBookingList.map((booking, index) => (
                 <Box key={index} className="booking-card">
-                    <Box className="booking-card-title">
-                        <Typography variant='body1'>
-                            {isUserAdmin ? booking.booker : '****'}
-                        </Typography>
-                        {isUserAdmin && (
-                            <Box sx={{ display: 'flex', gap: 1 }}>
-                                <IconButton
-                                    onClick={() => {
-                                        setIdToEdit(booking.id);
-                                        setOpenEdit(true);
-                                    }}
-                                    sx={{ padding: 0 }}
-                                >
-                                    <EditRounded />
-                                </IconButton>
-                                <IconButton
-                                    onClick={() => handleDeleteBooking(booking.id)}
-                                    sx={{ padding: 0, color: 'red' }}
-                                >
-                                    <DeleteRounded />
-                                </IconButton>
-                            </Box>
-                        )}
-                    </Box>
+                    <BookingHeader
+                        booking={booking}
+                        isUserAdmin={isUserAdmin}
+                        setIdToEdit={setIdToEdit}
+                        setOpenEdit={setOpenEdit}
+                    />
                     <Divider sx={{ my: 1 }} flexItem />
-                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, padding: 1 }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            <EventRoundedIcon />
-                            <Typography>
-                                {booking.startDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })} - {booking.endDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
-                            </Typography>
-                        </Box>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            <GroupRounded />
-                            <Typography>
-                                {isUserAdmin ? booking.guests : '*' } personne{booking.guests > 1 && 's'}
-                            </Typography>
-                        </Box>
-                    </Box>
+                    <BookingDetails booking={booking} isUserAdmin={isUserAdmin} />
                 </Box>
             ))}
         </Box>

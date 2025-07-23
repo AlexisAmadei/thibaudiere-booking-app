@@ -1,5 +1,4 @@
 import { Box, Dialog, Typography } from '@mui/material'
-import React from 'react'
 import Button from '../Button/Button'
 import { deleteBooking } from '../../Utils/booking';
 

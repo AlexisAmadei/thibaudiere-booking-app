@@ -1,4 +1,3 @@
-import React from 'react'
 import Button from './Button/Button'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
