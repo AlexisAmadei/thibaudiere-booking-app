@@ -63,7 +63,9 @@ export default function List() {
     };
 
     useEffect(() => {
+        const today = new Date();
         let filtered = [];
+
         if (
             monthFilter.length === 0 ||
             (monthFilter.length === 1 && monthFilter[0].value === 'tous')
@@ -79,6 +81,14 @@ export default function List() {
         }
         // Sort filtered bookings by startDate in ascending order
         filtered.sort((a, b) => a.startDate - b.startDate);
+
+        // Remove past bookings
+        filtered = filtered.filter(booking => {
+            const bookingDate = new Date(booking.startDate);
+            console.log('Booking Date:', bookingDate);
+            return bookingDate >= today;
+        });
+
         setFilteredBookingList(filtered);
     }, [bookingList, monthFilter]);
 
