@@ -83,7 +83,6 @@ export async function isAdmin(uid, email) {
     const querySnapshot = await getDocs(q);
     if (!querySnapshot.empty) {
         const userDoc = querySnapshot.docs[0].data();
-        // console.log(userDoc.admin);
         return userDoc.admin;
     } else {
         console.error("No such document!");

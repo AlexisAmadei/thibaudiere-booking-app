@@ -85,7 +85,6 @@ export default function List() {
         // Remove past bookings
         filtered = filtered.filter(booking => {
             const bookingDate = new Date(booking.startDate);
-            console.log('Booking Date:', bookingDate);
             return bookingDate >= today;
         });
 

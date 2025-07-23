@@ -15,7 +15,6 @@ export default function AuthProvider({ children }) {
 
     async function checkAdminStatus(uid, email) {
         const adminStatus = await isAdmin(uid, email);
-        console.log('Admin status:', adminStatus);
         setIsUserAdmin(adminStatus);
     }
 

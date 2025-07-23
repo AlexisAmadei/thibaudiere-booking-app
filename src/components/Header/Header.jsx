@@ -16,8 +16,6 @@ export default function Header() {
 
     const MenuElements = [
         { name: 'Déconnexion', action: () => logout() },
-        // { name: 'Theme', action: () => console.log('switch theme') },
-        // { name: 'Paramètres', action: () => navigate('/settings') },
     ];
 
     return (
