@@ -8,7 +8,7 @@ import { createBooking } from '../supabase/booking'
 import { useEffect } from 'react'
 import { Toaster, toaster } from '../components/ui/toaster'
 
-export default function AddBooking({ bookingList = [] }) {
+export default function AddBooking({ bookingList = [], isMobile = true }) {
   const [canValidate, setCanValidate] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [title, setTitle] = useState('')
@@ -21,7 +21,7 @@ export default function AddBooking({ bookingList = [] }) {
     const dates = [];
     const start = new Date(booking.start_date);
     const end = new Date(booking.end_date);
-    
+
     const currentDate = new Date(start);
     while (currentDate <= end) {
       dates.push(new Date(currentDate));
@@ -75,7 +75,7 @@ export default function AddBooking({ bookingList = [] }) {
   }, [title, startDate, endDate]);
 
   return (
-    <Flex direction={'column'} justifyContent="space-between" alignItems="center" gap={4}>
+    <Flex direction={'column'} alignItems="center" gap={4} width={isMobile ? '100%' : '30%'} maxH={'100vh'} justifyContent={isMobile ? 'space-between' : 'flex-start'} flex={1}>
       <Heading as="h2" size="md">
         Ajouter une réservation
       </Heading>

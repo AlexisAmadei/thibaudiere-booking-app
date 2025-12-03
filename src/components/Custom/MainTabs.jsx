@@ -5,10 +5,10 @@ import AddBooking from '../../views/AddBooking'
 import BookingList from '../../views/BookingList'
 import React from 'react'
 
-export default function MainTabs({ bookingList }) {
+export default function MainTabs({ bookings }) {
   return (
-    <Tabs.Root defaultValue="add-booking" width={'100%'}>
-      <Tabs.List justifyContent="space-around" mb={4}>
+    <Tabs.Root defaultValue="view-booking" width={'100%'} display="flex" flexDirection="column" height={'calc(100vh - 200px)'}>
+      <Tabs.List justifyContent="space-around" mb={4} flexShrink={0}>
         <Tabs.Trigger value="add-booking">
           <CalendarPlus />
           Ajouter
@@ -18,11 +18,11 @@ export default function MainTabs({ bookingList }) {
           Voir la liste
         </Tabs.Trigger>
       </Tabs.List>
-      <Tabs.Content value="add-booking">
-        <AddBooking bookingList={bookingList} />
+      <Tabs.Content value="add-booking" flex={1} minH={0}>
+        <AddBooking bookingList={bookings} isMobile={true} />
       </Tabs.Content>
-      <Tabs.Content value="view-booking">
-        <BookingList bookingList={bookingList} />
+      <Tabs.Content value="view-booking" flex={1} minH={0}>
+        <BookingList bookingList={bookings} isMobile={true} />
       </Tabs.Content>
     </Tabs.Root>
   )

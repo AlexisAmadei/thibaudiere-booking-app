@@ -7,8 +7,10 @@ import { useState } from 'react'
 import MainTabs from '../components/Custom/MainTabs'
 import { useEffect } from 'react'
 import { getAllBookings } from '../supabase/booking'
-import { Toaster } from '../components/ui/toaster'
 import Loading from '../components/Custom/Loading'
+import AddBooking from './AddBooking'
+import BookingList from './BookingList'
+import useIsMobile from '../hooks/useIsMobile'
 
 const MENU_ITEMS = [
   { label: 'Profile', href: '/' },
@@ -18,9 +20,9 @@ const MENU_ITEMS = [
 export default function App() {
   const [bookings, setBookings] = useState([])
   const [loading, setLoading] = useState(true)
+  const isMobile = useIsMobile();
 
   useEffect(() => {
-    // Fetch bookings from Supabase or any other source
     async function fetchBookings() {
       const data = await getAllBookings()
       setBookings(data)
@@ -59,7 +61,20 @@ export default function App() {
         </Box>
       </Flex>
 
-      {loading ? <Loading /> : <MainTabs bookingList={bookings} />}
+      {loading ? (
+        <Loading />
+      ) : (
+        <>
+          {isMobile ? (
+            <MainTabs bookings={bookings} />
+          ) : (
+            <Flex gap={8} direction={'row'} justifyContent="space-evenly" width={'100%'} height={'calc(100vh - 200px)'}>
+              <AddBooking bookingList={bookings} isMobile={isMobile} />
+              <BookingList bookingList={bookings} isMobile={isMobile} />
+            </Flex>
+          )}
+        </>
+      )}
     </Box>
   )
 }
