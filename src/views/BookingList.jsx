@@ -58,7 +58,7 @@ export default function BookingList({ bookingList, isMobile = true, onBookingDel
 
   if (bookingList?.length === 0) {
     return (
-      <Flex direction={'column'} alignItems="center" justifyContent="center" height="100%">
+      <Flex direction={'column'} alignItems="center" justifyContent="center" height="100%" width={isMobile ? '100%' : '70%'} gap={4}>
         <Heading as="h2" size="md" mb={4}>
           Aucune réservation trouvée
         </Heading>
