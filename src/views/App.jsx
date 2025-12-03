@@ -1,7 +1,7 @@
 import { Flex, Heading, Highlight, Menu } from '@chakra-ui/react'
 import { Portal } from '@chakra-ui/react'
 import { Box } from '@chakra-ui/react'
-import { Settings } from 'lucide-react'
+import { Settings, LogOut } from 'lucide-react'
 import { ColorModeButton } from '../components/ui/color-mode'
 import { useState } from 'react'
 import MainTabs from '../components/Custom/MainTabs'
@@ -11,6 +11,7 @@ import Loading from '../components/Custom/Loading'
 import AddBooking from './AddBooking'
 import BookingList from './BookingList'
 import useIsMobile from '../hooks/useIsMobile'
+import { useAuth } from '../contexts/AuthContext'
 
 const MENU_ITEMS = [
   { label: 'Profile', href: '/' },
@@ -18,6 +19,7 @@ const MENU_ITEMS = [
 ]
 
 export default function App() {
+  const { signOut, user } = useAuth()
   const [bookings, setBookings] = useState([])
   const [loading, setLoading] = useState(true)
   const isMobile = useIsMobile();
@@ -30,6 +32,14 @@ export default function App() {
     }
     fetchBookings()
   }, [])
+
+  const handleSignOut = async () => {
+    try {
+      await signOut()
+    } catch (error) {
+      console.error('Sign out error:', error)
+    }
+  }
 
   return (
     <Box p={8}>
@@ -54,6 +64,11 @@ export default function App() {
                       {item.label}
                     </Menu.Item>
                   ))}
+                  <Menu.Separator />
+                  <Menu.Item color="red.500" onClick={handleSignOut}>
+                    <LogOut size={16} />
+                    Se déconnecter
+                  </Menu.Item>
                 </Menu.Content>
               </Menu.Positioner>
             </Portal>
