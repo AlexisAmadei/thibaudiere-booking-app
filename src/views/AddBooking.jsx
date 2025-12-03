@@ -39,7 +39,7 @@ export default function AddBooking({ bookingList = [], isMobile = true, onBookin
         booker: title,
         start_date: startDate.toISOString().split('T')[0],
         end_date: endDate.toISOString().split('T')[0],
-        status: 'confirmed',
+        status: 'CONFIRMED',
       });
 
       // Reset form
