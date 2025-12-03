@@ -30,7 +30,7 @@ export default function AddBooking({ bookingList = [], isMobile = true, onBookin
     return dates;
   });
 
-  const handleAddBooking = async () => {
+  const handleAddBooking = async (status) => {
     if (!canValidate || isLoading) return;
 
     setIsLoading(true);
@@ -39,7 +39,7 @@ export default function AddBooking({ bookingList = [], isMobile = true, onBookin
         booker: title,
         start_date: startDate.toISOString().split('T')[0],
         end_date: endDate.toISOString().split('T')[0],
-        status: 'CONFIRMED',
+        status: status,
       });
 
       // Reset form
@@ -109,9 +109,10 @@ export default function AddBooking({ bookingList = [], isMobile = true, onBookin
           colorPalette={'yellow'}
           variant={'subtle'}
           borderRadius={8}
-          disabled={isLoading}
+          disabled={!canValidate || isLoading}
+          onClick={() => handleAddBooking('PROVISIONAL')}
         >
-          Annuler
+          Provisoire
         </Button>
         <Button
           disabled={!canValidate || isLoading}
@@ -120,7 +121,7 @@ export default function AddBooking({ bookingList = [], isMobile = true, onBookin
           colorPalette={'green'}
           variant={'subtle'}
           borderRadius={8}
-          onClick={handleAddBooking}
+          onClick={() => handleAddBooking('CONFIRMED')}
         >
           Confirmer
         </Button>

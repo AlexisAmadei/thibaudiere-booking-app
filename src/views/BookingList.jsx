@@ -1,4 +1,4 @@
-import { Button, Card, Heading } from '@chakra-ui/react'
+import { Badge, Button, Card, Heading } from '@chakra-ui/react'
 import { Text } from '@chakra-ui/react'
 import { Flex } from '@chakra-ui/react'
 import { CalendarArrowDown, CalendarArrowUp } from 'lucide-react'
@@ -10,6 +10,7 @@ import { deleteBooking } from '../supabase/booking'
 import { toaster } from '../components/ui/toaster'
 import { CalendarSync } from 'lucide-react'
 import { useBooking } from '../contexts/BookingContext'
+import { Box } from '@chakra-ui/react'
 
 export default function BookingList({ bookingList, isMobile = true, onBookingDeleted }) {
   const [sortOrder, setSortOrder] = useState('asc') // 'asc' or 'desc'
@@ -133,29 +134,40 @@ export default function BookingList({ bookingList, isMobile = true, onBookingDel
                 </Text>
               </Flex>
             </Card.Body>
-            <Card.Footer alignSelf={isMobile ? 'auto' : 'flex-end'}>
-              <Button
-                variant="subtle"
-                colorPalette="red"
-                flex={isMobile ? '1' : 'none'}
-                size={isMobile ? 'md' : 'sm'}
-                onClick={() => handleDeleteBooking(booking.id, booking.booker)}
-                loading={deletingId === booking.id}
-                disabled={deletingId === booking.id}
-              >
-                <Trash />
-                Supprimer
-              </Button>
-              <Button
-                variant="subtle"
-                colorPalette="blue"
-                flex={isMobile ? '1' : 'none'}
-                size={isMobile ? 'md' : 'sm'}
-                disabled={deletingId !== null}
-              >
-                <Pen />
-                Edit
-              </Button>
+            <Card.Footer justifyContent="space-between" alignItems={isMobile ? 'stretch' : 'center'} flexDirection={isMobile ? 'column' : 'row'} gap={isMobile ? 2 : 0}>
+              <Box id='badges'>
+                {booking.status === 'CONFIRMED' ? (
+                  <Badge colorPalette={'green'} mr={2}>Confirmée</Badge>
+                ) : (
+                  <Badge colorPalette="yellow" mr={2}>Provisoire</Badge>
+                )}
+              </Box>
+
+              <Box display="inline-flex" gap={2} flexDirection={isMobile ? 'column' : 'row'} width={isMobile ? '100%' : 'auto'}>
+                <Button
+                  variant="subtle"
+                  colorPalette="red"
+                  flex={isMobile ? '1' : 'none'}
+                  size={isMobile ? 'md' : 'sm'}
+                  onClick={() => handleDeleteBooking(booking.id, booking.booker)}
+                  loading={deletingId === booking.id}
+                  disabled={deletingId === booking.id}
+                >
+                  <Trash />
+                  Supprimer
+                </Button>
+                <Button
+                  variant="subtle"
+                  colorPalette="blue"
+                  flex={isMobile ? '1' : 'none'}
+                  size={isMobile ? 'md' : 'sm'}
+                  disabled={deletingId !== null}
+                >
+                  <Pen />
+                  Edit
+                </Button>
+
+              </Box>
             </Card.Footer>
           </Card.Root>
         ))}
