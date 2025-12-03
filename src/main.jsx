@@ -5,6 +5,7 @@ import App from './views/App.jsx'
 import { createRoot } from 'react-dom/client'
 import { StrictMode } from 'react'
 import { AuthProvider } from './contexts/AuthContext.jsx'
+import { BookingProvider } from './contexts/BookingContext.jsx'
 import SecurityLayout from './Layout/SecurityLayout.jsx'
 
 createRoot(document.getElementById('root')).render(
@@ -12,9 +13,11 @@ createRoot(document.getElementById('root')).render(
     <BrowserRouter>
       <Provider>
         <AuthProvider>
-          <SecurityLayout>
-            <App />
-          </SecurityLayout>
+          <BookingProvider>
+            <SecurityLayout>
+              <App />
+            </SecurityLayout>
+          </BookingProvider>
         </AuthProvider>
       </Provider>
     </BrowserRouter>

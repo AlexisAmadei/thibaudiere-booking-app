@@ -5,10 +5,17 @@ import { CalendarArrowDown, CalendarArrowUp } from 'lucide-react'
 import { Pen } from 'lucide-react'
 import { Trash } from 'lucide-react'
 import { Calendar } from 'lucide-react'
-import React, { useState, useMemo } from 'react'
+import { useState, useMemo } from 'react'
+import { deleteBooking } from '../supabase/booking'
+import { toaster } from '../components/ui/toaster'
+import { CalendarSync } from 'lucide-react'
+import { useBooking } from '../contexts/BookingContext'
 
-export default function BookingList({ bookingList, isMobile = true }) {
+export default function BookingList({ bookingList, isMobile = true, onBookingDeleted }) {
   const [sortOrder, setSortOrder] = useState('asc') // 'asc' or 'desc'
+  const [deletingId, setDeletingId] = useState(null)
+  const [refreshDisabled, setRefreshDisabled] = useState(false)
+  const { refetch } = useBooking()
 
   const sortedBookings = useMemo(() => {
     if (!bookingList) return [];
@@ -23,6 +30,30 @@ export default function BookingList({ bookingList, isMobile = true }) {
 
   const toggleSortOrder = () => {
     setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc');
+  };
+
+  const handleDeleteBooking = async (bookingId, bookerName) => {
+    setDeletingId(bookingId);
+    try {
+      await deleteBooking(bookingId);
+      toaster.create({
+        title: 'Réservation supprimée',
+        description: `La réservation de ${bookerName} a été supprimée avec succès.`,
+        type: 'success',
+      });
+      if (onBookingDeleted) {
+        onBookingDeleted(bookingId);
+      }
+    } catch (error) {
+      console.error('Delete error:', error);
+      toaster.create({
+        title: 'Erreur',
+        description: 'La suppression a échoué. Veuillez réessayer.',
+        type: 'error',
+      });
+    } finally {
+      setDeletingId(null);
+    }
   };
 
   if (bookingList?.length === 0) {
@@ -40,16 +71,31 @@ export default function BookingList({ bookingList, isMobile = true }) {
       .toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
       .toLowerCase();
 
+  const handleRefetch = async () => {
+    setRefreshDisabled(true);
+    try {
+      await refetch();
+    } finally {
+      setRefreshDisabled(false);
+    }
+  };
+
   return (
     <Flex direction={'column'} gap={4} width={isMobile ? '100%' : '70%'} minH={0} height="100%">
       <Heading as="h2" size="md" flexShrink={0}>
         Liste des réservations
       </Heading>
 
-      <Button size="sm" onClick={toggleSortOrder} variant="outline" flexShrink={0}>
-        {sortOrder === 'asc' ? <CalendarArrowDown /> : <CalendarArrowUp />}
-        {sortOrder === 'asc' ? 'Plus récent en premier' : 'Plus ancien en premier'}
-      </Button>
+      <Flex direction={'row'} gap={2} mb={2} flexShrink={0}>
+        <Button size="sm" onClick={toggleSortOrder} variant="outline" flexShrink={0}>
+          {sortOrder === 'asc' ? <CalendarArrowDown /> : <CalendarArrowUp />}
+          {sortOrder === 'asc' ? 'Plus récent en premier' : 'Plus ancien en premier'}
+        </Button>
+        <Button size="sm" onClick={handleRefetch} disabled={refreshDisabled} variant="outline" flexShrink={0}>
+          <CalendarSync /> Rafraichir
+        </Button>
+
+      </Flex>
 
       <Flex
         direction={'column'}
@@ -88,11 +134,25 @@ export default function BookingList({ bookingList, isMobile = true }) {
               </Flex>
             </Card.Body>
             <Card.Footer alignSelf={isMobile ? 'auto' : 'flex-end'}>
-              <Button variant="subtle" colorPalette="red" flex={isMobile ? '1' : 'none'} size={isMobile ? 'md' : 'sm'}>
+              <Button
+                variant="subtle"
+                colorPalette="red"
+                flex={isMobile ? '1' : 'none'}
+                size={isMobile ? 'md' : 'sm'}
+                onClick={() => handleDeleteBooking(booking.id, booking.booker)}
+                loading={deletingId === booking.id}
+                disabled={deletingId === booking.id}
+              >
                 <Trash />
                 Supprimer
               </Button>
-              <Button variant="subtle" colorPalette="blue" flex={isMobile ? '1' : 'none'} size={isMobile ? 'md' : 'sm'}>
+              <Button
+                variant="subtle"
+                colorPalette="blue"
+                flex={isMobile ? '1' : 'none'}
+                size={isMobile ? 'md' : 'sm'}
+                disabled={deletingId !== null}
+              >
                 <Pen />
                 Edit
               </Button>

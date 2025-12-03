@@ -3,15 +3,14 @@ import { Portal } from '@chakra-ui/react'
 import { Box } from '@chakra-ui/react'
 import { Settings, LogOut } from 'lucide-react'
 import { ColorModeButton } from '../components/ui/color-mode'
-import { useState } from 'react'
-import MainTabs from '../components/Custom/MainTabs'
 import { useEffect } from 'react'
-import { getAllBookings } from '../supabase/booking'
+import MainTabs from '../components/Custom/MainTabs'
 import Loading from '../components/Custom/Loading'
 import AddBooking from './AddBooking'
 import BookingList from './BookingList'
 import useIsMobile from '../hooks/useIsMobile'
 import { useAuth } from '../contexts/AuthContext'
+import { useBooking } from '../contexts/BookingContext'
 
 const MENU_ITEMS = [
   { label: 'Profile', href: '/' },
@@ -19,19 +18,13 @@ const MENU_ITEMS = [
 ]
 
 export default function App() {
-  const { signOut, user } = useAuth()
-  const [bookings, setBookings] = useState([])
-  const [loading, setLoading] = useState(true)
+  const { signOut } = useAuth()
+  const { bookings, loading, fetchBookings, refetch } = useBooking()
   const isMobile = useIsMobile();
 
   useEffect(() => {
-    async function fetchBookings() {
-      const data = await getAllBookings()
-      setBookings(data)
-      setLoading(false)
-    }
     fetchBookings()
-  }, [])
+  }, [fetchBookings])
 
   const handleSignOut = async () => {
     try {
@@ -76,19 +69,13 @@ export default function App() {
         </Box>
       </Flex>
 
-      {loading ? (
-        <Loading />
+      {isMobile ? (
+        <MainTabs bookings={bookings} />
       ) : (
-        <>
-          {isMobile ? (
-            <MainTabs bookings={bookings} />
-          ) : (
-            <Flex gap={8} direction={'row'} justifyContent="space-evenly" width={'100%'} height={'calc(100vh - 200px)'}>
-              <AddBooking bookingList={bookings} isMobile={isMobile} />
-              <BookingList bookingList={bookings} isMobile={isMobile} />
-            </Flex>
-          )}
-        </>
+        <Flex gap={8} direction={'row'} justifyContent="space-evenly" width={'100%'} height={'calc(100vh - 200px)'}>
+          <AddBooking bookingList={bookings} isMobile={isMobile} onBookingAdded={refetch} />
+          <BookingList bookingList={bookings} isMobile={isMobile} onBookingDeleted={refetch} />
+        </Flex>
       )}
     </Box>
   )

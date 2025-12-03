@@ -8,7 +8,7 @@ import { createBooking } from '../supabase/booking'
 import { useEffect } from 'react'
 import { Toaster, toaster } from '../components/ui/toaster'
 
-export default function AddBooking({ bookingList = [], isMobile = true }) {
+export default function AddBooking({ bookingList = [], isMobile = true, onBookingAdded }) {
   const [canValidate, setCanValidate] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [title, setTitle] = useState('')
@@ -39,6 +39,7 @@ export default function AddBooking({ bookingList = [], isMobile = true }) {
         booker: title,
         start_date: startDate.toISOString().split('T')[0],
         end_date: endDate.toISOString().split('T')[0],
+        status: 'confirmed',
       });
 
       // Reset form
@@ -53,6 +54,11 @@ export default function AddBooking({ bookingList = [], isMobile = true }) {
         description: `La réservation de ${data.booker} a été ajoutée avec succès.`,
         type: 'success',
       });
+
+      // Call the refetch callback to update the booking list
+      if (onBookingAdded) {
+        onBookingAdded();
+      }
     } catch (error) {
       console.error('Error creating booking:', error);
       toaster.create({
