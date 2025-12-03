@@ -1,0 +1,43 @@
+/* src/index.css - base styles for a full-height React app */
+@import "tailwindcss";
+
+/* sensible defaults */
+:root {
+    --bg: #fff;
+    --text: #111;
+    --accent: #0b5fff;
+    --max-width: 1200px;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+/* Make the React root occupy the full viewport */
+#root {
+    min-height: 100%;
+    min-height: 100vh; /* fallback to viewport height */
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+/* Utility helpers */
+.container {
+    width: 100%;
+    max-width: var(--max-width);
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
