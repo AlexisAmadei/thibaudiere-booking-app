@@ -69,7 +69,7 @@ export default function BookingList({ bookingList, isMobile = true, onBookingDel
   }
   const formatDate = (d) =>
     new Date(d)
-      .toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
+      .toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
       .toLowerCase();
 
   const handleRefetch = async () => {
