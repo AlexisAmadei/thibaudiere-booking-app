@@ -101,7 +101,7 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
     const lastDay = new Date(year, month + 1, 0);
     const daysInMonth = lastDay.getDate();
     let startingDayOfWeek = firstDay.getDay();
-    
+
     // Convert Sunday (0) to 6 for Monday-first week
     startingDayOfWeek = startingDayOfWeek === 0 ? 6 : startingDayOfWeek - 1;
 
@@ -247,13 +247,13 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
         >
           <ChevronLeft size={20} />
         </IconButton>
-        
+
         {/* Month Select */}
         <Select.Root
           collection={monthCollection}
           value={currentMonthValue}
           onValueChange={(details) => handleMonthChange(details.value)}
-          positioning={{ sameWidth: false }}
+          positioning={{ sameWidth: true }}
           size="sm"
         >
           <Select.Control>
@@ -282,7 +282,7 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
           collection={yearCollection}
           value={currentYearValue}
           onValueChange={(details) => handleYearChange(details.value)}
-          positioning={{ sameWidth: false }}
+          positioning={{ sameWidth: true }}
           size="sm"
         >
           <Select.Control>
