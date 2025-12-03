@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
-import { Box, Button, HStack, VStack, Grid, Text, IconButton, Stack } from '@chakra-ui/react';
+import { Box, Button, HStack, VStack, Grid, Text, IconButton, Stack, Select, createListCollection, Portal } from '@chakra-ui/react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 
 interface DateRangePickerProps {
   /** Callback when date range is selected */
@@ -17,10 +18,10 @@ interface DateRangePickerProps {
   maxDate?: Date;
 }
 
-const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const WEEKDAYS = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
 const MONTHS = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December'
+  'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
+  'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
 ];
 
 export const DateRangePicker: React.FC<DateRangePickerProps> = ({
@@ -99,7 +100,10 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
     const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
     const daysInMonth = lastDay.getDate();
-    const startingDayOfWeek = firstDay.getDay();
+    let startingDayOfWeek = firstDay.getDay();
+    
+    // Convert Sunday (0) to 6 for Monday-first week
+    startingDayOfWeek = startingDayOfWeek === 0 ? 6 : startingDayOfWeek - 1;
 
     const days: (Date | null)[] = [];
 
@@ -168,6 +172,52 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
     setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1));
   };
 
+  // Generate month options
+  const monthOptions = useMemo(() => {
+    return MONTHS.map((month, index) => ({
+      value: `${index}`,
+      label: month,
+      month: index
+    }));
+  }, []);
+
+  const monthCollection = createListCollection({ items: monthOptions });
+
+  // Generate year options
+  const yearOptions = useMemo(() => {
+    const options = [];
+    const today = new Date();
+    for (let y = today.getFullYear() - 2; y <= today.getFullYear() + 2; y++) {
+      options.push({
+        value: `${y}`,
+        label: `${y}`,
+        year: y
+      });
+    }
+    return options;
+  }, []);
+
+  const yearCollection = createListCollection({ items: yearOptions });
+
+  // Handle month select change
+  const handleMonthChange = (value: string[]) => {
+    if (value.length > 0) {
+      const month = parseInt(value[0]);
+      setCurrentMonth(new Date(currentMonth.getFullYear(), month));
+    }
+  };
+
+  // Handle year select change
+  const handleYearChange = (value: string[]) => {
+    if (value.length > 0) {
+      const year = parseInt(value[0]);
+      setCurrentMonth(new Date(year, currentMonth.getMonth()));
+    }
+  };
+
+  const currentMonthValue = [`${currentMonth.getMonth()}`];
+  const currentYearValue = [`${currentMonth.getFullYear()}`];
+
   // Clear selection
   const clearSelection = () => {
     setStartDate(null);
@@ -177,8 +227,8 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
 
   // Format date for display
   const formatDate = (date: Date | null): string => {
-    if (!date) return 'Not selected';
-    return date.toLocaleDateString('en-US', {
+    if (!date) return 'Sélectionner une date';
+    return date.toLocaleDateString('fr-FR', {
       month: 'short',
       day: 'numeric',
       year: 'numeric'
@@ -197,9 +247,65 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
         >
           <ChevronLeft size={20} />
         </IconButton>
-        <Text fontWeight="semibold" fontSize="lg">
-          {MONTHS[currentMonth.getMonth()]} {currentMonth.getFullYear()}
-        </Text>
+        
+        {/* Month Select */}
+        <Select.Root
+          collection={monthCollection}
+          value={currentMonthValue}
+          onValueChange={(details) => handleMonthChange(details.value)}
+          positioning={{ sameWidth: false }}
+          size="sm"
+        >
+          <Select.Control>
+            <Select.Trigger>
+              <Select.ValueText placeholder="Month" />
+            </Select.Trigger>
+            <Select.IndicatorGroup>
+              <ChevronDown size={16} />
+            </Select.IndicatorGroup>
+          </Select.Control>
+          <Portal>
+            <Select.Positioner>
+              <Select.Content maxH="200px" overflowY="auto">
+                {monthCollection.items.map((item) => (
+                  <Select.Item item={item} key={item.value}>
+                    {item.label}
+                  </Select.Item>
+                ))}
+              </Select.Content>
+            </Select.Positioner>
+          </Portal>
+        </Select.Root>
+
+        {/* Year Select */}
+        <Select.Root
+          collection={yearCollection}
+          value={currentYearValue}
+          onValueChange={(details) => handleYearChange(details.value)}
+          positioning={{ sameWidth: false }}
+          size="sm"
+        >
+          <Select.Control>
+            <Select.Trigger>
+              <Select.ValueText placeholder="Year" />
+            </Select.Trigger>
+            <Select.IndicatorGroup>
+              <ChevronDown size={16} />
+            </Select.IndicatorGroup>
+          </Select.Control>
+          <Portal>
+            <Select.Positioner>
+              <Select.Content maxH="200px" overflowY="auto">
+                {yearCollection.items.map((item) => (
+                  <Select.Item item={item} key={item.value}>
+                    {item.label}
+                  </Select.Item>
+                ))}
+              </Select.Content>
+            </Select.Positioner>
+          </Portal>
+        </Select.Root>
+
         <IconButton
           aria-label="Next month"
           onClick={goToNextMonth}
@@ -270,16 +376,16 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
       {/* Selected range display */}
       <VStack gap={2} align="stretch" pt={2} borderTopWidth="1px">
         <HStack justify="space-between" fontSize="sm">
-          <Text fontWeight="medium">Start Date:</Text>
+          <Text fontWeight="medium">Date de début :</Text>
           <Text color={startDate ? 'brand.fg' : 'gray.500'}>{formatDate(startDate)}</Text>
         </HStack>
         <HStack justify="space-between" fontSize="sm">
-          <Text fontWeight="medium">End Date:</Text>
+          <Text fontWeight="medium">Date de fin :</Text>
           <Text color={endDate ? 'brand.fg' : 'gray.500'}>{formatDate(endDate)}</Text>
         </HStack>
         {(startDate || endDate) && (
           <Button onClick={clearSelection} size="sm" variant="outline" colorPalette="brand">
-            Clear Selection
+            Effacer la sélection
           </Button>
         )}
       </VStack>
