@@ -85,9 +85,7 @@ export default function AddBooking({ bookingList = [], isMobile = true, onBookin
       <Heading as="h2" size="md">
         Ajouter une réservation
       </Heading>
-      <InputGroup startElement={<Tag />}>
-        <Input placeholder="Titre de la réservation" borderRadius={8} value={title} onChange={(e) => setTitle(e.target.value)} />
-      </InputGroup>
+
       <DateRangePicker
         key={pickerKey}
         onDateRangeChange={(start, end) => {
@@ -103,6 +101,11 @@ export default function AddBooking({ bookingList = [], isMobile = true, onBookin
         unavailableDates={unavailableDates}
         minDate={new Date()}
       />
+
+      <InputGroup startElement={<Tag />}>
+        <Input placeholder="Titre de la réservation" borderRadius={8} value={title} onChange={(e) => setTitle(e.target.value)} />
+      </InputGroup>
+
       <Box width={'100%'} display="inline-flex" gap={2}>
         <Button
           flex={1}
