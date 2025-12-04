@@ -10,11 +10,8 @@ import BookingList from './BookingList'
 import useIsMobile from '../hooks/useIsMobile'
 import { useAuth } from '../contexts/AuthContext'
 import { useBooking } from '../contexts/BookingContext'
-
-const MENU_ITEMS = [
-  { label: 'Profile', href: '/' },
-  { label: 'Settings', href: '/settings' },
-]
+import Footer from '../components/Footer'
+import NavMenu from '../components/NavMenu'
 
 export default function App() {
   const { signOut } = useAuth()
@@ -25,13 +22,7 @@ export default function App() {
     fetchBookings()
   }, [fetchBookings])
 
-  const handleSignOut = async () => {
-    try {
-      await signOut()
-    } catch (error) {
-      console.error('Sign out error:', error)
-    }
-  }
+
 
   return (
     <Box
@@ -51,27 +42,7 @@ export default function App() {
 
         <Box display="flex" alignItems="center" gap={1}>
           <ColorModeButton />
-          <Menu.Root>
-            <Menu.Trigger>
-              <Settings strokeWidth={'1.5px'} />
-            </Menu.Trigger>
-            <Portal>
-              <Menu.Positioner>
-                <Menu.Content>
-                  {MENU_ITEMS.map((item) => (
-                    <Menu.Item key={item.href} as="a" href={item.href}>
-                      {item.label}
-                    </Menu.Item>
-                  ))}
-                  <Menu.Separator />
-                  <Menu.Item color="red.500" onClick={handleSignOut}>
-                    <LogOut size={16} />
-                    Se déconnecter
-                  </Menu.Item>
-                </Menu.Content>
-              </Menu.Positioner>
-            </Portal>
-          </Menu.Root>
+          <NavMenu />
         </Box>
       </Flex>
 
@@ -83,13 +54,7 @@ export default function App() {
           <BookingList bookingList={bookings} isMobile={isMobile} onBookingDeleted={refetch} />
         </Flex>
       )}
-      <Box position={'fixed'} bottom={3} textAlign="center" fontSize="sm" color="gray.500">
-        <Link href="https://alexisamadei.fr" isExternal>
-          <Highlight query={'Kiwi'} styles={{ color: 'brand.solid' }}>
-            by Kiwi Dev
-          </Highlight>
-        </Link>
-      </Box>
+      <Footer />
     </Box>
   )
 }
