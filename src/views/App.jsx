@@ -21,7 +21,8 @@ export default function App() {
 
   return (
     <Box
-      p={8}
+      px={5}
+      py={5}
       height="100%"
       boxSizing="border-box"
       display="flex"
