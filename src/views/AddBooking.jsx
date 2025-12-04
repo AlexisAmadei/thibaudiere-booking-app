@@ -1,17 +1,21 @@
 import { Box, Button, Flex, Heading, Input, InputGroup } from '@chakra-ui/react'
 import { Tag } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import DateRangePicker from '../components/Custom/DateRangePicker'
 import { Toaster, toaster } from '../components/ui/toaster'
+import { useBooking } from '../contexts/BookingContext'
 import { createBooking } from '../supabase/booking'
 
-export default function AddBooking({ bookingList = [], isMobile = true, onBookingAdded }) {
+export default function AddBooking({ bookingList = [], isMobile = true }) {
   const [canValidate, setCanValidate] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [title, setTitle] = useState('')
   const [startDate, setStartDate] = useState(null)
   const [endDate, setEndDate] = useState(null)
-  const [pickerKey, setPickerKey] = useState(0)
+  // const [pickerKey, setPickerKey] = useState(0)
+  const childRef = useRef();
+
+  const { refetch } = useBooking()
 
   // Convert bookings to unavailable dates
   const unavailableDates = bookingList.flatMap(booking => {
@@ -44,18 +48,16 @@ export default function AddBooking({ bookingList = [], isMobile = true, onBookin
       setStartDate(null);
       setEndDate(null);
       setCanValidate(false);
-      setPickerKey(prev => prev + 1); // Force DateRangePicker to remount
+      if (childRef.current) {
+        childRef.current.clearSelection();
+      }
+      // setPickerKey(prev => prev + 1); // Force DateRangePicker to remount
 
       toaster.create({
         title: 'Réservation ajoutée',
         description: `La réservation de ${data.booker} a été ajoutée avec succès.`,
         type: 'success',
       });
-
-      // Call the refetch callback to update the booking list
-      if (onBookingAdded) {
-        onBookingAdded();
-      }
     } catch (error) {
       console.error('Error creating booking:', error);
       toaster.create({
@@ -65,11 +67,11 @@ export default function AddBooking({ bookingList = [], isMobile = true, onBookin
       });
     } finally {
       setIsLoading(false);
+      refetch();
     }
   }
 
   useEffect(() => {
-    // Simple validation: both dates must be selected and title must not be empty
     if (startDate && endDate && title.trim() !== '') {
       setCanValidate(true)
     } else {
@@ -111,7 +113,8 @@ export default function AddBooking({ bookingList = [], isMobile = true, onBookin
 
       <Box width={'100%'} flexShrink={0}>
         <DateRangePicker
-          key={pickerKey}
+          // key={pickerKey}
+          ref={childRef}
           onDateRangeChange={(start, end) => {
             setStartDate(start)
             setEndDate(end)

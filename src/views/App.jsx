@@ -4,15 +4,13 @@ import MainTabs from '../components/Custom/MainTabs'
 import Footer from '../components/Footer'
 import NavMenu from '../components/NavMenu'
 import { ColorModeButton } from '../components/ui/color-mode'
-import { useAuth } from '../contexts/AuthContext'
 import { useBooking } from '../contexts/BookingContext'
 import useIsMobile from '../hooks/useIsMobile'
 import AddBooking from './AddBooking'
 import BookingList from './BookingList'
 
 export default function App() {
-  const { signOut } = useAuth()
-  const { bookings, loading, fetchBookings, refetch } = useBooking()
+  const { bookings, fetchBookings, refetch } = useBooking()
   const isMobile = useIsMobile();
 
   useEffect(() => {

@@ -1,6 +1,6 @@
 import { Box, Button, createListCollection, Grid, HStack, IconButton, Portal, Select, Text, VStack } from '@chakra-ui/react';
 import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
-import React, { useMemo, useState } from 'react';
+import React, { forwardRef, useImperativeHandle, useMemo, useState } from 'react';
 
 interface DateRangePickerProps {
   /** Callback when date range is selected */
@@ -17,20 +17,24 @@ interface DateRangePickerProps {
   maxDate?: Date;
 }
 
+interface DateRangePickerHandle {
+  callChildFn: () => void;
+}
+
 const WEEKDAYS = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
 const MONTHS = [
   'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
   'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
 ];
 
-export const DateRangePicker: React.FC<DateRangePickerProps> = ({
+export const DateRangePicker: React.FC<DateRangePickerProps> = forwardRef<DateRangePickerHandle, DateRangePickerProps>(({
   onDateRangeChange,
   unavailableDates = [],
   initialStartDate = null,
   initialEndDate = null,
   minDate,
   maxDate,
-}) => {
+}, ref) => {
   const [startDate, setStartDate] = useState<Date | null>(initialStartDate);
   const [endDate, setEndDate] = useState<Date | null>(initialEndDate);
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
@@ -224,6 +228,13 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
     onDateRangeChange?.(null, null);
   };
 
+  useImperativeHandle(ref, () => ({
+    callChildFn() {
+      clearSelection();
+    }
+  }));
+
+
   // Format date for display
   const formatDate = (date: Date | null): string => {
     if (!date) return 'Sélectionner une date';
@@ -416,6 +427,6 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
       </Stack> */}
     </VStack>
   );
-};
+});
 
 export default DateRangePicker;
