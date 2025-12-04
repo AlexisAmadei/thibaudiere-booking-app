@@ -113,7 +113,7 @@ export default function AddBooking({ bookingList = [], isMobile = true, onBookin
           variant={'subtle'}
           borderRadius={8}
           disabled={!canValidate || isLoading}
-          onClick={() => handleAddBooking('PROVISIONAL')}
+          onClick={() => handleAddBooking('PENDING')}
         >
           Provisoire
         </Button>
