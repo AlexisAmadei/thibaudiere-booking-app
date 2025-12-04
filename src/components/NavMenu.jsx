@@ -1,5 +1,6 @@
 import { Menu, Portal } from '@chakra-ui/react'
 import { LogOut, Settings } from 'lucide-react'
+import { useAuth } from '../contexts/AuthContext'
 
 const MENU_ITEMS = [
   { label: 'Profile', href: '/' },
@@ -7,6 +8,8 @@ const MENU_ITEMS = [
 ]
 
 export default function NavMenu() {
+  const { signOut } = useAuth()
+
   const handleSignOut = async () => {
     try {
       await signOut()
@@ -28,7 +31,7 @@ export default function NavMenu() {
               </Menu.Item>
             ))}
             <Menu.Separator />
-            <Menu.Item color="red.500" onClick={handleSignOut}>
+            <Menu.Item color="red.500" onClick={() => handleSignOut()}>
               <LogOut size={16} />
               Se déconnecter
             </Menu.Item>

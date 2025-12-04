@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react';
+import { toaster } from '../components/ui/toaster';
 import { supabase } from '../supabase/client';
 
 const AuthContext = createContext({});
@@ -36,23 +37,20 @@ export const AuthProvider = ({ children }) => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signUp = async (email, password) => {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
-
-    if (error) throw error;
-    return data;
-  };
-
   const signIn = async (email, password) => {
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
-    if (error) throw error;
+    if (error) {
+      toaster.create({
+        title: 'Erreur de connexion',
+        description: error.message,
+        type: 'error',
+      });
+      throw error;
+    }
     return data;
   };
 
@@ -79,7 +77,6 @@ export const AuthProvider = ({ children }) => {
     user,
     session,
     loading,
-    signUp,
     signIn,
     signOut,
     resetPassword,

@@ -2,7 +2,7 @@ import { Box, Button, Card, Field, Heading, Input, Stack, Text } from '@chakra-u
 import { LogIn } from 'lucide-react'
 import { useState } from 'react'
 import { PasswordInput } from '../components/ui/password-input'
-import { toaster } from '../components/ui/toaster'
+import { Toaster, toaster } from '../components/ui/toaster'
 import { useAuth } from '../contexts/AuthContext'
 
 export default function AuthForm() {
@@ -52,11 +52,6 @@ export default function AuthForm() {
       setErrors({})
     } catch (error) {
       console.error('Authentication error:', error)
-      toaster.create({
-        title: 'Erreur',
-        description: error.message || 'Une erreur est survenue',
-        type: 'error',
-      })
     } finally {
       setIsLoading(false)
     }
@@ -129,6 +124,7 @@ export default function AuthForm() {
           </form>
         </Card.Body>
       </Card.Root>
+      <Toaster />
     </Box>
   )
 }
