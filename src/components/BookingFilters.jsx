@@ -1,6 +1,5 @@
 import { Button, Flex } from "@chakra-ui/react";
-import { CalendarSync } from "lucide-react";
-import { CalendarArrowDown, CalendarArrowUp } from "lucide-react";
+import { CalendarArrowDown, CalendarArrowUp, CalendarSync } from "lucide-react";
 
 export default function BookingFilters({ sortOrder, setSortOrder, handleRefetch, refreshDisabled }) {
   const toggleSortOrder = () => {
@@ -8,7 +7,7 @@ export default function BookingFilters({ sortOrder, setSortOrder, handleRefetch,
   };
 
   return (
-    <Flex direction={'row'} gap={2} mb={2} flexShrink={0} maxW={'100%'} overflow={'scroll'}>
+    <Flex direction={'row'} gap={2} mb={2} flexShrink={0} maxW={'100%'}>
       <Button size="sm" onClick={toggleSortOrder} variant="outline" colorPalette="brand" flexShrink={0}>
         {sortOrder === 'asc' ? <CalendarArrowDown /> : <CalendarArrowUp />}
         Date
