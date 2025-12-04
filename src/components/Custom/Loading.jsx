@@ -1,6 +1,4 @@
-import { Text } from '@chakra-ui/react'
-import { AbsoluteCenter, Spinner } from '@chakra-ui/react'
-import React from 'react'
+import { AbsoluteCenter, Spinner, Text } from '@chakra-ui/react'
 
 export default function Loading() {
   return (

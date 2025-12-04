@@ -1,7 +1,6 @@
-import React, { useState, useMemo } from 'react';
-import { Box, Button, HStack, VStack, Grid, Text, IconButton, Stack, Select, createListCollection, Portal } from '@chakra-ui/react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { ChevronDown } from 'lucide-react';
+import { Box, Button, createListCollection, Grid, HStack, IconButton, Portal, Select, Text, VStack } from '@chakra-ui/react';
+import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
 
 interface DateRangePickerProps {
   /** Callback when date range is selected */

@@ -1,13 +1,5 @@
-import { Badge, Flex, Portal } from '@chakra-ui/react'
-import { Box } from '@chakra-ui/react'
-import { Text } from '@chakra-ui/react'
-import { Heading } from '@chakra-ui/react'
-import { Card, IconButton, Menu } from '@chakra-ui/react'
-import { Calendar } from 'lucide-react'
-import { CalendarArrowUp } from 'lucide-react'
-import { Clock } from 'lucide-react'
-import { Trash } from 'lucide-react'
-import { MoreVertical } from 'lucide-react'
+import { Badge, Box, Card, Flex, Heading, IconButton, Menu, Portal, Text } from '@chakra-ui/react'
+import { Calendar, CalendarArrowUp, Clock, MoreVertical, Trash } from 'lucide-react'
 
 export default function BookingCard({ booking, isMobile, handleDeleteBooking, handleStatusToggle, deletingId, formatDate }) {
   return (

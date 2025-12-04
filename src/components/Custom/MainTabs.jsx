@@ -1,9 +1,7 @@
 import { Tabs } from '@chakra-ui/react'
-import { CalendarPlus } from 'lucide-react'
-import { CalendarSearch } from 'lucide-react'
+import { CalendarPlus, CalendarSearch } from 'lucide-react'
 import AddBooking from '../../views/AddBooking'
 import BookingList from '../../views/BookingList'
-import React from 'react'
 
 export default function MainTabs({ bookings }) {
   return (

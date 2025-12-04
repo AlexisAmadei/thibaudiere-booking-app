@@ -24,25 +24,25 @@ const customConfig = defineConfig({
         brand: {
           solid: { value: '{colors.brand.500}' },
           contrast: { value: 'white' },
-          fg: { 
+          fg: {
             value: {
               _light: '{colors.brand.700}',
               _dark: '{colors.brand.300}'
             }
           },
-          muted: { 
+          muted: {
             value: {
               _light: '{colors.brand.100}',
               _dark: '{colors.brand.900}'
             }
           },
-          subtle: { 
+          subtle: {
             value: {
               _light: '{colors.brand.50}',
               _dark: '{colors.brand.950}'
             }
           },
-          emphasized: { 
+          emphasized: {
             value: {
               _light: '{colors.brand.600}',
               _dark: '{colors.brand.400}'

@@ -1,7 +1,5 @@
-import { Portal } from '@chakra-ui/react'
-import { Menu } from '@chakra-ui/react'
-import { LogOut } from 'lucide-react'
-import { Settings } from 'lucide-react'
+import { Menu, Portal } from '@chakra-ui/react'
+import { LogOut, Settings } from 'lucide-react'
 
 const MENU_ITEMS = [
   { label: 'Profile', href: '/' },

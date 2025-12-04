@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import { createContext, useCallback, useContext, useState } from 'react';
 import { getAllBookings, getUnavailableDates } from '../supabase/booking';
 
 const BookingContext = createContext({});

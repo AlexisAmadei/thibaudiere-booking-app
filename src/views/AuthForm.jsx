@@ -1,9 +1,9 @@
-import React, { useState } from 'react'
 import { Box, Button, Card, Field, Heading, Input, Stack, Text } from '@chakra-ui/react'
-import { PasswordInput } from '../components/ui/password-input'
 import { LogIn } from 'lucide-react'
-import { useAuth } from '../contexts/AuthContext'
+import { useState } from 'react'
+import { PasswordInput } from '../components/ui/password-input'
 import { toaster } from '../components/ui/toaster'
+import { useAuth } from '../contexts/AuthContext'
 
 export default function AuthForm() {
   const { signIn } = useAuth()
@@ -78,7 +78,7 @@ export default function AuthForm() {
             Connexion
           </Heading>
           <Text textAlign="center" color="gray.600" mt={2}>
-              Connectez-vous à votre compte
+            Connectez-vous à votre compte
           </Text>
         </Card.Header>
 

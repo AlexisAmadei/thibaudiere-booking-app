@@ -1,12 +1,9 @@
-import { Button, Flex, Input, InputGroup } from '@chakra-ui/react'
-import DateRangePicker from '../components/Custom/DateRangePicker'
+import { Box, Button, Flex, Heading, Input, InputGroup } from '@chakra-ui/react'
 import { Tag } from 'lucide-react'
-import { useState } from 'react'
-import { Heading } from '@chakra-ui/react'
-import { Box } from '@chakra-ui/react'
-import { createBooking } from '../supabase/booking'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import DateRangePicker from '../components/Custom/DateRangePicker'
 import { Toaster, toaster } from '../components/ui/toaster'
+import { createBooking } from '../supabase/booking'
 
 export default function AddBooking({ bookingList = [], isMobile = true, onBookingAdded }) {
   const [canValidate, setCanValidate] = useState(false)
