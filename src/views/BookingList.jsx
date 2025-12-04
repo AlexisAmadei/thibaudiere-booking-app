@@ -175,7 +175,7 @@ export default function BookingList({ bookingList, isMobile = true, onBookingDel
         }}
       >
         {sortedBookings.map((booking) => (
-          <Card.Root key={booking.id} size="sm" borderRadius={'lg'} flexShrink={0} position="relative" backgroundColor={booking.status === 'CONFIRMED' ? '' : 'yellow.50'}>
+          <Card.Root key={booking.id} size="sm" borderRadius={'lg'} flexShrink={0} position="relative" backgroundColor={booking.status === 'CONFIRMED' ? '' : 'yellow.50'} _dark={{ backgroundColor: booking.status === 'CONFIRMED' ? '' : 'yellow.900' }}>
             <Menu.Root>
               <Menu.Trigger asChild>
                 <IconButton
