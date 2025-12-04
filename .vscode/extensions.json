@@ -1,7 +1,9 @@
 {
   "recommendations": [
-    "dsznajder.es7-react-js-snippets",
     "shardulm94.trailing-spaces",
-    "kiwidev.code-session-timer"
+    "kiwidev.code-session-timer",
+    "pkief.material-icon-theme",
+    "github.github-vscode-theme",
+    "usernamehw.indent-one-space"
   ]
 }
