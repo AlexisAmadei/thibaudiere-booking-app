@@ -35,7 +35,7 @@ export default function App() {
   }
 
   return (
-    <Box p={8}>
+    <Box p={8} height="100%" boxSizing="border-box">
       <Flex direction={'row'} gap={4} width="100%" alignItems="center" justifyContent={'space-between'} mb={8}>
         <Heading>
           <Highlight query={'Thibaudiere'} styles={{ color: 'brand.solid' }}>

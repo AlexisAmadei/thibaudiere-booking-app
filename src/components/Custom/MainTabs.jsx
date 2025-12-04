@@ -7,7 +7,7 @@ import React from 'react'
 
 export default function MainTabs({ bookings }) {
   return (
-    <Tabs.Root defaultValue="view-booking" width={'100%'} display="flex" flexDirection="column" height={'calc(100vh - 200px)'}>
+    <Tabs.Root defaultValue="add-booking" width={'100%'} display="flex" flexDirection="column" height={'calc(100vh - 150px)'}>
       <Tabs.List justifyContent="space-around" mb={4} flexShrink={0}>
         <Tabs.Trigger value="add-booking">
           <CalendarPlus />

@@ -127,12 +127,12 @@ export default function BookingList({ bookingList, isMobile = true, onBookingDel
   };
 
   return (
-    <Flex direction={'column'} gap={4} width={isMobile ? '100%' : '70%'} minH={0} height="100%">
+    <Flex direction={'column'} gap={4} width={isMobile ? '100%' : '70%'} height="100%">
       <Heading as="h2" size="md" flexShrink={0}>
         Liste des réservations
       </Heading>
 
-      <Flex direction={'row'} gap={2} mb={2} flexShrink={0}>
+      <Flex direction={'row'} gap={2} mb={2} flexShrink={0} maxW={'100%'} overflow={'scroll'}>
         <Button size="sm" onClick={() => toggleSortOrder('date')} variant={statusSort ? 'outline' : 'solid'} colorPalette={statusSort ? undefined : 'brand'} flexShrink={0}>
           {sortOrder === 'asc' ? <CalendarArrowDown /> : <CalendarArrowUp />}
           {sortOrder === 'asc' ? 'Plus récent en premier' : 'Plus ancien en premier'}
@@ -156,7 +156,6 @@ export default function BookingList({ bookingList, isMobile = true, onBookingDel
         gap={2}
         overflowY="auto"
         flex={1}
-        minH={0}
         pr={2}
         css={{
           '&::-webkit-scrollbar': {
