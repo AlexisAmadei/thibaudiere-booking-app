@@ -248,31 +248,6 @@ export default function BookingList({ bookingList, isMobile = true, onBookingDel
                   Ajoutée le {formatDate(booking.created_at)}
                 </Text>
               </Box>
-              {/* <Box display="inline-flex" gap={2} flexDirection={'row'} width={isMobile ? '100%' : 'auto'}>
-                <Button
-                  variant="subtle"
-                  colorPalette="red"
-                  flex={isMobile ? '1' : 'none'}
-                  size={isMobile ? 'xs' : 'sm'}
-                  onClick={() => handleDeleteBooking(booking.id, booking.booker)}
-                  loading={deletingId === booking.id}
-                  disabled={deletingId === booking.id}
-                >
-                  <Trash />
-                  Supprimer
-                </Button>
-                <Button
-                  variant="subtle"
-                  colorPalette="blue"
-                  flex={isMobile ? '1' : 'none'}
-                  size={isMobile ? 'xs' : 'sm'}
-                  disabled={deletingId !== null}
-                >
-                  <Pen />
-                  Edit
-                </Button>
-
-              </Box> */}
             </Card.Footer>
           </Card.Root>
         ))}
