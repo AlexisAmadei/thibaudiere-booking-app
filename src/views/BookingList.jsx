@@ -14,12 +14,14 @@ import { Box } from '@chakra-ui/react'
 import { MoreVertical } from 'lucide-react'
 import { Clock } from 'lucide-react'
 import { Check } from 'lucide-react'
+import useWindowSize from '../hooks/useWindowSize'
 
 export default function BookingList({ bookingList, isMobile = true, onBookingDeleted }) {
   const [sortOrder, setSortOrder] = useState('asc') // 'asc' or 'desc'
   const [statusSort, setStatusSort] = useState(null) // null, 'confirmed-first', or 'pending-first'
   const [deletingId, setDeletingId] = useState(null)
   const [refreshDisabled, setRefreshDisabled] = useState(false)
+  const windowSize = useWindowSize();
   const { refetch } = useBooking()
 
   const sortedBookings = useMemo(() => {
@@ -126,8 +128,10 @@ export default function BookingList({ bookingList, isMobile = true, onBookingDel
     });
   };
 
+  console.log('windowSize:', windowSize);
+
   return (
-    <Flex direction={'column'} gap={4} width={isMobile ? '100%' : '70%'} height="100%">
+    <Flex direction={'column'} gap={4} width={isMobile ? '100%' : '70%'} height={windowSize.height - 220} minH={0}>
       <Heading as="h2" size="md" flexShrink={0}>
         Liste des réservations
       </Heading>
