@@ -6,7 +6,7 @@ import { Pen } from 'lucide-react'
 import { Trash } from 'lucide-react'
 import { Calendar } from 'lucide-react'
 import { useState, useMemo } from 'react'
-import { deleteBooking } from '../supabase/booking'
+import { deleteBooking, updateBooking } from '../supabase/booking'
 import { toaster } from '../components/ui/toaster'
 import { CalendarSync } from 'lucide-react'
 import { useBooking } from '../contexts/BookingContext'
@@ -83,6 +83,19 @@ export default function BookingList({ bookingList, isMobile = true, onBookingDel
     }
   };
 
+  const handleStatusToggle = (booking, status) => {
+    updateBooking(booking.id, {
+      status: status,
+    }).then(() => {
+      toaster.create({
+        title: 'Statut mis à jour',
+        description: `La réservation de ${booking.booker} est maintenant Confirmée.`,
+        type: 'success',
+      });
+      refetch();
+    });
+  };
+
   return (
     <Flex direction={'column'} gap={4} width={isMobile ? '100%' : '70%'} minH={0} height="100%">
       <Heading as="h2" size="md" flexShrink={0}>
@@ -154,6 +167,7 @@ export default function BookingList({ bookingList, isMobile = true, onBookingDel
                     <Menu.Item 
                       value="edit"
                       disabled={deletingId !== null}
+                      onClick={() => handleStatusToggle(booking, booking.status === 'CONFIRMED' ? 'PENDING' : 'CONFIRMED')}
                     >
                       {booking.status === 'CONFIRMED' ?  (
                         <>
