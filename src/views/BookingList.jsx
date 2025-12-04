@@ -243,6 +243,11 @@ export default function BookingList({ bookingList, isMobile = true, onBookingDel
                   <Badge colorPalette="yellow" mr={2}>Provisoire</Badge>
                 )}
               </Box>
+              <Box>
+                <Text fontSize={'sm'} color="fg.muted">
+                  Ajoutée le {formatDate(booking.created_at)}
+                </Text>
+              </Box>
               {/* <Box display="inline-flex" gap={2} flexDirection={'row'} width={isMobile ? '100%' : 'auto'}>
                 <Button
                   variant="subtle"
