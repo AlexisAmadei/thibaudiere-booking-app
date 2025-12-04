@@ -1,11 +1,10 @@
-import { Flex, Heading, Highlight, Menu } from '@chakra-ui/react'
+import { Flex, Heading, Highlight, Link, Menu } from '@chakra-ui/react'
 import { Portal } from '@chakra-ui/react'
 import { Box } from '@chakra-ui/react'
 import { Settings, LogOut } from 'lucide-react'
 import { ColorModeButton } from '../components/ui/color-mode'
 import { useEffect } from 'react'
 import MainTabs from '../components/Custom/MainTabs'
-import Loading from '../components/Custom/Loading'
 import AddBooking from './AddBooking'
 import BookingList from './BookingList'
 import useIsMobile from '../hooks/useIsMobile'
@@ -35,7 +34,14 @@ export default function App() {
   }
 
   return (
-    <Box p={8} height="100%" boxSizing="border-box">
+    <Box
+      p={8}
+      height="100%"
+      boxSizing="border-box"
+      display="flex"
+      flexDirection="column"
+      alignItems="center"
+    >
       <Flex direction={'row'} gap={4} width="100%" alignItems="center" justifyContent={'space-between'} mb={8}>
         <Heading>
           <Highlight query={'Thibaudiere'} styles={{ color: 'brand.solid' }}>
@@ -72,11 +78,18 @@ export default function App() {
       {isMobile ? (
         <MainTabs bookings={bookings} />
       ) : (
-        <Flex gap={8} direction={'row'} justifyContent="space-evenly" width={'100%'} height={'calc(100vh - 200px)'}>
+        <Flex gap={8} direction={'row'} justifyContent="space-evenly" width={'100%'} height={'calc(100vh - 200px)'} minH={0}>
           <AddBooking bookingList={bookings} isMobile={isMobile} onBookingAdded={refetch} />
           <BookingList bookingList={bookings} isMobile={isMobile} onBookingDeleted={refetch} />
         </Flex>
       )}
+      <Box position={'fixed'} bottom={3} textAlign="center" fontSize="sm" color="gray.500">
+        <Link href="https://alexisamadei.fr" isExternal>
+          <Highlight query={'Kiwi'} styles={{ color: 'brand.solid' }}>
+            by Kiwi Dev
+          </Highlight>
+        </Link>
+      </Box>
     </Box>
   )
 }

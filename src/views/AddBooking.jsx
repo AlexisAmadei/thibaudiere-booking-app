@@ -81,32 +81,60 @@ export default function AddBooking({ bookingList = [], isMobile = true, onBookin
   }, [title, startDate, endDate]);
 
   return (
-    <Flex direction={'column'} alignItems="center" gap={4} width={isMobile ? '100%' : '30%'} maxH={'100vh'} justifyContent={isMobile ? 'space-between' : 'flex-start'} flex={1}>
+    <Flex
+      direction={'column'}
+      alignItems="center"
+      gap={4}
+      width={isMobile ? '100%' : '30%'}
+      justifyContent={isMobile ? 'space-between' : 'flex-start'}
+      flex={1}
+      minH={0}
+      overflowY="auto"
+      p={4}
+      pr={isMobile ? 4 : 2}
+      css={{
+        '&::-webkit-scrollbar': {
+          width: '8px',
+        },
+        '&::-webkit-scrollbar-track': {
+          background: 'transparent',
+        },
+        '&::-webkit-scrollbar-thumb': {
+          background: 'var(--chakra-colors-gray-300)',
+          borderRadius: '4px',
+        },
+        '&::-webkit-scrollbar-thumb:hover': {
+          background: 'var(--chakra-colors-gray-400)',
+        },
+      }}
+    >
       <Heading as="h2" size="md">
         Ajouter une réservation
       </Heading>
 
-      <DateRangePicker
-        key={pickerKey}
-        onDateRangeChange={(start, end) => {
-          setStartDate(start)
-          setEndDate(end)
-          // Simple validation: both dates must be selected and title must not be empty
-          if (start && end && title.trim() !== '') {
-            setCanValidate(true)
-          } else {
-            setCanValidate(false)
-          }
-        }}
-        unavailableDates={unavailableDates}
-        minDate={new Date()}
-      />
+      <Box width={'100%'} flexShrink={0}>
+        <DateRangePicker
+          key={pickerKey}
+          onDateRangeChange={(start, end) => {
+            setStartDate(start)
+            setEndDate(end)
+            // Simple validation: both dates must be selected and title must not be empty
+            if (start && end && title.trim() !== '') {
+              setCanValidate(true)
+            } else {
+              setCanValidate(false)
+            }
+          }}
+          unavailableDates={unavailableDates}
+          minDate={new Date()}
+        />
+      </Box>
 
-      <InputGroup startElement={<Tag />}>
+      <InputGroup startElement={<Tag />} width={'100%'} flexShrink={0}>
         <Input placeholder="Titre de la réservation" borderRadius={8} value={title} onChange={(e) => setTitle(e.target.value)} />
       </InputGroup>
 
-      <Box width={'100%'} display="inline-flex" gap={2}>
+      <Box width={'100%'} display="inline-flex" gap={2} flexShrink={0}>
         <Button
           flex={1}
           colorPalette={'yellow'}
