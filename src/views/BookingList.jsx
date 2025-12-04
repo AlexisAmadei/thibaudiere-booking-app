@@ -13,26 +13,56 @@ import { useBooking } from '../contexts/BookingContext'
 import { Box } from '@chakra-ui/react'
 import { MoreVertical } from 'lucide-react'
 import { Clock } from 'lucide-react'
+import { Check } from 'lucide-react'
 
 export default function BookingList({ bookingList, isMobile = true, onBookingDeleted }) {
   const [sortOrder, setSortOrder] = useState('asc') // 'asc' or 'desc'
+  const [statusSort, setStatusSort] = useState(null) // null, 'confirmed-first', or 'pending-first'
   const [deletingId, setDeletingId] = useState(null)
   const [refreshDisabled, setRefreshDisabled] = useState(false)
   const { refetch } = useBooking()
 
   const sortedBookings = useMemo(() => {
     if (!bookingList) return [];
+    let result = [...bookingList];
 
-    return [...bookingList].sort((a, b) => {
-      const dateA = new Date(a.start_date).getTime();
-      const dateB = new Date(b.start_date).getTime();
+    // Apply status sort if active
+    if (statusSort === 'confirmed-first') {
+      result.sort((a, b) => {
+        if (a.status === 'CONFIRMED' && b.status !== 'CONFIRMED') return -1;
+        if (a.status !== 'CONFIRMED' && b.status === 'CONFIRMED') return 1;
+        return 0;
+      });
+    } else if (statusSort === 'pending-first') {
+      result.sort((a, b) => {
+        if (a.status === 'PENDING' && b.status !== 'PENDING') return -1;
+        if (a.status !== 'PENDING' && b.status === 'PENDING') return 1;
+        return 0;
+      });
+    } else {
+      // Apply date sort
+      result.sort((a, b) => {
+        const dateA = new Date(a.start_date).getTime();
+        const dateB = new Date(b.start_date).getTime();
+        return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
+      });
+    }
 
-      return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
-    });
-  }, [bookingList, sortOrder]);
+    return result;
+  }, [bookingList, sortOrder, statusSort]);
 
-  const toggleSortOrder = () => {
-    setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc');
+  const toggleSortOrder = (type) => {
+    if (type === 'date') {
+      setStatusSort(null);
+      setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc');
+    } else if (type === 'status') {
+      // Toggle between confirmed-first and pending-first
+      if (statusSort === null || statusSort === 'pending-first') {
+        setStatusSort('confirmed-first');
+      } else if (statusSort === 'confirmed-first') {
+        setStatusSort('pending-first');
+      }
+    }
   };
 
   const handleDeleteBooking = async (bookingId, bookerName) => {
@@ -103,9 +133,17 @@ export default function BookingList({ bookingList, isMobile = true, onBookingDel
       </Heading>
 
       <Flex direction={'row'} gap={2} mb={2} flexShrink={0}>
-        <Button size="sm" onClick={toggleSortOrder} variant="outline" flexShrink={0}>
+        <Button size="sm" onClick={() => toggleSortOrder('date')} variant={statusSort ? 'outline' : 'solid'} colorPalette={statusSort ? undefined : 'brand'} flexShrink={0}>
           {sortOrder === 'asc' ? <CalendarArrowDown /> : <CalendarArrowUp />}
           {sortOrder === 'asc' ? 'Plus récent en premier' : 'Plus ancien en premier'}
+        </Button>
+        <Button size="sm" onClick={() => toggleSortOrder('status')} variant={statusSort ? 'solid' : 'outline'} colorPalette={statusSort ? 'brand' : undefined} flexShrink={0}>
+          {statusSort === 'confirmed-first'
+            ? <><Check />Confirmées en premier</>
+            : statusSort === 'pending-first'
+              ? <><Clock />Provisoires en premier</>
+              : 'Trier par statut'
+          }
         </Button>
         <Button size="sm" onClick={handleRefetch} disabled={refreshDisabled} variant="outline" flexShrink={0}>
           <CalendarSync /> Rafraichir
@@ -155,21 +193,21 @@ export default function BookingList({ bookingList, isMobile = true, onBookingDel
               <Portal>
                 <Menu.Positioner>
                   <Menu.Content>
-                    <Menu.Item 
+                    <Menu.Item
                       value="delete"
-                      onClick={() => handleDeleteBooking(booking.id, booking.booker)} 
-                      color="red.500" 
+                      onClick={() => handleDeleteBooking(booking.id, booking.booker)}
+                      color="red.500"
                       disabled={deletingId === booking.id}
                     >
                       <Trash size={16} />
                       Supprimer
                     </Menu.Item>
-                    <Menu.Item 
+                    <Menu.Item
                       value="edit"
                       disabled={deletingId !== null}
                       onClick={() => handleStatusToggle(booking, booking.status === 'CONFIRMED' ? 'PENDING' : 'CONFIRMED')}
                     >
-                      {booking.status === 'CONFIRMED' ?  (
+                      {booking.status === 'CONFIRMED' ? (
                         <>
                           <Clock size={16} />
                           Marquer Provisoire
