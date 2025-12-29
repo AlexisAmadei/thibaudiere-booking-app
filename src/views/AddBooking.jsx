@@ -12,7 +12,7 @@ export default function AddBooking({ bookingList = [], isMobile = true }) {
   const [title, setTitle] = useState('')
   const [startDate, setStartDate] = useState(null)
   const [endDate, setEndDate] = useState(null)
-  // const [pickerKey, setPickerKey] = useState(0)
+  const [pickerKey, setPickerKey] = useState(0)
   const childRef = useRef();
 
   const { refetch } = useBooking()
@@ -48,10 +48,7 @@ export default function AddBooking({ bookingList = [], isMobile = true }) {
       setStartDate(null);
       setEndDate(null);
       setCanValidate(false);
-      if (childRef.current) {
-        childRef.current.clearSelection();
-      }
-      // setPickerKey(prev => prev + 1); // Force DateRangePicker to remount
+      setPickerKey(prev => prev + 1); // Force DateRangePicker to remount
 
       toaster.create({
         title: 'Réservation ajoutée',
@@ -113,7 +110,7 @@ export default function AddBooking({ bookingList = [], isMobile = true }) {
 
       <Box width={'100%'} flexShrink={0}>
         <DateRangePicker
-          // key={pickerKey}
+          key={pickerKey}
           ref={childRef}
           onDateRangeChange={(start, end) => {
             setStartDate(start)
