@@ -8,6 +8,7 @@ import { useBooking } from '../contexts/BookingContext'
 import useIsMobile from '../hooks/useIsMobile'
 import AddBooking from './AddBooking'
 import BookingList from './BookingList'
+import AppBar from '../components/AppBar'
 
 export default function App() {
   const { bookings, fetchBookings, refetch } = useBooking()
@@ -29,18 +30,7 @@ export default function App() {
       flexDirection="column"
       alignItems="center"
     >
-      <Flex direction={'row'} gap={4} width="100%" alignItems="center" justifyContent={'space-between'} mb={8}>
-        <Heading>
-          <Highlight query={'Thibaudiere'} styles={{ color: 'brand.solid' }}>
-            La Thibaudiere
-          </Highlight>
-        </Heading>
-
-        <Box display="flex" alignItems="center" gap={1}>
-          <ColorModeButton />
-          <NavMenu />
-        </Box>
-      </Flex>
+      <AppBar />
 
       {isMobile ? (
         <MainTabs bookings={bookings} />

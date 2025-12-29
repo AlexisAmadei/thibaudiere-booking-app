@@ -1,4 +1,4 @@
-import { Menu, Portal } from '@chakra-ui/react'
+import { IconButton, Menu, Portal } from '@chakra-ui/react'
 import { LogOut, Settings } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 
@@ -20,7 +20,9 @@ export default function NavMenu() {
   return (
     <Menu.Root>
       <Menu.Trigger>
-        <Settings strokeWidth={'1.5px'} />
+        <IconButton aria-label="Menu" variant="ghost">
+          <Settings strokeWidth={'1.5px'} />
+        </IconButton>
       </Menu.Trigger>
       <Portal>
         <Menu.Positioner>
