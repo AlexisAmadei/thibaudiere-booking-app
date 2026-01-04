@@ -34,12 +34,15 @@ export default function AddBooking({ bookingList = [], isMobile = true }) {
   const handleAddBooking = async (status) => {
     if (!canValidate || isLoading) return;
 
+    const startDateUTC = new Date(Date.UTC(startDate.getFullYear(), startDate.getMonth(), startDate.getDate()));
+    const endDateUTC = new Date(Date.UTC(endDate.getFullYear(), endDate.getMonth(), endDate.getDate()));
+
     setIsLoading(true);
     try {
       const data = await createBooking({
         booker: title,
-        start_date: startDate.toISOString().split('T')[0],
-        end_date: endDate.toISOString().split('T')[0],
+        start_date: startDateUTC,
+        end_date: endDateUTC,
         status: status,
       });
 
