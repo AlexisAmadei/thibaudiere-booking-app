@@ -19,7 +19,7 @@ export default function NavMenu() {
   }
   return (
     <Menu.Root>
-      <Menu.Trigger>
+      <Menu.Trigger asChild>
         <IconButton aria-label="Menu" variant="ghost">
           <Settings strokeWidth={'1.5px'} />
         </IconButton>
