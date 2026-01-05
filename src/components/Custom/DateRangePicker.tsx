@@ -246,7 +246,7 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = forwardRef<DateRa
   };
 
   return (
-    <VStack gap={4} align="stretch" p={4} borderWidth="1px" borderRadius="lg" maxW="400px">
+    <VStack gap={4} align="stretch" p={4} borderWidth="1px" borderRadius="lg">
       {/* Header with month navigation */}
       <HStack justify="space-between">
         <IconButton

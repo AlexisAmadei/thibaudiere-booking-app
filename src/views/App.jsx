@@ -1,12 +1,12 @@
 import { Box, Flex } from '@chakra-ui/react'
 import { useEffect } from 'react'
+import AppBar from '../components/AppBar'
 import MainTabs from '../components/Custom/MainTabs'
 import Footer from '../components/Footer'
 import { useBooking } from '../contexts/BookingContext'
 import useIsMobile from '../hooks/useIsMobile'
 import AddBooking from './AddBooking'
 import BookingList from './BookingList'
-import AppBar from '../components/AppBar'
 
 export default function App() {
   const { bookings, fetchBookings, refetch } = useBooking()
@@ -21,6 +21,7 @@ export default function App() {
       px={5}
       py={5}
       height="100%"
+      maxHeight="100vh"
       boxSizing="border-box"
       display="flex"
       flexDirection="column"

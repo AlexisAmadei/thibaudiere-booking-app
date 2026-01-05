@@ -81,7 +81,7 @@ export default function AddBooking({ bookingList = [], isMobile = true }) {
 
   return (
     <Flex
-      direction={'column'}
+      direction="column"
       alignItems="center"
       gap={4}
       width={isMobile ? '100%' : '30%'}
@@ -90,6 +90,7 @@ export default function AddBooking({ bookingList = [], isMobile = true }) {
       minH={0}
       overflowY="auto"
       p={4}
+      pt={0}
       pr={isMobile ? 4 : 2}
       css={{
         '&::-webkit-scrollbar': {
@@ -111,7 +112,7 @@ export default function AddBooking({ bookingList = [], isMobile = true }) {
         Ajouter une réservation
       </Heading>
 
-      <Box width={'100%'} flexShrink={0}>
+      <Box flexShrink={0} width={'100%'}>
         <DateRangePicker
           key={pickerKey}
           ref={childRef}
