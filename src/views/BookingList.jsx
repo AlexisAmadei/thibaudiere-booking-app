@@ -7,11 +7,13 @@ import { toaster } from '../components/ui/toaster'
 import { useBooking } from '../contexts/BookingContext'
 import useWindowSize from '../hooks/useWindowSize'
 import { deleteBooking, updateBooking } from '../supabase/booking'
+import { Text } from '@chakra-ui/react'
 
 export default function BookingList({ bookingList, isMobile = true, onBookingDeleted }) {
   const [sortOrder, setSortOrder] = useState('asc') // 'asc' or 'desc'
   const [deletingId, setDeletingId] = useState(null)
   const [refreshDisabled, setRefreshDisabled] = useState(false)
+  const { error, loading } = useBooking()
 
   const windowSize = useWindowSize();
   const { refetch } = useBooking()
@@ -54,16 +56,6 @@ export default function BookingList({ bookingList, isMobile = true, onBookingDel
     }
   };
 
-  if (bookingList?.length === 0) {
-    return (
-      <Flex direction={'column'} alignItems="center" justifyContent="center" height="100%" width={isMobile ? '100%' : '70%'} gap={4}>
-        <Heading as="h2" size="md" mb={4}>
-          Aucune réservation trouvée
-        </Heading>
-        <Calendar size={48} color="gray" />
-      </Flex>
-    )
-  }
   const formatDate = (d) =>
     new Date(d)
       .toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
@@ -106,6 +98,16 @@ export default function BookingList({ bookingList, isMobile = true, onBookingDel
         refreshDisabled={refreshDisabled}
       />
 
+      {bookingList.length === 0 && !loading && (
+        <Flex direction={'column'} alignItems="center" justifyContent="center" height="100%" width={isMobile ? '100%' : '70%'} gap={4}>
+          <Calendar size={48} color="gray" />
+          <Heading as="h2" size="md" mb={4}>
+            Aucune réservation trouvée 🙁
+          </Heading>
+          <Text color={'red'} fontStyle="italic" fontSize={'sm'}>{error}</Text>
+        </Flex>
+      )}
+
       <Flex
         direction={'column'}
         gap={2}
@@ -128,6 +130,9 @@ export default function BookingList({ bookingList, isMobile = true, onBookingDel
           },
         }}
       >
+        {loading && (
+          <Text textAlign={'center'}>Chargement...</Text>
+        )}
         {sortedBookings.map((booking) => (
           <BookingCard
             key={booking.id}
