@@ -1,9 +1,7 @@
-import { Box, Flex, Heading, Highlight } from '@chakra-ui/react'
+import { Box, Flex } from '@chakra-ui/react'
 import { useEffect } from 'react'
 import MainTabs from '../components/Custom/MainTabs'
 import Footer from '../components/Footer'
-import NavMenu from '../components/NavMenu'
-import { ColorModeButton } from '../components/ui/color-mode'
 import { useBooking } from '../contexts/BookingContext'
 import useIsMobile from '../hooks/useIsMobile'
 import AddBooking from './AddBooking'
@@ -17,8 +15,6 @@ export default function App() {
   useEffect(() => {
     fetchBookings()
   }, [fetchBookings])
-
-
 
   return (
     <Box
