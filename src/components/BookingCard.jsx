@@ -23,7 +23,7 @@ export default function BookingCard({ booking, isMobile, handleDeleteBooking, ha
             <Menu.Content>
               <Menu.Item
                 value="delete"
-                onClick={() => handleDeleteBooking(booking.id, booking.booker)}
+                onClick={() => handleDeleteBooking(booking.id, booking.title)}
                 color="red.500"
                 disabled={deletingId === booking.id}
               >
@@ -54,7 +54,7 @@ export default function BookingCard({ booking, isMobile, handleDeleteBooking, ha
       </Menu.Root>
 
       <Card.Header>
-        <Heading size="md">{booking.booker}</Heading>
+        <Heading size="md">{booking.title}</Heading>
       </Card.Header>
       <Card.Body color="fg.muted">
         <Flex align="center" gap={2}>

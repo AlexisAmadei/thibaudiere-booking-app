@@ -132,7 +132,7 @@ export async function createBooking(booking: BookingInsert): Promise<Booking> {
   const { data, error } = await supabase
     .from('bookings')
     .insert({
-      booker: booking.booker,
+      booker: booking.title,
       start_date: booking.start_date,
       end_date: booking.end_date,
       status: booking.status,

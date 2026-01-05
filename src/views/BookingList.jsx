@@ -1,4 +1,4 @@
-import { Flex, Heading } from '@chakra-ui/react'
+import { Flex, Heading, Text } from '@chakra-ui/react'
 import { Calendar } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import BookingCard from '../components/BookingCard'
@@ -7,7 +7,6 @@ import { toaster } from '../components/ui/toaster'
 import { useBooking } from '../contexts/BookingContext'
 import useWindowSize from '../hooks/useWindowSize'
 import { deleteBooking, updateBooking } from '../supabase/booking'
-import { Text } from '@chakra-ui/react'
 
 export default function BookingList({ bookingList, isMobile = true, onBookingDeleted }) {
   const [sortOrder, setSortOrder] = useState('asc') // 'asc' or 'desc'
@@ -76,7 +75,7 @@ export default function BookingList({ bookingList, isMobile = true, onBookingDel
     }).then(() => {
       toaster.create({
         title: 'Statut mis à jour',
-        description: `La réservation de ${booking.booker} est maintenant Confirmée.`,
+        description: `La réservation de ${booking.title} est maintenant Confirmée.`,
         type: 'success',
       });
       refetch();

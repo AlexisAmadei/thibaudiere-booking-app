@@ -1,7 +1,6 @@
-import { Flex, Heading, Highlight } from "@chakra-ui/react"
-import { ColorModeButton } from "./ui/color-mode"
+import { Box, Flex, Heading, Highlight } from "@chakra-ui/react"
 import NavMenu from "./NavMenu"
-import { Box } from "@chakra-ui/react"
+import { ColorModeButton } from "./ui/color-mode"
 
 export default function AppBar() {
   return (

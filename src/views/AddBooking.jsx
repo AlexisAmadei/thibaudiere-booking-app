@@ -55,7 +55,7 @@ export default function AddBooking({ bookingList = [], isMobile = true }) {
 
       toaster.create({
         title: 'Réservation ajoutée',
-        description: `La réservation de ${data.booker} a été ajoutée avec succès.`,
+        description: `La réservation de ${data.title} a été ajoutée avec succès.`,
         type: 'success',
       });
     } catch (error) {
