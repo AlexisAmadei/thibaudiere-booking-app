@@ -1,29 +1,43 @@
 import { Avatar, AvatarGroup, Box, Flex, Heading, IconButton, Input } from "@chakra-ui/react";
 import { Send, SquarePen } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AppBar from "../components/AppBar";
 import { useAuth } from "../contexts/AuthContext";
 import useIsMobile from "../hooks/useIsMobile";
-import { editDisplayName } from "../supabase/user";
+import { editDisplayName, getCurrentUserProfile } from "../supabase/user";
 
 export default function Profile() {
   const { user } = useAuth();
   const isMobile = useIsMobile();
 
+  const [profile, setProfile] = useState(null);
   const [editField, setEditField] = useState("");
-  const [newDisplayName, setNewDisplayName] = useState(user.user_metadata?.display_name || "");
+  const [newDisplayName, setNewDisplayName] = useState("");
+
+  const fetchProfile = async () => {
+    const profileData = await getCurrentUserProfile();
+    setProfile(profileData);
+  };
 
   const handleSaveProfile = async () => {
     switch (editField) {
       case 'displayName':
         await editDisplayName(newDisplayName);
         setEditField("");
+        setNewDisplayName("");
+        fetchProfile();
         break;
 
       default:
         break;
     }
   };
+
+  useEffect(() => {
+    if (user) {
+      fetchProfile();
+    }
+  }, [user]);
 
   return (
     <Box
@@ -54,7 +68,7 @@ export default function Profile() {
           </Avatar.Root>
         </AvatarGroup>
 
-        <Heading as="h2" size="2xl" mt={4} mb={2} fontWeight={'bold'}>{user.user_metadata?.display_name || 'Utilisateur'}</Heading>
+        <Heading as="h2" size="2xl" mt={4} mb={2} fontWeight={'bold'}>{profile?.display_name || '...'}</Heading>
 
         <Flex width={!isMobile ? '500px' : '100%'} direction={'column'} gap={1} alignItems="flex-start">
           <Heading as="h3" size="lg" mt={4} fontWeight={'bold'}>Connexion</Heading>
@@ -99,8 +113,8 @@ export default function Profile() {
 
           <Box display="inline-flex" width={'100%'} justifyContent={'center'} gap={4} alignItems="center" mb={2}>
             <Input
-              placeholder={user.user_metadata?.display_name}
-              value={newDisplayName}
+              placeholder={"Nom d'affichage"}
+              value={newDisplayName || profile?.display_name || ''}
               onChange={(e) => {
                 setNewDisplayName(e.target.value);
               }}

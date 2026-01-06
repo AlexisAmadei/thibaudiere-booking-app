@@ -1,6 +1,8 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router';
 import { toaster } from '../components/ui/toaster';
 import { supabase } from '../supabase/client';
+import { checkIfDisplayNameExists } from '../supabase/user';
 
 const AuthContext = createContext({});
 
@@ -16,6 +18,8 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
+  const hasCheckedDisplayName = useRef(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Get initial session
@@ -34,6 +38,29 @@ export const AuthProvider = ({ children }) => {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  useEffect(() => {
+    const checkDisplayName = async () => {
+      if (user && !hasCheckedDisplayName.current) {
+        hasCheckedDisplayName.current = true;
+        const exists = await checkIfDisplayNameExists(user.id);
+        if (!exists) {
+          toaster.create({
+            title: 'Profil incomplet',
+            description: 'Veuillez compléter votre profil en ajoutant un nom d\'affichage.',
+            type: 'info',
+            action: {
+              label: 'Aller au profil',
+              onClick: () => {
+                navigate('/profile');
+              },
+            },
+          });
+        }
+      }
+    };
+    checkDisplayName();
+  }, [user]);
 
   const signIn = async (email, password) => {
     const { data, error } = await supabase.auth.signInWithPassword({
