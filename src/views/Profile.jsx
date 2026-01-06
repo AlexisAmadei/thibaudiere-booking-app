@@ -14,18 +14,16 @@ export default function Profile() {
   const [editField, setEditField] = useState("");
   const [newDisplayName, setNewDisplayName] = useState("");
 
-  const fetchProfile = async () => {
-    const profileData = await getCurrentUserProfile();
-    setProfile(profileData);
-  };
-
   const handleSaveProfile = async () => {
     switch (editField) {
       case 'displayName':
         await editDisplayName(newDisplayName);
         setEditField("");
         setNewDisplayName("");
-        fetchProfile();
+        if (user) {
+          const profileData = await getCurrentUserProfile();
+          setProfile(profileData);
+        }
         break;
 
       default:
@@ -34,9 +32,14 @@ export default function Profile() {
   };
 
   useEffect(() => {
-    if (user) {
-      fetchProfile();
-    }
+    if (!user) return;
+
+    const fetchProfile = async () => {
+      const profileData = await getCurrentUserProfile();
+      setProfile(profileData);
+    };
+
+    fetchProfile();
   }, [user]);
 
   return (

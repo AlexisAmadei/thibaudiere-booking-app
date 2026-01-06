@@ -1,6 +1,6 @@
 import { IconButton, Menu, Portal } from '@chakra-ui/react'
 import { LogOut, MenuIcon } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useMemo } from 'react'
 import { useLocation } from 'react-router'
 import { useAuth } from '../contexts/AuthContext'
 
@@ -13,7 +13,10 @@ const MENU_ITEMS = [
 export default function NavMenu() {
   const { signOut } = useAuth()
   const location = useLocation();
-  const [activeMenus, setActiveMenus] = useState([]);
+
+  const activeMenus = useMemo(() => {
+    return MENU_ITEMS.filter(item => item.href !== location.pathname);
+  }, [location.pathname]);
 
   const handleSignOut = async () => {
     try {
@@ -22,11 +25,6 @@ export default function NavMenu() {
       console.error('Sign out error:', error)
     }
   }
-
-  useEffect(() => {
-    const currentActiveMenus = MENU_ITEMS.filter(item => item.href !== location.pathname);
-    setActiveMenus(currentActiveMenus);
-  }, [location]);
 
   return (
     <Menu.Root>
