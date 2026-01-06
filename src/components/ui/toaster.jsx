@@ -1,6 +1,7 @@
 'use client'
 
 import {
+  Button,
   Toaster as ChakraToaster,
   Portal,
   Spinner,
@@ -32,7 +33,13 @@ export const Toaster = () => {
               )}
             </Stack>
             {toast.action && (
-              <Toast.ActionTrigger>{toast.action.label}</Toast.ActionTrigger>
+              <Toast.ActionTrigger asChild>
+                <Button
+                  variant={'subtle'}
+                >
+                  {toast.action.label}
+                </Button>
+              </Toast.ActionTrigger>
             )}
             {toast.closable && <Toast.CloseTrigger />}
           </Toast.Root>
