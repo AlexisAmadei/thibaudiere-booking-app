@@ -40,7 +40,7 @@ export default function AddBooking({ bookingList = [], isMobile = true }) {
     setIsLoading(true);
     try {
       const data = await createBooking({
-        booker: title,
+        title: title,
         start_date: startDateUTC,
         end_date: endDateUTC,
         status: status,

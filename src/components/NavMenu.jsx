@@ -7,7 +7,7 @@ import { useAuth } from '../contexts/AuthContext'
 const MENU_ITEMS = [
   { label: 'Home', href: '/' },
   { label: 'Profile', href: '/profile' },
-  { label: 'Settings', href: '/settings' },
+  // { label: 'Settings', href: '/settings' },
 ]
 
 export default function NavMenu() {

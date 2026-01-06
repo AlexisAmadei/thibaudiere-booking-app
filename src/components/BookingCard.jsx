@@ -1,7 +1,28 @@
-import { Badge, Box, Card, Flex, Heading, IconButton, Menu, Portal, Text } from '@chakra-ui/react'
-import { Calendar, CalendarArrowUp, Clock, MoreVertical, Trash } from 'lucide-react'
+import { Badge, Box, Card, Flex, Heading, IconButton, Menu, Portal, Text } from '@chakra-ui/react';
+import { Calendar, CalendarArrowUp, Clock, MoreVertical, Trash } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { getProfileWithId } from '../supabase/user';
 
 export default function BookingCard({ booking, isMobile, handleDeleteBooking, handleStatusToggle, deletingId, formatDate }) {
+  const [bookerProfile, setBookerProfile] = useState(null);
+
+  function setBookerInfos() {
+    if (bookerProfile?.display_name) {
+      return <Text fontSize={'sm'} color="teal">par {bookerProfile.display_name}</Text>;
+    } else if (bookerProfile?.email) {
+      return <Text fontSize={'sm'} color="teal">par {bookerProfile.email}</Text>;
+    } else {
+      return null;
+    }
+  }
+
+  useEffect(() => {
+    async function getData() {
+      setBookerProfile(await getProfileWithId(booking.booker));
+    }
+    getData();
+  }, [booking]);
+
   return (
     <Card.Root key={booking.id} size="sm" borderRadius={'lg'} flexShrink={0} position="relative" backgroundColor={booking.status === 'CONFIRMED' ? '' : 'yellow.50'} _dark={{ backgroundColor: booking.status === 'CONFIRMED' ? '' : 'yellow.900' }}>
       <Menu.Root>
@@ -72,10 +93,11 @@ export default function BookingCard({ booking, isMobile, handleDeleteBooking, ha
             <Badge colorPalette="yellow" mr={2}>Provisoire</Badge>
           )}
         </Box>
-        <Box>
+        <Box display={'inline-flex'} gap={1}>
           <Text fontSize={'sm'} color="fg.muted">
-            Ajoutée le {formatDate(booking.created_at)}
+            Le {formatDate(booking.created_at)}
           </Text>
+          {setBookerInfos()}
         </Box>
       </Card.Footer>
     </Card.Root>

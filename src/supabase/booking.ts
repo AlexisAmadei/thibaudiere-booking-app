@@ -2,10 +2,11 @@ import { supabase } from './client';
 
 export interface Booking {
   id: number;
-  booker: string;
+  title: string;
   start_date: string;
   end_date: string;
   status: string;
+  created_at: string;
 }
 
 export type BookingInsert = Omit<Booking, 'id'>;
@@ -65,24 +66,6 @@ export async function getBookingsByStatus(status: string): Promise<Booking[]> {
 }
 
 /**
- * Retrieve bookings by booker name
- */
-export async function getBookingsByBooker(booker: string): Promise<Booking[]> {
-  const { data, error } = await supabase
-    .from('bookings')
-    .select('*')
-    .eq('booker', booker)
-    .order('start_date', { ascending: true });
-
-  if (error) {
-    console.error('Error fetching bookings by booker:', error);
-    throw error;
-  }
-
-  return data || [];
-}
-
-/**
  * Retrieve bookings within a date range
  */
 export async function getBookingsInDateRange(
@@ -105,34 +88,13 @@ export async function getBookingsInDateRange(
 }
 
 /**
- * Retrieve bookings that overlap with a given date range
- */
-export async function getOverlappingBookings(
-  startDate: string,
-  endDate: string
-): Promise<Booking[]> {
-  const { data, error } = await supabase
-    .from('bookings')
-    .select('*')
-    .or(`and(start_date.lte.${endDate},end_date.gte.${startDate})`)
-    .order('start_date', { ascending: true });
-
-  if (error) {
-    console.error('Error fetching overlapping bookings:', error);
-    throw error;
-  }
-
-  return data || [];
-}
-
-/**
  * Create a new booking
  */
 export async function createBooking(booking: BookingInsert): Promise<Booking> {
   const { data, error } = await supabase
     .from('bookings')
     .insert({
-      booker: booking.title,
+      title: booking.title,
       start_date: booking.start_date,
       end_date: booking.end_date,
       status: booking.status,

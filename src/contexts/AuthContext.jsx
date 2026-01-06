@@ -35,10 +35,6 @@ export const AuthProvider = ({ children }) => {
     return () => subscription.unsubscribe();
   }, []);
 
-  useEffect(() => {
-    console.log('user:', user);
-  }, [user]);
-
   const signIn = async (email, password) => {
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
