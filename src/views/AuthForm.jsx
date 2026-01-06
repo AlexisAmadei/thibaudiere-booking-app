@@ -84,7 +84,7 @@ export default function AuthForm() {
                 <Field.Label>Email</Field.Label>
                 <Input
                   type="email"
-                  placeholder="exemple@email.com"
+                  placeholder="Email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={isLoading}
@@ -97,7 +97,7 @@ export default function AuthForm() {
               <Field.Root invalid={!!errors.password} required>
                 <Field.Label>Mot de passe</Field.Label>
                 <PasswordInput
-                  placeholder="Entrez votre mot de passe"
+                  placeholder="Mot de passe"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   disabled={isLoading}
