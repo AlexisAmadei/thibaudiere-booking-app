@@ -5,8 +5,8 @@ import { useLocation } from 'react-router'
 import { useAuth } from '../contexts/AuthContext'
 
 const MENU_ITEMS = [
-  { label: 'Home', href: '/' },
-  { label: 'Profile', href: '/profile' },
+  { label: 'Accueil', href: '/' },
+  { label: 'Profil', href: '/profile' },
   // { label: 'Settings', href: '/settings' },
 ]
 
