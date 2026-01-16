@@ -10,7 +10,7 @@ export default function BookingCard({ booking, isMobile, handleDeleteBooking, ha
     if (bookerProfile?.display_name) {
       return <Text fontSize={'sm'} color="teal">par {bookerProfile.display_name}</Text>;
     } else if (bookerProfile?.email) {
-      return <Text fontSize={'sm'} color="teal">par {bookerProfile.email}</Text>;
+      return <Text fontSize={'sm'} color="teal">par {bookerProfile.email.split('@')[0]}</Text>;
     } else {
       return null;
     }

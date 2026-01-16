@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { toaster } from '../components/ui/toaster';
 import { supabase } from '../supabase/client';
-import { checkIfDisplayNameExists } from '../supabase/user';
+import { checkIfDisplayNameExists, getCurrentUserProfile } from '../supabase/user';
 
 const AuthContext = createContext({});
 
@@ -19,6 +19,7 @@ export const AuthProvider = ({ children }) => {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
   const hasCheckedDisplayName = useRef(false);
+  const [profile, setProfile] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -56,6 +57,8 @@ export const AuthProvider = ({ children }) => {
               },
             },
           });
+        } else {
+          setProfile(await getCurrentUserProfile());
         }
       }
     };
@@ -100,6 +103,7 @@ export const AuthProvider = ({ children }) => {
 
   const value = {
     user,
+    profile,
     session,
     loading,
     signIn,
