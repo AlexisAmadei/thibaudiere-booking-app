@@ -85,7 +85,7 @@ export default function BookingList({ bookingList, isMobile = true, onBookingDel
   return (
     <Flex direction={'column'} gap={4} width={isMobile ? '100%' : '70%'} height={windowSize.height - 220} minH={0}>
       <Flex direction={'row'} justifyContent={'space-between'}>
-        <Heading as="h2" size="md" flexShrink={0}>
+        <Heading as="h2" size="md">
           Liste des réservations
         </Heading>
       </Flex>

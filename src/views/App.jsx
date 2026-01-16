@@ -18,7 +18,7 @@ export default function App() {
 
   return (
     <Box
-      px={5}
+      px={6}
       py={5}
       height="100%"
       maxHeight="100vh"
@@ -32,7 +32,7 @@ export default function App() {
       {isMobile ? (
         <MainTabs bookings={bookings} />
       ) : (
-        <Flex gap={8} direction={'row'} justifyContent="space-evenly" width={'100%'} height={'calc(100vh - 200px)'} minH={0}>
+        <Flex gap={6} direction='row' justifyContent="space-evenly" width={'100%'} height={'calc(100vh - 200px)'} minH={0}>
           <AddBooking bookingList={bookings} isMobile={isMobile} onBookingAdded={refetch} />
           <BookingList bookingList={bookings} isMobile={isMobile} onBookingDeleted={refetch} />
         </Flex>

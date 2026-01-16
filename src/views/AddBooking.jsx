@@ -89,9 +89,7 @@ export default function AddBooking({ bookingList = [], isMobile = true }) {
       flex={1}
       minH={0}
       overflowY="auto"
-      p={4}
       pt={0}
-      pr={isMobile ? 4 : 2}
       css={{
         '&::-webkit-scrollbar': {
           width: '8px',

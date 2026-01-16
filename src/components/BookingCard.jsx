@@ -24,7 +24,14 @@ export default function BookingCard({ booking, isMobile, handleDeleteBooking, ha
   }, [booking]);
 
   return (
-    <Card.Root key={booking.id} size="sm" borderRadius={'lg'} flexShrink={0} position="relative" backgroundColor={booking.status === 'CONFIRMED' ? '' : 'yellow.50'} _dark={{ backgroundColor: booking.status === 'CONFIRMED' ? '' : 'yellow.900' }}>
+    <Card.Root key={booking.id}
+      size="sm"
+      borderRadius={'lg'}
+      flexShrink={0}
+      position="relative"
+      backgroundColor={booking.status === 'CONFIRMED' ? 'green.50' : 'yellow.50'}
+      _dark={{ backgroundColor: booking.status === 'CONFIRMED' ? 'green.900' : 'yellow.900' }}
+    >
       <Menu.Root>
         <Menu.Trigger asChild>
           <IconButton
@@ -74,10 +81,17 @@ export default function BookingCard({ booking, isMobile, handleDeleteBooking, ha
         </Portal>
       </Menu.Root>
 
-      <Card.Header>
+      <Card.Header display={'flex'} flexDirection={'row'} alignItems={'center'}>
         <Heading size="md">{booking.title}</Heading>
+        <Box id='badges'>
+          {booking.status === 'CONFIRMED' ? (
+            <Badge colorPalette="green">Confirmée</Badge>
+          ) : (
+            <Badge colorPalette="yellow">Non confirmée</Badge>
+          )}
+        </Box>
       </Card.Header>
-      <Card.Body color="fg.muted">
+      <Card.Body color="" py={2}>
         <Flex align="center" gap={2}>
           <Calendar />
           <Text fontSize={isMobile ? 'sm' : 'md'} fontWeight={'bold'}>
@@ -86,16 +100,9 @@ export default function BookingCard({ booking, isMobile, handleDeleteBooking, ha
         </Flex>
       </Card.Body>
       <Card.Footer justifyContent="space-between" alignItems={isMobile ? 'stretch' : 'center'} flexDirection={isMobile ? 'column' : 'row'} gap={isMobile ? 2 : 0}>
-        <Box id='badges'>
-          {booking.status === 'CONFIRMED' ? (
-            <Badge colorPalette={'green'} mr={2}>Confirmée</Badge>
-          ) : (
-            <Badge colorPalette="yellow" mr={2}>Provisoire</Badge>
-          )}
-        </Box>
         <Box display={'inline-flex'} gap={1}>
           <Text fontSize={'sm'} color="fg.muted">
-            Le {formatDate(booking.created_at)}
+            Ajoutée le {formatDate(booking.created_at)}
           </Text>
           {setBookerInfos()}
         </Box>
