@@ -8,6 +8,7 @@ import './index.css'
 import SecurityLayout from './Layout/SecurityLayout.jsx'
 import App from './views/App.jsx'
 import Profile from './views/Profile.jsx'
+import NotFound from './views/NotFound.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -19,6 +20,7 @@ createRoot(document.getElementById('root')).render(
               <Routes>
                 <Route path="/" element={<App />} />
                 <Route path='/profile' element={<Profile />} />
+                <Route path="*" element={<NotFound />} />
               </Routes>
             </SecurityLayout>
           </BookingProvider>
