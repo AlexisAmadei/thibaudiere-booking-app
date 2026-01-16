@@ -50,15 +50,6 @@ export default function BookingCard({ booking, isMobile, handleDeleteBooking, ha
           <Menu.Positioner>
             <Menu.Content>
               <Menu.Item
-                value="delete"
-                onClick={() => handleDeleteBooking(booking.id, booking.title)}
-                color="red.500"
-                disabled={deletingId === booking.id}
-              >
-                <Trash size={16} />
-                Supprimer
-              </Menu.Item>
-              <Menu.Item
                 value="edit"
                 disabled={deletingId !== null}
                 onClick={() => handleStatusToggle(booking, booking.status === 'CONFIRMED' ? 'PENDING' : 'CONFIRMED')}
@@ -75,6 +66,15 @@ export default function BookingCard({ booking, isMobile, handleDeleteBooking, ha
                   </>
                 )
                 }
+              </Menu.Item>
+              <Menu.Item
+                value="delete"
+                onClick={() => handleDeleteBooking(booking.id, booking.title)}
+                color="red.500"
+                disabled={deletingId === booking.id}
+              >
+                <Trash size={16} />
+                Supprimer
               </Menu.Item>
             </Menu.Content>
           </Menu.Positioner>
