@@ -13,17 +13,17 @@ const GRADIENT_DAY = 'linear-gradient(180deg,rgba(52, 109, 186, 1) 0%, rgba(86, 
 export default function OpenMeteo() {
   const [meteoData, setMeteoData] = useState(null);
 
-  async function fetchOpenMeteo() {
-    try {
-      const resp = await fetch('https://api.open-meteo.com/v1/forecast?latitude=47.4035&longitude=0.5969&current=temperature_2m,precipitation,is_day');
-      const data = await resp.json();
-      setMeteoData(data);
-    } catch (error) {
-      console.error('Error fetching Open-Meteo data:', error);
-    }
-  }
 
   useEffect(() => {
+    async function fetchOpenMeteo() {
+      try {
+        const resp = await fetch('https://api.open-meteo.com/v1/forecast?latitude=47.4035&longitude=0.5969&current=temperature_2m,precipitation,is_day');
+        const data = await resp.json();
+        setMeteoData(data);
+      } catch (error) {
+        console.error('Error fetching Open-Meteo data:', error);
+      }
+    }
     fetchOpenMeteo();
   }, []);
 

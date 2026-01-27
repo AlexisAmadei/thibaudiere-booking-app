@@ -63,7 +63,7 @@ export const AuthProvider = ({ children }) => {
       }
     };
     checkDisplayName();
-  }, [user]);
+  }, [user, navigate]);
 
   const signIn = async (email, password) => {
     const { data, error } = await supabase.auth.signInWithPassword({
