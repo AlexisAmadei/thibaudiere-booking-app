@@ -7,6 +7,7 @@ import { useBooking } from '../contexts/BookingContext'
 import useIsMobile from '../hooks/useIsMobile'
 import AddBooking from './AddBooking'
 import BookingList from './BookingList'
+import OpenMeteo from '../components/OpenMeteo'
 
 export default function App() {
   const { bookings, fetchBookings, refetch } = useBooking()
@@ -37,7 +38,7 @@ export default function App() {
           <BookingList bookingList={bookings} isMobile={isMobile} onBookingDeleted={refetch} />
         </Flex>
       )}
-      <Footer />
+      {/* <Footer /> */}
     </Box>
   )
 }

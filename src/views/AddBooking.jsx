@@ -5,6 +5,7 @@ import DateRangePicker from '../components/Custom/DateRangePicker'
 import { Toaster, toaster } from '../components/ui/toaster'
 import { useBooking } from '../contexts/BookingContext'
 import { createBooking } from '../supabase/booking'
+import OpenMeteo from '../components/OpenMeteo'
 
 export default function AddBooking({ bookingList = [], isMobile = true }) {
   const [canValidate, setCanValidate] = useState(false)
@@ -106,6 +107,7 @@ export default function AddBooking({ bookingList = [], isMobile = true }) {
         },
       }}
     >
+      <OpenMeteo />
       <Heading as="h2" size="md">
         Ajouter une réservation
       </Heading>
