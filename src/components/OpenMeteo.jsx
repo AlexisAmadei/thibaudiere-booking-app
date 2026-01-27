@@ -1,9 +1,14 @@
 import { Box, Flex } from "@chakra-ui/react";
 import { Droplets } from "lucide-react";
+import { CloudRain } from "lucide-react";
+import { CloudRainWind } from "lucide-react";
 import { DropletOff } from "lucide-react";
 import { Sun } from "lucide-react";
 import { Moon } from "lucide-react";
 import { useState, useEffect } from "react";
+
+const GRADIENT_NIGHT = 'linear-gradient(180deg,rgba(21, 39, 87, 1) 0%, rgba(34, 63, 103, 1) 100%)';
+const GRADIENT_DAY = 'linear-gradient(180deg,rgba(52, 109, 186, 1) 0%, rgba(86, 141, 186, 1) 100%)';
 
 export default function OpenMeteo() {
   const [meteoData, setMeteoData] = useState(null);
@@ -32,19 +37,23 @@ export default function OpenMeteo() {
           color='white'
           direction="row"
           alignItems="center"
-          justifyContent={'center'}
+          justifyContent={'space-between'}
           gap={4}
-          p={2}
-          borderRadius={'md'}
-          backgroundImage={meteoData.current.is_day ? 'linear-gradient(140deg, rgb(16, 16, 90) 0%, rgba(0, 212, 255, 1) 100%)' : 'linear-gradient(140deg,rgba(2, 0, 36, 1) 0%, rgb(16, 16, 90) 100%)'}
+          px={4} py={2}
+          boxShadow="md"
+          borderRadius={'lg'}
+          backgroundImage={meteoData.current.is_day ? GRADIENT_DAY : GRADIENT_NIGHT}
         >
           <Box>
             {meteoData.current.is_day ? <Sun /> : <Moon />}
           </Box>
 
-          <Box fontSize="lg" fontWeight="bold">
-            {meteoData.current.temperature_2m}°C
-          </Box>
+          <Flex direction="row" alignItems="center" gap={2}>
+            {meteoData.current.precipitation > 0 ? <CloudRainWind /> : null}
+            <Box fontSize="lg" fontWeight="bold">
+              {meteoData.current.temperature_2m}°C
+            </Box>
+          </Flex>
         </Flex>
       ) : (
         <Box mb={4} textAlign="center">

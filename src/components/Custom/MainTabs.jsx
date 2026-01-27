@@ -16,10 +16,10 @@ export default function MainTabs({ bookings }) {
           Voir la liste
         </Tabs.Trigger>
       </Tabs.List>
-      <Tabs.Content value="add-booking" flex={1} minH={0}>
+      <Tabs.Content value="add-booking" flex={1} minH={0} pt={0}>
         <AddBooking bookingList={bookings} isMobile={true} />
       </Tabs.Content>
-      <Tabs.Content value="view-booking" flex={1} minH={0}>
+      <Tabs.Content value="view-booking" flex={1} minH={0} pt={0}>
         <BookingList bookingList={bookings} isMobile={true} />
       </Tabs.Content>
     </Tabs.Root>
