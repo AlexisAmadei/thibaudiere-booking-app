@@ -7,8 +7,10 @@ import { BookingProvider } from './contexts/BookingContext.jsx'
 import './index.css'
 import SecurityLayout from './Layout/SecurityLayout.jsx'
 import App from './views/App.jsx'
-import Profile from './views/Profile.jsx'
 import NotFound from './views/NotFound.jsx'
+import Profile from './views/Profile.jsx'
+
+import './assets/font/Alice.css'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

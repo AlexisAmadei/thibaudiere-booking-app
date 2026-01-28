@@ -58,3 +58,14 @@ body {
   padding-left: 1rem;
   padding-right: 1rem;
 }
+
+h1 {
+  font-family: 'Alice', serif;
+  font-size: 1.6rem;
+}
+
+@media screen and (max-width: 728px) {
+  h1 {
+    font-size: 1.4rem;
+  }
+}
