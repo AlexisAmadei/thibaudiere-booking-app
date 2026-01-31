@@ -2,10 +2,10 @@ import { Box, Button, Flex, Heading, Input, InputGroup } from '@chakra-ui/react'
 import { Tag } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import DateRangePicker from '../components/Custom/DateRangePicker'
+import OpenMeteo from '../components/OpenMeteo'
 import { Toaster, toaster } from '../components/ui/toaster'
 import { useBooking } from '../contexts/BookingContext'
 import { createBooking } from '../supabase/booking'
-import OpenMeteo from '../components/OpenMeteo'
 
 export default function AddBooking({ bookingList = [], isMobile = true }) {
   const [canValidate, setCanValidate] = useState(false)
@@ -107,10 +107,20 @@ export default function AddBooking({ bookingList = [], isMobile = true }) {
         },
       }}
     >
-      <OpenMeteo />
-      <Heading as="h2" size="md">
-        Ajouter une réservation
-      </Heading>
+      <Flex
+        width={'100%'}
+        justifyContent="space-between"
+        alignItems="center"
+        pl={1}
+        direction={'row'}
+      >
+        <Heading as="h2" size="lg" flexBasis={'2/3'}>
+          Ajouter une réservation
+        </Heading>
+        <Box>
+          <OpenMeteo />
+        </Box>
+      </Flex>
 
       <Box flexShrink={0} width={'100%'}>
         <DateRangePicker

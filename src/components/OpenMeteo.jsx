@@ -1,11 +1,6 @@
 import { Box, Flex } from "@chakra-ui/react";
-import { Droplets } from "lucide-react";
-import { CloudRain } from "lucide-react";
-import { CloudRainWind } from "lucide-react";
-import { DropletOff } from "lucide-react";
-import { Sun } from "lucide-react";
-import { Moon } from "lucide-react";
-import { useState, useEffect } from "react";
+import { CloudRainWind, Moon, Sun } from "lucide-react";
+import { useEffect, useState } from "react";
 
 const GRADIENT_NIGHT = 'linear-gradient(180deg,rgba(21, 39, 87, 1) 0%, rgba(34, 63, 103, 1) 100%)';
 const GRADIENT_DAY = 'linear-gradient(180deg,rgba(52, 109, 186, 1) 0%, rgba(86, 141, 186, 1) 100%)';
