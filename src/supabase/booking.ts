@@ -19,6 +19,7 @@ export async function getAllBookings(): Promise<Booking[]> {
   const { data, error } = await supabase
     .from('bookings')
     .select('*')
+    .gte('start_date', new Date().toISOString())
     .order('start_date', { ascending: true });
 
   if (error) {
