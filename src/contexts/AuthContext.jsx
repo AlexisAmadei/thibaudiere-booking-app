@@ -18,23 +18,27 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isPasswordRecovery, setIsPasswordRecovery] = useState(false);
   const hasCheckedDisplayName = useRef(false);
   const [profile, setProfile] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
     });
 
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
+
+      if (event === 'PASSWORD_RECOVERY') {
+        setIsPasswordRecovery(true);
+        navigate('/reset-password');
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -88,9 +92,15 @@ export const AuthProvider = ({ children }) => {
   };
 
   const resetPassword = async (email) => {
-    const { data, error } = await supabase.auth.resetPasswordForEmail(email);
-    if (error) throw error;
-    return data;
+    const response = await fetch('/api/send-reset-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+    if (!response.ok) {
+      const { error } = await response.json();
+      throw new Error(error || 'Échec de l\'envoi de l\'email');
+    }
   };
 
   const updatePassword = async (newPassword) => {
@@ -98,6 +108,7 @@ export const AuthProvider = ({ children }) => {
       password: newPassword,
     });
     if (error) throw error;
+    setIsPasswordRecovery(false);
     return data;
   };
 
@@ -106,6 +117,7 @@ export const AuthProvider = ({ children }) => {
     profile,
     session,
     loading,
+    isPasswordRecovery,
     signIn,
     signOut,
     resetPassword,

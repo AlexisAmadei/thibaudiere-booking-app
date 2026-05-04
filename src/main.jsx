@@ -9,6 +9,7 @@ import SecurityLayout from './Layout/SecurityLayout.jsx'
 import App from './views/App.jsx'
 import NotFound from './views/NotFound.jsx'
 import Profile from './views/Profile.jsx'
+import ResetPassword from './views/ResetPassword.jsx'
 
 import './assets/font/Alice.css'
 
@@ -22,6 +23,7 @@ createRoot(document.getElementById('root')).render(
               <Routes>
                 <Route path="/" element={<App />} />
                 <Route path='/profile' element={<Profile />} />
+                <Route path='/reset-password' element={<ResetPassword />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </SecurityLayout>
