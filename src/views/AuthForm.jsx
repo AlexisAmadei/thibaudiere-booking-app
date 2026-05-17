@@ -141,7 +141,7 @@ export default function AuthForm() {
 
                 <Text
                   fontSize="sm"
-                  color="blue.500"
+                  color="teal"
                   cursor="pointer"
                   textAlign="right"
                   _hover={{ textDecoration: 'underline' }}
