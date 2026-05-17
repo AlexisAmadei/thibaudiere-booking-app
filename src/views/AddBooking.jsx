@@ -47,6 +47,17 @@ export default function AddBooking({ bookingList = [], isMobile = true }) {
         status: status,
       });
 
+      fetch('/api/send-booking-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: data.title,
+          start_date: data.start_date,
+          end_date: data.end_date,
+          status: data.status,
+        }),
+      }).catch(err => console.error('Failed to send booking email:', err));
+
       // Reset form
       setTitle('');
       setStartDate(null);
@@ -165,7 +176,7 @@ export default function AddBooking({ bookingList = [], isMobile = true }) {
           borderRadius={8}
           onClick={() => handleAddBooking('CONFIRMED')}
         >
-          Confirmer
+          Confirmée
         </Button>
       </Box>
       <Toaster />
