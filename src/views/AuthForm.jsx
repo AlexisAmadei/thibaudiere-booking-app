@@ -1,5 +1,5 @@
 import { Box, Button, Card, Field, Heading, Input, Stack, Text } from '@chakra-ui/react'
-import { LogIn, Mail } from 'lucide-react'
+import { LogIn } from 'lucide-react'
 import { useState } from 'react'
 import { PasswordInput } from '../components/ui/password-input'
 import { Toaster, toaster } from '../components/ui/toaster'
@@ -86,13 +86,6 @@ export default function AuthForm() {
     }
   }
 
-  const switchMode = (newMode) => {
-    setMode(newMode)
-    setErrors({})
-    setEmail('')
-    setPassword('')
-  }
-
   return (
     <Box
       display="flex"
@@ -104,119 +97,115 @@ export default function AuthForm() {
       _dark={{ bg: "gray.900" }}
     >
       <Card.Root maxW="md" width="100%">
-        {mode === 'login' ? (
-          <>
-            <Card.Header>
-              <Heading size="lg" textAlign="center">Connexion</Heading>
-              <Text textAlign="center" color="gray.600" mt={2}>
-                Connectez-vous à votre compte
-              </Text>
-            </Card.Header>
-            <Card.Body>
-              <form onSubmit={handleLogin}>
-                <Stack gap={4}>
-                  <Field.Root invalid={!!errors.email} required>
-                    <Field.Label>Email</Field.Label>
-                    <Input
-                      type="email"
-                      placeholder="Email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      disabled={isLoading}
-                    />
-                    {errors.email && <Field.ErrorText>{errors.email}</Field.ErrorText>}
-                  </Field.Root>
+        <Card.Header>
+          <Heading size="lg" textAlign="center">
+            {mode === 'login' ? 'Connexion' : 'Mot de passe oublié'}
+          </Heading>
+          <Text textAlign="center" color="gray.600" mt={2}>
+            {mode === 'login'
+              ? 'Connectez-vous à votre compte'
+              : 'Entrez votre email pour recevoir un lien de réinitialisation'}
+          </Text>
+        </Card.Header>
 
-                  <Field.Root invalid={!!errors.password} required>
-                    <Field.Label>Mot de passe</Field.Label>
-                    <PasswordInput
-                      placeholder="Mot de passe"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      disabled={isLoading}
-                    />
-                    {errors.password && <Field.ErrorText>{errors.password}</Field.ErrorText>}
-                  </Field.Root>
-
-                  <Text
-                    fontSize="sm"
-                    color="brand.500"
-                    cursor="pointer"
-                    textAlign="right"
-                    _hover={{ textDecoration: 'underline' }}
-                    onClick={() => switchMode('forgot')}
-                  >
-                    Mot de passe oublié ?
-                  </Text>
-
-                  <Button
-                    type="submit"
-                    colorPalette="brand"
-                    width="100%"
-                    mt={2}
-                    loading={isLoading}
+        <Card.Body>
+          {mode === 'login' ? (
+            <form onSubmit={handleLogin}>
+              <Stack gap={4}>
+                <Field.Root invalid={!!errors.email} required>
+                  <Field.Label>Email</Field.Label>
+                  <Input
+                    type="email"
+                    placeholder="Email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     disabled={isLoading}
-                    display="inline-flex"
-                    alignItems="center"
-                  >
-                    <LogIn size={20} />
-                    Se connecter
-                  </Button>
-                </Stack>
-              </form>
-            </Card.Body>
-          </>
-        ) : (
-          <>
-            <Card.Header>
-              <Heading size="lg" textAlign="center">Mot de passe oublié</Heading>
-              <Text textAlign="center" color="gray.600" mt={2}>
-                Entrez votre email pour recevoir un lien de réinitialisation
-              </Text>
-            </Card.Header>
-            <Card.Body>
-              <form onSubmit={handleForgotPassword}>
-                <Stack gap={4}>
-                  <Field.Root invalid={!!errors.email} required>
-                    <Field.Label>Email</Field.Label>
-                    <Input
-                      type="email"
-                      placeholder="Email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      disabled={isLoading}
-                    />
-                    {errors.email && <Field.ErrorText>{errors.email}</Field.ErrorText>}
-                  </Field.Root>
+                  />
+                  {errors.email && (
+                    <Field.ErrorText>{errors.email}</Field.ErrorText>
+                  )}
+                </Field.Root>
 
-                  <Button
-                    type="submit"
-                    colorPalette="brand"
-                    width="100%"
-                    loading={isLoading}
+                <Field.Root invalid={!!errors.password} required>
+                  <Field.Label>Mot de passe</Field.Label>
+                  <PasswordInput
+                    placeholder="Mot de passe"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     disabled={isLoading}
-                    display="inline-flex"
-                    alignItems="center"
-                  >
-                    <Mail size={20} />
-                    Envoyer le lien
-                  </Button>
+                  />
+                  {errors.password && (
+                    <Field.ErrorText>{errors.password}</Field.ErrorText>
+                  )}
+                </Field.Root>
 
-                  <Text
-                    fontSize="sm"
-                    color="gray.500"
-                    textAlign="center"
-                    cursor="pointer"
-                    _hover={{ textDecoration: 'underline' }}
-                    onClick={() => switchMode('login')}
-                  >
-                    Retour à la connexion
-                  </Text>
-                </Stack>
-              </form>
-            </Card.Body>
-          </>
-        )}
+                <Text
+                  fontSize="sm"
+                  color="blue.500"
+                  cursor="pointer"
+                  textAlign="right"
+                  _hover={{ textDecoration: 'underline' }}
+                  onClick={() => { setMode('forgot'); setErrors({}) }}
+                >
+                  Mot de passe oublié ?
+                </Text>
+
+                <Button
+                  type="submit"
+                  colorPalette="brand"
+                  width="100%"
+                  mt={2}
+                  loading={isLoading}
+                  disabled={isLoading}
+                  display={'inline-flex'}
+                  alignItems={'center'}
+                >
+                  <LogIn size={20} />
+                  Se connecter
+                </Button>
+              </Stack>
+            </form>
+          ) : (
+            <form onSubmit={handleForgotPassword}>
+              <Stack gap={4}>
+                <Field.Root invalid={!!errors.email} required>
+                  <Field.Label>Email</Field.Label>
+                  <Input
+                    type="email"
+                    placeholder="Email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    disabled={isLoading}
+                  />
+                  {errors.email && (
+                    <Field.ErrorText>{errors.email}</Field.ErrorText>
+                  )}
+                </Field.Root>
+
+                <Button
+                  type="submit"
+                  colorPalette="brand"
+                  width="100%"
+                  loading={isLoading}
+                  disabled={isLoading}
+                >
+                  Envoyer le lien
+                </Button>
+
+                <Text
+                  fontSize="sm"
+                  color="blue.500"
+                  cursor="pointer"
+                  textAlign="center"
+                  _hover={{ textDecoration: 'underline' }}
+                  onClick={() => { setMode('login'); setErrors({}) }}
+                >
+                  Retour à la connexion
+                </Text>
+              </Stack>
+            </form>
+          )}
+        </Card.Body>
       </Card.Root>
       <Toaster />
     </Box>

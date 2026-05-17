@@ -1,10 +1,12 @@
 import { Box } from '@chakra-ui/react';
+import { useLocation } from 'react-router';
 import Loading from '../components/Custom/Loading';
 import { useAuth } from '../contexts/AuthContext';
 import AuthForm from '../views/AuthForm';
 
 export default function SecurityLayout({ children }) {
   const { user, loading } = useAuth();
+  const { pathname } = useLocation();
 
   if (loading) {
     return (
@@ -19,7 +21,7 @@ export default function SecurityLayout({ children }) {
     );
   }
 
-  if (!user) {
+  if (!user && pathname !== '/reset-password') {
     return <AuthForm />;
   }
 

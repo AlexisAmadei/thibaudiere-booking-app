@@ -30,13 +30,12 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     });
 
+    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
-
       if (event === 'PASSWORD_RECOVERY') {
-        setIsPasswordRecovery(true);
         navigate('/reset-password');
       }
     });
@@ -92,15 +91,11 @@ export const AuthProvider = ({ children }) => {
   };
 
   const resetPassword = async (email) => {
-    const response = await fetch('/api/send-reset-email', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email }),
+    const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
     });
-    if (!response.ok) {
-      const { error } = await response.json();
-      throw new Error(error || 'Échec de l\'envoi de l\'email');
-    }
+    if (error) throw error;
+    return data;
   };
 
   const updatePassword = async (newPassword) => {
