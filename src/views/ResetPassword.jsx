@@ -13,6 +13,9 @@ export default function ResetPassword() {
   const [isLoading, setIsLoading] = useState(false)
   const [errors, setErrors] = useState({})
 
+  const hashParams = new URLSearchParams(window.location.hash.slice(1))
+  const isInvite = hashParams.get('type') === 'invite'
+
   const validate = () => {
     const newErrors = {}
     if (!password) {
@@ -65,10 +68,12 @@ export default function ResetPassword() {
       <Card.Root maxW="md" width="100%">
         <Card.Header>
           <Heading size="lg" textAlign="center">
-            Nouveau mot de passe
+            {isInvite ? 'Bienvenue !' : 'Nouveau mot de passe'}
           </Heading>
           <Text textAlign="center" color="gray.600" mt={2}>
-            Choisissez un nouveau mot de passe
+            {isInvite
+              ? 'Créez un mot de passe pour accéder à votre compte'
+              : 'Choisissez un nouveau mot de passe'}
           </Text>
         </Card.Header>
 
@@ -109,7 +114,7 @@ export default function ResetPassword() {
                 loading={isLoading}
                 disabled={isLoading}
               >
-                Mettre à jour le mot de passe
+                {isInvite ? 'Créer mon mot de passe' : 'Mettre à jour le mot de passe'}
               </Button>
             </Stack>
           </form>
