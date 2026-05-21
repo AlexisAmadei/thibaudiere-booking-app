@@ -11,7 +11,7 @@ export default function AppBar() {
   const navigate = useNavigate();
 
   return (
-    <Flex direction={'row'} gap={4} width="100%" alignItems="center" justifyContent={'space-between'} mb={8}>
+    <Flex direction={'row'} gap={4} width="100%" alignItems="center" justifyContent={'space-between'} mb={4}>
       <Heading as="h1" onClick={() => navigate('/')} cursor="pointer">
         <Highlight query={'Thibaudiere'} styles={{ color: 'brand.solid' }}>
           La Thibaudiere

@@ -14,7 +14,7 @@ export default function MainTabs({ bookings }) {
       minH={0}
       maxH={'100%'}
     >
-      <Tabs.List justifyContent="space-around" mb={4} flexShrink={0}>
+      <Tabs.List justifyContent="space-around" mb={2} flexShrink={0}>
         <Tabs.Trigger value="add-booking">
           <CalendarPlus />
           Ajouter

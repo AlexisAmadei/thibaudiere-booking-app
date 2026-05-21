@@ -6,6 +6,8 @@ import { getProfileWithId } from '../supabase/user';
 export default function BookingCard({ booking, isMobile, handleDeleteBooking, handleStatusToggle, deletingId, formatDate }) {
   const [bookerProfile, setBookerProfile] = useState(null);
 
+  const formatDateWithoutYear = (date) => formatDate(date).replace(/\s+\d{4}\b/, '');
+
   function setBookerInfos() {
     if (bookerProfile?.display_name) {
       return <Text fontSize={'sm'} color="teal">par {bookerProfile.display_name}</Text>;
@@ -86,7 +88,7 @@ export default function BookingCard({ booking, isMobile, handleDeleteBooking, ha
       </Menu.Root>
 
       <Card.Header display={'flex'} flexDirection={'row'} alignItems={'center'}>
-        <Heading size="md">{booking.title}</Heading>
+        <Heading size="md">{booking.title.toUpperCase()}</Heading>
         <Box id='badges'>
           {booking.status === 'CONFIRMED' ? (
             <Badge colorPalette="green">Confirmée</Badge>
@@ -95,11 +97,11 @@ export default function BookingCard({ booking, isMobile, handleDeleteBooking, ha
           )}
         </Box>
       </Card.Header>
-      <Card.Body color="" py={2}>
-        <Flex align="center" gap={2}>
-          <Calendar />
+      <Card.Body py={2}>
+        <Flex align="center" gap={1}>
+          <Calendar size={"18px"} />
           <Text fontSize={isMobile ? 'sm' : 'md'} fontWeight={'bold'}>
-            Du {formatDate(booking.start_date)} au {formatDate(booking.end_date)}
+            Du {formatDateWithoutYear(booking.start_date)} au {formatDate(booking.end_date)}
           </Text>
         </Flex>
       </Card.Body>
