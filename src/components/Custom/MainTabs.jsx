@@ -5,7 +5,15 @@ import BookingList from '../../views/BookingList'
 
 export default function MainTabs({ bookings }) {
   return (
-    <Tabs.Root defaultValue="add-booking" width={'100%'} display="flex" flexDirection="column" height={'calc(100vh - 150px)'}>
+    <Tabs.Root
+      defaultValue="add-booking"
+      width={'100%'}
+      display="flex"
+      flexDirection="column"
+      flex={1}
+      minH={0}
+      maxH={'100%'}
+    >
       <Tabs.List justifyContent="space-around" mb={4} flexShrink={0}>
         <Tabs.Trigger value="add-booking">
           <CalendarPlus />
@@ -16,10 +24,18 @@ export default function MainTabs({ bookings }) {
           Voir la liste
         </Tabs.Trigger>
       </Tabs.List>
-      <Tabs.Content value="add-booking" flex={1} minH={0} pt={0}>
+      <Tabs.Content value="add-booking" flex={1} minH={0} pt={0} overflowY="auto">
         <AddBooking bookingList={bookings} isMobile={true} />
       </Tabs.Content>
-      <Tabs.Content value="view-booking" flex={1} minH={0} pt={0}>
+      <Tabs.Content
+        value="view-booking"
+        flex={1}
+        minH={0}
+        maxH={'100%'}
+        pt={0}
+        overflowY="auto"
+        overscrollBehavior="contain"
+      >
         <BookingList bookingList={bookings} isMobile={true} />
       </Tabs.Content>
     </Tabs.Root>

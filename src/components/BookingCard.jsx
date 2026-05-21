@@ -25,12 +25,16 @@ export default function BookingCard({ booking, isMobile, handleDeleteBooking, ha
 
   return (
     <Card.Root key={booking.id}
+      width={'100%'}
       size="sm"
       borderRadius={'lg'}
       flexShrink={0}
       position="relative"
-      backgroundColor={booking.status === 'CONFIRMED' ? 'green.50' : 'yellow.50'}
-      _dark={{ backgroundColor: booking.status === 'CONFIRMED' ? 'green.900' : 'yellow.900' }}
+      border={booking.status === 'CONFIRMED' ? '1px solid var(--chakra-colors-green-300)' : '1px solid var(--chakra-colors-yellow-300)'}
+      backgroundColor={"#f8f8f8"}
+      _dark={{ backgroundColor: "#222222", border: booking.status === 'CONFIRMED' ? '1px solid var(--chakra-colors-green-700)' : '1px solid var(--chakra-colors-yellow-700)' }}
+    // backgroundColor={booking.status === 'CONFIRMED' ? 'green.50' : 'yellow.50'}
+    // _dark={{ backgroundColor: booking.status === 'CONFIRMED' ? 'green.900' : 'yellow.900' }}
     >
       <Menu.Root>
         <Menu.Trigger asChild>
