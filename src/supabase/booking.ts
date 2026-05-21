@@ -11,6 +11,7 @@ export interface Booking {
 
 export type BookingInsert = Omit<Booking, 'id'>;
 export type BookingUpdate = Partial<BookingInsert>;
+export type UnavailableDateEntry = { date: Date; status: Booking['status'] };
 
 /**
  * Retrieve all bookings from the database
@@ -150,11 +151,11 @@ export async function deleteBooking(id: number): Promise<void> {
 
 /**
  * Get all unavailable dates from bookings (for DateRangePicker)
- * Returns an array of Date objects for all dates that fall within existing bookings
+ * Returns an array of objects with date and status for all dates that fall within existing bookings
  */
-export async function getUnavailableDates(): Promise<Date[]> {
+export async function getUnavailableDates(): Promise<UnavailableDateEntry[]> {
   const bookings = await getAllBookings();
-  const unavailableDates: Date[] = [];
+  const unavailableDates: UnavailableDateEntry[] = [];
 
   bookings.forEach(booking => {
     const start = new Date(booking.start_date);
@@ -163,7 +164,7 @@ export async function getUnavailableDates(): Promise<Date[]> {
     // Add all dates in the range
     const currentDate = new Date(start);
     while (currentDate <= end) {
-      unavailableDates.push(new Date(currentDate));
+      unavailableDates.push({ date: new Date(currentDate), status: booking.status });
       currentDate.setDate(currentDate.getDate() + 1);
     }
   });

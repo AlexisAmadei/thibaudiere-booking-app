@@ -18,7 +18,7 @@ export default function AddBooking({ bookingList = [], isMobile = true }) {
 
   const { refetch } = useBooking()
 
-  // Convert bookings to unavailable dates
+  // Convert bookings to unavailable dates with status and metadata
   const unavailableDates = bookingList.flatMap(booking => {
     const dates = [];
     const start = new Date(booking.start_date);
@@ -26,7 +26,13 @@ export default function AddBooking({ bookingList = [], isMobile = true }) {
 
     const currentDate = new Date(start);
     while (currentDate <= end) {
-      dates.push(new Date(currentDate));
+      dates.push({
+        date: new Date(currentDate),
+        status: booking.status,
+        title: booking.title,
+        startDate: start,
+        endDate: end,
+      });
       currentDate.setDate(currentDate.getDate() + 1);
     }
     return dates;

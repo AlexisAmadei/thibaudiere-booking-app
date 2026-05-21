@@ -1,6 +1,6 @@
 import { Box, Button, createListCollection, Grid, HStack, IconButton, Portal, Select, Text, VStack } from '@chakra-ui/react';
 import { ChevronDown, ChevronLeft, ChevronRight, Cloud, CloudLightning, CloudRain, CloudRainWind, CloudSnow, Sun } from 'lucide-react';
-import React, { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from 'react';
+import React, { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 
 function getWeatherIcon(code: number) {
   if (code === 0 || code === 1) return <Sun size={10} />;
@@ -21,13 +21,16 @@ type BookingStatus = 'CONFIRMED' | 'PENDING';
 interface UnavailableDateEntry {
   date: Date;
   status: BookingStatus;
+  title: string;
+  startDate: Date;
+  endDate: Date;
 }
 
 interface DateRangePickerProps {
   /** Callback when date range is selected */
   onDateRangeChange?: (startDate: Date | null, endDate: Date | null) => void;
-  /** Array of unavailable dates */
-  unavailableDates?: Date[];
+  /** Array of unavailable dates with status */
+  unavailableDates?: UnavailableDateEntry[];
   /** Initial start date */
   initialStartDate?: Date | null;
   /** Initial end date */
@@ -48,6 +51,8 @@ const MONTHS = [
   'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
 ];
 
+const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
+
 export const DateRangePicker: React.FC<DateRangePickerProps> = forwardRef<DateRangePickerHandle, DateRangePickerProps>(({
   onDateRangeChange,
   unavailableDates = [],
@@ -60,6 +65,10 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = forwardRef<DateRa
   const [endDate, setEndDate] = useState<Date | null>(initialEndDate);
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
   const [weatherForecast, setWeatherForecast] = useState<Map<string, number>>(new Map());
+  const [activeTooltipDay, setActiveTooltipDay] = useState<number | null>(null);
+  const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0, visible: false });
+  const dayRefs = useRef<Map<number, HTMLButtonElement | null>>(new Map());
+  const tooltipRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     async function fetchForecast() {
@@ -87,13 +96,30 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = forwardRef<DateRa
     return normalized;
   };
 
+  const unavailableInfoByDay = useMemo(() => {
+    const map = new Map<number, UnavailableDateEntry>();
+    unavailableDates.forEach((entry) => {
+      const key = normalizeDate(entry.date).getTime();
+      const existing = map.get(key);
+      if (existing && existing.status === 'CONFIRMED') return;
+      if (existing && existing.status === 'PENDING' && entry.status !== 'CONFIRMED') return;
+      map.set(key, entry);
+    });
+    return map;
+  }, [unavailableDates]);
+
+  const getUnavailableInfo = (date: Date): UnavailableDateEntry | undefined => {
+    const normalized = normalizeDate(date);
+    return unavailableInfoByDay.get(normalized.getTime());
+  };
+
+  const getUnavailableStatus = (date: Date): BookingStatus | undefined => {
+    return getUnavailableInfo(date)?.status;
+  };
+
   // Check if a date is unavailable
   const isDateUnavailable = (date: Date): boolean => {
-    const normalized = normalizeDate(date);
-    return unavailableDates.some(unavailableDate => {
-      const normalizedUnavailable = normalizeDate(unavailableDate);
-      return normalized.getTime() === normalizedUnavailable.getTime();
-    });
+    return Boolean(getUnavailableStatus(date));
   };
 
   // Check if a date is disabled (before minDate or after maxDate)
@@ -164,9 +190,18 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = forwardRef<DateRa
     return days;
   }, [currentMonth]);
 
-  // Handle date click
-  const handleDateClick = (date: Date) => {
-    if (isDateUnavailable(date) || isDateDisabled(date)) return;
+  const activeUnavailableInfo = activeTooltipDay !== null ? unavailableInfoByDay.get(activeTooltipDay) : undefined;
+
+  const handleDayClick = (event: React.MouseEvent, date: Date) => {
+    event.stopPropagation();
+    const info = getUnavailableInfo(date);
+    if (info) {
+      const key = normalizeDate(date).getTime();
+      setActiveTooltipDay((prev) => (prev === key ? null : key));
+      return;
+    }
+    if (isDateDisabled(date)) return;
+    setActiveTooltipDay(null);
 
     const normalized = normalizeDate(date);
 
@@ -205,6 +240,50 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = forwardRef<DateRa
       onDateRangeChange?.(rangeStart, rangeEnd);
     }
   };
+
+  useEffect(() => {
+    if (activeTooltipDay === null) return;
+    const handleOutsideClick = () => setActiveTooltipDay(null);
+    document.addEventListener('pointerdown', handleOutsideClick);
+    return () => document.removeEventListener('pointerdown', handleOutsideClick);
+  }, [activeTooltipDay]);
+
+  useEffect(() => {
+    if (activeTooltipDay === null) {
+      setTooltipPosition((prev) => ({ ...prev, visible: false }));
+      return;
+    }
+
+    const anchor = dayRefs.current.get(activeTooltipDay);
+    if (!anchor) return;
+
+    const updatePosition = () => {
+      const rect = anchor.getBoundingClientRect();
+      const tooltip = tooltipRef.current;
+      if (!tooltip) return;
+
+      const tooltipRect = tooltip.getBoundingClientRect();
+      const spacing = 2;
+      const minLeft = spacing + tooltipRect.width / 2;
+      const maxLeft = window.innerWidth - spacing - tooltipRect.width / 2;
+      const centerX = rect.left + rect.width / 2;
+      const left = clamp(centerX, minLeft, maxLeft);
+
+      const top = rect.top - spacing - tooltipRect.height;
+
+      setTooltipPosition({ top, left, visible: true });
+    };
+
+    const raf = requestAnimationFrame(updatePosition);
+    window.addEventListener('resize', updatePosition);
+    window.addEventListener('scroll', updatePosition, true);
+
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener('resize', updatePosition);
+      window.removeEventListener('scroll', updatePosition, true);
+    };
+  }, [activeTooltipDay]);
 
   // Navigate to previous month
   const goToPreviousMonth = () => {
@@ -383,50 +462,126 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = forwardRef<DateRa
             return <Box key={`empty-${index}`} />;
           }
 
-          const unavailable = isDateUnavailable(date);
+          const unavailableInfo = getUnavailableInfo(date);
+          const unavailableStatus = unavailableInfo?.status;
+          const unavailable = Boolean(unavailableStatus);
           const disabled = isDateDisabled(date);
           const inRange = isDateInRange(date);
           const isEdge = isDateRangeEdge(date);
           const isToday = normalizeDate(date).getTime() === normalizeDate(new Date()).getTime();
           const weatherCode = weatherForecast.get(toDateString(date));
+          const dayKey = normalizeDate(date).getTime();
 
           return (
             <Button
               key={date.toISOString()}
-              onClick={() => handleDateClick(date)}
-              disabled={unavailable || disabled}
+              onClick={(event) => handleDayClick(event, date)}
+              disabled={disabled}
               size="sm"
               variant={isEdge ? 'solid' : inRange ? 'subtle' : 'ghost'}
               colorPalette={isEdge || inRange ? 'brand' : undefined}
+              bg={
+                unavailable
+                  ? (unavailableStatus === 'CONFIRMED' ? 'green.100' : 'yellow.100')
+                  : undefined
+              }
+              _dark={
+                unavailable
+                  ? { bg: unavailableStatus === 'CONFIRMED' ? 'green.900' : 'yellow.900' }
+                  : undefined
+              }
               position="relative"
-              height="40px"
+              height={weatherCode !== undefined ? '48px' : '40px'}
               fontSize="sm"
               fontWeight={isToday ? 'bold' : 'normal'}
-              opacity={unavailable || disabled ? 0.4 : 1}
-              cursor={unavailable || disabled ? 'not-allowed' : 'pointer'}
-              _hover={unavailable || disabled ? {} : undefined}
+              opacity={disabled ? 0.4 : unavailable ? 0.7 : 1}
+              cursor={disabled ? 'not-allowed' : 'pointer'}
+              _hover={disabled ? {} : undefined}
               borderWidth={isToday && !isEdge ? '2px' : undefined}
               borderColor={isToday && !isEdge ? 'brand.500' : undefined}
+              flexDirection="column"
+              gap={0}
+              px={0}
+              overflow="visible"
+              ref={(node) => {
+                if (node) {
+                  dayRefs.current.set(dayKey, node);
+                } else {
+                  dayRefs.current.delete(dayKey);
+                }
+              }}
             >
               {date.getDate()}
               {weatherCode !== undefined && (
                 <Box opacity={0.6} lineHeight={1}>{getWeatherIcon(weatherCode)}</Box>
               )}
               {unavailable && (
-                <Box
-                  position="absolute"
-                  top="50%"
-                  left="50%"
-                  transform="translate(-50%, -50%) rotate(45deg)"
-                  width="3px"
-                  height="90%"
-                  bg="red.500"
-                />
+                <>
+                  <Box
+                    position="absolute"
+                    top="50%"
+                    left="50%"
+                    transform="translate(-50%, -50%) rotate(45deg)"
+                    width="3px"
+                    height="90%"
+                    bg={unavailableStatus === 'CONFIRMED' ? 'green.500' : 'yellow.500'}
+                    _dark={{ bg: unavailableStatus === 'CONFIRMED' ? 'green.300' : 'yellow.300' }}
+                  />
+                  <Box
+                    position="absolute"
+                    top="50%"
+                    left="50%"
+                    transform="translate(-50%, -50%) rotate(-45deg)"
+                    width="3px"
+                    height="90%"
+                    bg={unavailableStatus === 'CONFIRMED' ? 'green.500' : 'yellow.500'}
+                    _dark={{ bg: unavailableStatus === 'CONFIRMED' ? 'green.300' : 'yellow.300' }}
+                  />
+                </>
               )}
             </Button>
           );
         })}
       </Grid>
+
+      {activeUnavailableInfo && (
+        <Box
+          position="fixed"
+          top={`${tooltipPosition.top}px`}
+          left={`${tooltipPosition.left}px`}
+          transform="translateX(-50%)"
+          bg="white"
+          color="gray.900"
+          px={4}
+          py={3}
+          borderRadius="md"
+          boxShadow="lg"
+          minW="220px"
+          maxW="90vw"
+          textAlign="left"
+          borderWidth="1px"
+          borderColor={activeUnavailableInfo.status === 'CONFIRMED' ? 'green.300' : 'yellow.300'}
+          _dark={{ bg: 'gray.800', color: 'white', borderColor: activeUnavailableInfo.status === 'CONFIRMED' ? 'green.700' : 'yellow.700' }}
+          zIndex={1000}
+          onPointerDown={(event) => event.stopPropagation()}
+          ref={tooltipRef}
+          visibility={tooltipPosition.visible ? 'visible' : 'hidden'}
+        >
+          <Text fontSize="sm" fontWeight="bold" mb={1}>
+            {activeUnavailableInfo.title}
+          </Text>
+          <Text fontSize="xs">
+            {formatDate(activeUnavailableInfo.startDate)} - {formatDate(activeUnavailableInfo.endDate)}
+          </Text>
+          <Text
+            fontSize="xs"
+            color={activeUnavailableInfo.status === 'CONFIRMED' ? 'green.600' : 'yellow.700'}
+            _dark={{ color: activeUnavailableInfo.status === 'CONFIRMED' ? 'green.300' : 'yellow.300' }}
+          >
+            {activeUnavailableInfo.status === 'CONFIRMED' ? 'Confirmée' : 'Provisoire'}
+          </Text>
+        </Box>
+      )}
 
       {/* Selected range display */}
       <VStack gap={2} align="stretch" pt={2} borderTopWidth="1px">

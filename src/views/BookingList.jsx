@@ -3,6 +3,7 @@ import { Calendar } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import BookingCard from '../components/BookingCard'
 import BookingFilters from '../components/BookingFilters'
+import WeeklyForecast from '../components/WeeklyForecast'
 import { toaster } from '../components/ui/toaster'
 import { useBooking } from '../contexts/BookingContext'
 import { deleteBooking, updateBooking } from '../supabase/booking'
@@ -93,7 +94,6 @@ export default function BookingList({ bookingList, isMobile = true, onBookingDel
         isMobile
           ? {
             scrollbarWidth: 'none',
-            '-ms-overflow-style': 'none',
             '&::-webkit-scrollbar': {
               display: 'none',
             },
@@ -139,6 +139,8 @@ export default function BookingList({ bookingList, isMobile = true, onBookingDel
           handleRefetch={handleRefetch}
           refreshDisabled={refreshDisabled}
         />
+
+        <WeeklyForecast />
       </Flex>
 
       {bookingList.length === 0 && !loading && (
