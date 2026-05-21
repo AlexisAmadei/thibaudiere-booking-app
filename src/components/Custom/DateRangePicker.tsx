@@ -1,6 +1,27 @@
 import { Box, Button, createListCollection, Grid, HStack, IconButton, Portal, Select, Text, VStack } from '@chakra-ui/react';
-import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
-import React, { forwardRef, useImperativeHandle, useMemo, useState } from 'react';
+import { ChevronDown, ChevronLeft, ChevronRight, Cloud, CloudLightning, CloudRain, CloudRainWind, CloudSnow, Sun } from 'lucide-react';
+import React, { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from 'react';
+
+function getWeatherIcon(code: number) {
+  if (code === 0 || code === 1) return <Sun size={10} />;
+  if (code <= 3 || code <= 48) return <Cloud size={10} />;
+  if (code <= 67) return <CloudRain size={10} />;
+  if (code <= 77) return <CloudSnow size={10} />;
+  if (code <= 82) return <CloudRainWind size={10} />;
+  if (code <= 86) return <CloudSnow size={10} />;
+  return <CloudLightning size={10} />;
+}
+
+function toDateString(date: Date): string {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+}
+
+type BookingStatus = 'CONFIRMED' | 'PENDING';
+
+interface UnavailableDateEntry {
+  date: Date;
+  status: BookingStatus;
+}
 
 interface DateRangePickerProps {
   /** Callback when date range is selected */
@@ -38,6 +59,26 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = forwardRef<DateRa
   const [startDate, setStartDate] = useState<Date | null>(initialStartDate);
   const [endDate, setEndDate] = useState<Date | null>(initialEndDate);
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
+  const [weatherForecast, setWeatherForecast] = useState<Map<string, number>>(new Map());
+
+  useEffect(() => {
+    async function fetchForecast() {
+      try {
+        const resp = await fetch(
+          'https://api.open-meteo.com/v1/forecast?latitude=47.4035&longitude=0.5969&daily=weather_code&timezone=Europe%2FParis&forecast_days=7'
+        );
+        const data = await resp.json();
+        const map = new Map<string, number>();
+        data.daily.time.forEach((date: string, i: number) => {
+          map.set(date, data.daily.weather_code[i]);
+        });
+        setWeatherForecast(map);
+      } catch {
+        // silent fail — weather is decorative
+      }
+    }
+    fetchForecast();
+  }, []);
 
   // Normalize dates to midnight for comparison
   const normalizeDate = (date: Date): Date => {
@@ -347,6 +388,7 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = forwardRef<DateRa
           const inRange = isDateInRange(date);
           const isEdge = isDateRangeEdge(date);
           const isToday = normalizeDate(date).getTime() === normalizeDate(new Date()).getTime();
+          const weatherCode = weatherForecast.get(toDateString(date));
 
           return (
             <Button
@@ -367,6 +409,9 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = forwardRef<DateRa
               borderColor={isToday && !isEdge ? 'brand.500' : undefined}
             >
               {date.getDate()}
+              {weatherCode !== undefined && (
+                <Box opacity={0.6} lineHeight={1}>{getWeatherIcon(weatherCode)}</Box>
+              )}
               {unavailable && (
                 <Box
                   position="absolute"
