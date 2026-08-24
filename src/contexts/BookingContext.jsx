@@ -1,5 +1,6 @@
-import { createContext, useCallback, useContext, useState } from 'react';
-import { getAllBookings, getUnavailableDates } from '../supabase/booking';
+import { createContext, useCallback, useContext, useMemo, useState } from 'react';
+import { occupancyOf } from '../booking/occupancy';
+import { getAllBookings } from '../supabase/booking';
 
 const BookingContext = createContext({});
 
@@ -13,7 +14,6 @@ export const useBooking = () => {
 
 export const BookingProvider = ({ children }) => {
   const [bookings, setBookings] = useState([]);
-  const [unavailableDates, setUnavailableDates] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -23,10 +23,6 @@ export const BookingProvider = ({ children }) => {
     try {
       const data = await getAllBookings();
       setBookings(data);
-
-      // Also fetch unavailable dates for the DateRangePicker
-      const dates = await getUnavailableDates();
-      setUnavailableDates(dates);
     } catch (err) {
       console.error('Error fetching bookings:', err);
       setError(err.message || 'Failed to fetch bookings');
@@ -39,9 +35,12 @@ export const BookingProvider = ({ children }) => {
     await fetchBookings();
   }, [fetchBookings]);
 
+  // Which booking sits on which day. Derived, never fetched.
+  const occupancy = useMemo(() => occupancyOf(bookings), [bookings]);
+
   const value = {
     bookings,
-    unavailableDates,
+    occupancy,
     loading,
     error,
     fetchBookings,

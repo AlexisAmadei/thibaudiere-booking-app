@@ -1,6 +1,9 @@
 import { Box, Button, createListCollection, Grid, HStack, IconButton, Portal, Select, Text, VStack } from '@chakra-ui/react';
 import { ChevronDown, ChevronLeft, ChevronRight, Cloud, CloudLightning, CloudRain, CloudRainWind, CloudSnow, Sun } from 'lucide-react';
 import React, { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
+import { EMPTY_OCCUPANCY, localDayKey } from '../../booking/occupancy';
+import type { DayKey, Occupancy } from '../../booking/occupancy';
+import type { Booking } from '../../supabase/booking';
 
 function getWeatherIcon(code: number) {
   if (code === 0 || code === 1) return <Sun size={10} />;
@@ -16,21 +19,11 @@ function toDateString(date: Date): string {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 }
 
-type BookingStatus = 'CONFIRMED' | 'PENDING';
-
-interface UnavailableDateEntry {
-  date: Date;
-  status: BookingStatus;
-  title: string;
-  startDate: Date;
-  endDate: Date;
-}
-
 interface DateRangePickerProps {
   /** Callback when date range is selected */
   onDateRangeChange?: (startDate: Date | null, endDate: Date | null) => void;
-  /** Array of unavailable dates with status */
-  unavailableDates?: UnavailableDateEntry[];
+  /** Which booking, if any, sits on each day */
+  occupancy?: Occupancy;
   /** Initial start date */
   initialStartDate?: Date | null;
   /** Initial end date */
@@ -55,7 +48,7 @@ const clamp = (value: number, min: number, max: number) => Math.min(Math.max(val
 
 export const DateRangePicker: React.FC<DateRangePickerProps> = forwardRef<DateRangePickerHandle, DateRangePickerProps>(({
   onDateRangeChange,
-  unavailableDates = [],
+  occupancy = EMPTY_OCCUPANCY,
   initialStartDate = null,
   initialEndDate = null,
   minDate,
@@ -65,9 +58,9 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = forwardRef<DateRa
   const [endDate, setEndDate] = useState<Date | null>(initialEndDate);
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
   const [weatherForecast, setWeatherForecast] = useState<Map<string, number>>(new Map());
-  const [activeTooltipDay, setActiveTooltipDay] = useState<number | null>(null);
+  const [activeTooltipDate, setActiveTooltipDate] = useState<Date | null>(null);
   const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0, visible: false });
-  const dayRefs = useRef<Map<number, HTMLButtonElement | null>>(new Map());
+  const dayRefs = useRef<Map<DayKey, HTMLButtonElement | null>>(new Map());
   const tooltipRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -96,32 +89,6 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = forwardRef<DateRa
     return normalized;
   };
 
-  const unavailableInfoByDay = useMemo(() => {
-    const map = new Map<number, UnavailableDateEntry>();
-    unavailableDates.forEach((entry) => {
-      const key = normalizeDate(entry.date).getTime();
-      const existing = map.get(key);
-      if (existing && existing.status === 'CONFIRMED') return;
-      if (existing && existing.status === 'PENDING' && entry.status !== 'CONFIRMED') return;
-      map.set(key, entry);
-    });
-    return map;
-  }, [unavailableDates]);
-
-  const getUnavailableInfo = (date: Date): UnavailableDateEntry | undefined => {
-    const normalized = normalizeDate(date);
-    return unavailableInfoByDay.get(normalized.getTime());
-  };
-
-  const getUnavailableStatus = (date: Date): BookingStatus | undefined => {
-    return getUnavailableInfo(date)?.status;
-  };
-
-  // Check if a date is unavailable
-  const isDateUnavailable = (date: Date): boolean => {
-    return Boolean(getUnavailableStatus(date));
-  };
-
   // Check if a date is disabled (before minDate or after maxDate)
   const isDateDisabled = (date: Date): boolean => {
     const normalized = normalizeDate(date);
@@ -144,22 +111,6 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = forwardRef<DateRa
     const normalized = normalizeDate(date);
     if (startDate && normalized.getTime() === normalizeDate(startDate).getTime()) return true;
     if (endDate && normalized.getTime() === normalizeDate(endDate).getTime()) return true;
-    return false;
-  };
-
-  // Check if range between two dates contains any unavailable dates
-  const rangeContainsUnavailableDate = (start: Date, end: Date): boolean => {
-    const normalizedStart = normalizeDate(start);
-    const normalizedEnd = normalizeDate(end);
-
-    // Iterate through each day in the range
-    const currentDate = new Date(normalizedStart);
-    while (currentDate <= normalizedEnd) {
-      if (isDateUnavailable(currentDate)) {
-        return true;
-      }
-      currentDate.setDate(currentDate.getDate() + 1);
-    }
     return false;
   };
 
@@ -190,18 +141,17 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = forwardRef<DateRa
     return days;
   }, [currentMonth]);
 
-  const activeUnavailableInfo = activeTooltipDay !== null ? unavailableInfoByDay.get(activeTooltipDay) : undefined;
+  const activeBooking: Booking | undefined = activeTooltipDate ? occupancy.on(activeTooltipDate) : undefined;
 
   const handleDayClick = (event: React.MouseEvent, date: Date) => {
     event.stopPropagation();
-    const info = getUnavailableInfo(date);
-    if (info) {
-      const key = normalizeDate(date).getTime();
-      setActiveTooltipDay((prev) => (prev === key ? null : key));
+    if (occupancy.on(date)) {
+      // Occupied days aren't selectable; clicking one explains why instead.
+      setActiveTooltipDate((prev) => (prev && localDayKey(prev) === localDayKey(date) ? null : date));
       return;
     }
     if (isDateDisabled(date)) return;
-    setActiveTooltipDay(null);
+    setActiveTooltipDate(null);
 
     const normalized = normalizeDate(date);
 
@@ -225,8 +175,7 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = forwardRef<DateRa
         rangeEnd = normalized;
       }
 
-      // Check if the range contains any unavailable dates
-      if (rangeContainsUnavailableDate(rangeStart, rangeEnd)) {
+      if (!occupancy.rangeIsFree(rangeStart, rangeEnd)) {
         // Don't allow the selection - reset to just the new date
         setStartDate(normalized);
         setEndDate(null);
@@ -242,19 +191,19 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = forwardRef<DateRa
   };
 
   useEffect(() => {
-    if (activeTooltipDay === null) return;
-    const handleOutsideClick = () => setActiveTooltipDay(null);
+    if (!activeTooltipDate) return;
+    const handleOutsideClick = () => setActiveTooltipDate(null);
     document.addEventListener('pointerdown', handleOutsideClick);
     return () => document.removeEventListener('pointerdown', handleOutsideClick);
-  }, [activeTooltipDay]);
+  }, [activeTooltipDate]);
 
   useEffect(() => {
-    if (activeTooltipDay === null) {
+    if (!activeTooltipDate) {
       setTooltipPosition((prev) => ({ ...prev, visible: false }));
       return;
     }
 
-    const anchor = dayRefs.current.get(activeTooltipDay);
+    const anchor = dayRefs.current.get(localDayKey(activeTooltipDate));
     if (!anchor) return;
 
     const updatePosition = () => {
@@ -283,7 +232,7 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = forwardRef<DateRa
       window.removeEventListener('resize', updatePosition);
       window.removeEventListener('scroll', updatePosition, true);
     };
-  }, [activeTooltipDay]);
+  }, [activeTooltipDate]);
 
   // Navigate to previous month
   const goToPreviousMonth = () => {
@@ -354,6 +303,15 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = forwardRef<DateRa
     }
   }));
 
+
+  // Stored columns sit at UTC midnight; read them back in UTC or they slip a day.
+  const formatStoredDate = (value: string): string =>
+    new Date(value).toLocaleDateString('fr-FR', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      timeZone: 'UTC',
+    });
 
   // Format date for display
   const formatDate = (date: Date | null): string => {
@@ -462,15 +420,15 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = forwardRef<DateRa
             return <Box key={`empty-${index}`} />;
           }
 
-          const unavailableInfo = getUnavailableInfo(date);
-          const unavailableStatus = unavailableInfo?.status;
-          const unavailable = Boolean(unavailableStatus);
+          const booking = occupancy.on(date);
+          const unavailableStatus = booking?.status;
+          const unavailable = Boolean(booking);
           const disabled = isDateDisabled(date);
           const inRange = isDateInRange(date);
           const isEdge = isDateRangeEdge(date);
           const isToday = normalizeDate(date).getTime() === normalizeDate(new Date()).getTime();
           const weatherCode = weatherForecast.get(toDateString(date));
-          const dayKey = normalizeDate(date).getTime();
+          const dayKey = localDayKey(date);
 
           return (
             <Button
@@ -544,7 +502,7 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = forwardRef<DateRa
         })}
       </Grid>
 
-      {activeUnavailableInfo && (
+      {activeBooking && (
         <Box
           position="fixed"
           top={`${tooltipPosition.top}px`}
@@ -560,25 +518,25 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = forwardRef<DateRa
           maxW="90vw"
           textAlign="left"
           borderWidth="1px"
-          borderColor={activeUnavailableInfo.status === 'CONFIRMED' ? 'green.300' : 'yellow.300'}
-          _dark={{ bg: 'gray.800', color: 'white', borderColor: activeUnavailableInfo.status === 'CONFIRMED' ? 'green.700' : 'yellow.700' }}
+          borderColor={activeBooking.status === 'CONFIRMED' ? 'green.300' : 'yellow.300'}
+          _dark={{ bg: 'gray.800', color: 'white', borderColor: activeBooking.status === 'CONFIRMED' ? 'green.700' : 'yellow.700' }}
           zIndex={1000}
           onPointerDown={(event) => event.stopPropagation()}
           ref={tooltipRef}
           visibility={tooltipPosition.visible ? 'visible' : 'hidden'}
         >
           <Text fontSize="sm" fontWeight="bold" mb={1}>
-            {activeUnavailableInfo.title}
+            {activeBooking.title}
           </Text>
           <Text fontSize="xs">
-            {formatDate(activeUnavailableInfo.startDate)} - {formatDate(activeUnavailableInfo.endDate)}
+            {formatStoredDate(activeBooking.start_date)} - {formatStoredDate(activeBooking.end_date)}
           </Text>
           <Text
             fontSize="xs"
-            color={activeUnavailableInfo.status === 'CONFIRMED' ? 'green.600' : 'yellow.700'}
-            _dark={{ color: activeUnavailableInfo.status === 'CONFIRMED' ? 'green.300' : 'yellow.300' }}
+            color={activeBooking.status === 'CONFIRMED' ? 'green.600' : 'yellow.700'}
+            _dark={{ color: activeBooking.status === 'CONFIRMED' ? 'green.300' : 'yellow.300' }}
           >
-            {activeUnavailableInfo.status === 'CONFIRMED' ? 'Confirmée' : 'Provisoire'}
+            {activeBooking.status === 'CONFIRMED' ? 'Confirmée' : 'Provisoire'}
           </Text>
         </Box>
       )}

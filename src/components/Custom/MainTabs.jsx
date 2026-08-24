@@ -25,7 +25,7 @@ export default function MainTabs({ bookings }) {
         </Tabs.Trigger>
       </Tabs.List>
       <Tabs.Content value="add-booking" flex={1} minH={0} pt={0} overflowY="auto">
-        <AddBooking bookingList={bookings} isMobile={true} />
+        <AddBooking isMobile={true} />
       </Tabs.Content>
       <Tabs.Content
         value="view-booking"

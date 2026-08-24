@@ -33,7 +33,7 @@ export default function App() {
         <MainTabs bookings={bookings} />
       ) : (
         <Flex className='app-content' gap={6} direction='row' justifyContent="space-evenly" width={'100%'} minH={0}>
-          <AddBooking bookingList={bookings} isMobile={isMobile} onBookingAdded={refetch} />
+          <AddBooking isMobile={isMobile} onBookingAdded={refetch} />
           <BookingList bookingList={bookings} isMobile={isMobile} onBookingDeleted={refetch} />
         </Flex>
       )}

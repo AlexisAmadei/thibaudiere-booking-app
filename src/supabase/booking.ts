@@ -1,3 +1,4 @@
+import { todayKey } from '../booking/occupancy';
 import { supabase } from './client';
 
 export interface Booking {
@@ -11,16 +12,19 @@ export interface Booking {
 
 export type BookingInsert = Omit<Booking, 'id'>;
 export type BookingUpdate = Partial<BookingInsert>;
-export type UnavailableDateEntry = { date: Date; status: Booking['status'] };
 
 /**
- * Retrieve all bookings from the database
+ * Retrieve every booking that has not finished yet.
+ *
+ * Filtering on end_date rather than start_date keeps stays that are already in
+ * progress, and arrivals earlier today, in the result: occupancy is wrong
+ * without them.
  */
 export async function getAllBookings(): Promise<Booking[]> {
   const { data, error } = await supabase
     .from('bookings')
     .select('*')
-    .gte('start_date', new Date().toISOString())
+    .gte('end_date', todayKey())
     .order('start_date', { ascending: true });
 
   if (error) {
@@ -147,27 +151,4 @@ export async function deleteBooking(id: number): Promise<void> {
     console.error('Error deleting booking:', error);
     throw error;
   }
-}
-
-/**
- * Get all unavailable dates from bookings (for DateRangePicker)
- * Returns an array of objects with date and status for all dates that fall within existing bookings
- */
-export async function getUnavailableDates(): Promise<UnavailableDateEntry[]> {
-  const bookings = await getAllBookings();
-  const unavailableDates: UnavailableDateEntry[] = [];
-
-  bookings.forEach(booking => {
-    const start = new Date(booking.start_date);
-    const end = new Date(booking.end_date);
-
-    // Add all dates in the range
-    const currentDate = new Date(start);
-    while (currentDate <= end) {
-      unavailableDates.push({ date: new Date(currentDate), status: booking.status });
-      currentDate.setDate(currentDate.getDate() + 1);
-    }
-  });
-
-  return unavailableDates;
 }

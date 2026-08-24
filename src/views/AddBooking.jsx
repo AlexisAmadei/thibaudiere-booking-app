@@ -7,7 +7,7 @@ import { Toaster, toaster } from '../components/ui/toaster'
 import { useBooking } from '../contexts/BookingContext'
 import { createBooking } from '../supabase/booking'
 
-export default function AddBooking({ bookingList = [], isMobile = true }) {
+export default function AddBooking({ isMobile = true }) {
   const [canValidate, setCanValidate] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [title, setTitle] = useState('')
@@ -16,27 +16,7 @@ export default function AddBooking({ bookingList = [], isMobile = true }) {
   const [pickerKey, setPickerKey] = useState(0)
   const childRef = useRef();
 
-  const { refetch } = useBooking()
-
-  // Convert bookings to unavailable dates with status and metadata
-  const unavailableDates = bookingList.flatMap(booking => {
-    const dates = [];
-    const start = new Date(booking.start_date);
-    const end = new Date(booking.end_date);
-
-    const currentDate = new Date(start);
-    while (currentDate <= end) {
-      dates.push({
-        date: new Date(currentDate),
-        status: booking.status,
-        title: booking.title,
-        startDate: start,
-        endDate: end,
-      });
-      currentDate.setDate(currentDate.getDate() + 1);
-    }
-    return dates;
-  });
+  const { refetch, occupancy } = useBooking()
 
   const handleAddBooking = async (status) => {
     if (!canValidate || isLoading) return;
@@ -153,7 +133,7 @@ export default function AddBooking({ bookingList = [], isMobile = true }) {
               setCanValidate(false)
             }
           }}
-          unavailableDates={unavailableDates}
+          occupancy={occupancy}
           minDate={new Date()}
         />
       </Box>
