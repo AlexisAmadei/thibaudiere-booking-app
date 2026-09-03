@@ -63,12 +63,17 @@ export default function WeeklyForecast() {
             borderRadius="md"
             bg={isToday ? 'whiteAlpha.300' : 'transparent'}
           >
-            <Text fontSize="xs" fontWeight={isToday ? 'bold' : 'normal'}>
-              {isToday ? 'Auj.' : dayName}
-            </Text>
-            <Box>{weatherIcon(forecast.weather_code[i])}</Box>
-            <Text fontSize="xs" fontWeight="bold">{Math.round(forecast.temperature_2m_max[i])}°</Text>
-            <Text fontSize="xs" opacity={0.75}>{Math.round(forecast.temperature_2m_min[i])}°</Text>
+            <Flex direction="row" alignItems="center" gap={1}>
+              <Text fontSize="xs" fontWeight={isToday ? 'bold' : 'normal'}>
+                {isToday ? 'Auj.' : dayName}
+              </Text>
+              <Box>{weatherIcon(forecast.weather_code[i])}</Box>
+            </Flex>
+
+            <Flex direction="row" alignItems="center" gap={1}>
+              <Text fontSize="xs" fontWeight="bold">{Math.round(forecast.temperature_2m_max[i])}°</Text> /
+              <Text fontSize="xs" opacity={0.75}>{Math.round(forecast.temperature_2m_min[i])}°</Text>
+            </Flex>
           </Flex>
         );
       })}
