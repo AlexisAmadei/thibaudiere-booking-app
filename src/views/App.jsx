@@ -6,6 +6,7 @@ import { useBooking } from '../contexts/BookingContext'
 import useIsMobile from '../hooks/useIsMobile'
 import AddBooking from './AddBooking'
 import BookingList from './BookingList'
+import { Analytics } from '@vercel/analytics/react';
 
 export default function App() {
   const { bookings, fetchBookings, refetch } = useBooking()
@@ -37,6 +38,8 @@ export default function App() {
           <BookingList bookingList={bookings} isMobile={isMobile} onBookingDeleted={refetch} />
         </Flex>
       )}
+      <Analytics />
+
       {/* <Footer /> */}
     </Box>
   )
