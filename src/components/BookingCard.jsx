@@ -1,10 +1,15 @@
 import { Badge, Box, Card, Flex, Heading, IconButton, Menu, Portal, Text } from '@chakra-ui/react';
-import { Calendar, CalendarArrowUp, Clock, MoreVertical, Trash } from 'lucide-react';
+import { Calendar, CalendarArrowUp, Clock, MoreVertical, Pencil, Trash } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { useAuth } from '../contexts/AuthContext';
 import { getProfileWithId } from '../supabase/user';
+import EditBookingDialog from './Custom/EditBookingDialog';
 
 export default function BookingCard({ booking, isMobile, handleDeleteBooking, handleStatusToggle, deletingId, formatDate }) {
   const [bookerProfile, setBookerProfile] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const { user } = useAuth();
+  const isOwnBooking = user?.id === booking.booker;
 
   const formatDateWithoutYear = (date) => formatDate(date).replace(/\s+\d{4}\b/, '');
 
@@ -55,24 +60,36 @@ export default function BookingCard({ booking, isMobile, handleDeleteBooking, ha
         <Portal>
           <Menu.Positioner>
             <Menu.Content>
-              <Menu.Item
-                value="edit"
-                disabled={deletingId !== null}
-                onClick={() => handleStatusToggle(booking, booking.status === 'CONFIRMED' ? 'PENDING' : 'CONFIRMED')}
-              >
-                {booking.status === 'CONFIRMED' ? (
-                  <>
-                    <Clock size={16} />
-                    Marquer Provisoire
-                  </>
-                ) : (
-                  <>
-                    <CalendarArrowUp size={16} />
-                    Marquer Confirmée
-                  </>
-                )
-                }
-              </Menu.Item>
+              <Menu.ItemGroup>
+                {isOwnBooking && (
+                  <Menu.Item
+                    value="modify"
+                    disabled={deletingId !== null}
+                    onClick={() => setIsEditing(true)}
+                  >
+                    <Pencil size={16} />
+                    Modifier
+                  </Menu.Item>
+                )}
+                <Menu.Item
+                  value="edit"
+                  disabled={deletingId !== null}
+                  onClick={() => handleStatusToggle(booking, booking.status === 'CONFIRMED' ? 'PENDING' : 'CONFIRMED')}
+                >
+                  {booking.status === 'CONFIRMED' ? (
+                    <>
+                      <Clock size={16} />
+                      Marquer Provisoire
+                    </>
+                  ) : (
+                    <>
+                      <CalendarArrowUp size={16} />
+                      Marquer Confirmée
+                    </>
+                  )
+                  }
+                </Menu.Item>
+              </Menu.ItemGroup>
               <Menu.Item
                 value="delete"
                 onClick={() => handleDeleteBooking(booking.id, booking.title)}
@@ -86,6 +103,10 @@ export default function BookingCard({ booking, isMobile, handleDeleteBooking, ha
           </Menu.Positioner>
         </Portal>
       </Menu.Root>
+
+      {isEditing && (
+        <EditBookingDialog booking={booking} onOpenChange={setIsEditing} />
+      )}
 
       <Card.Header display={'flex'} flexDirection={'row'} alignItems={'center'}>
         <Heading size="md">{booking.title.toUpperCase()}</Heading>

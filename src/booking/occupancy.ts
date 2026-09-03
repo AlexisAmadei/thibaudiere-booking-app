@@ -45,6 +45,12 @@ function storedDayKey(value: string): DayKey {
   return toDayKey(parsed.getUTCFullYear(), parsed.getUTCMonth(), parsed.getUTCDate());
 }
 
+/** A stored column read back as the local `Date` that means the same calendar day. */
+export function storedLocalDate(value: string): Date {
+  const [year, month, day] = storedDayKey(value).split('-').map(Number);
+  return new Date(year, month - 1, day);
+}
+
 /** Every civil date from `from` to `to`, inclusive. UTC arithmetic, so DST cannot shift it. */
 function daysBetween(from: DayKey, to: DayKey): DayKey[] {
   const cursor = new Date(`${from}T00:00:00Z`);
@@ -98,3 +104,13 @@ export function occupancyOf(bookings: Booking[]): Occupancy {
 }
 
 export const EMPTY_OCCUPANCY = occupancyOf([]);
+
+/**
+ * Occupancy of every booking but one.
+ *
+ * A booking being edited must not collide with itself: the days it already
+ * holds have to read as free while its own range is being re-picked.
+ */
+export function occupancyExcluding(bookings: Booking[], bookingId: number): Occupancy {
+  return occupancyOf(bookings.filter(booking => booking.id !== bookingId));
+}
