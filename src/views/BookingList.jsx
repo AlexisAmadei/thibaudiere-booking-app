@@ -6,7 +6,7 @@ import BookingFilters from '../components/BookingFilters'
 import WeeklyForecast from '../components/WeeklyForecast'
 import { toaster } from '../components/ui/toaster'
 import { useBooking } from '../contexts/BookingContext'
-import { deleteBooking, updateBooking } from '../supabase/booking'
+import { deleteBooking, setBookingStatus } from '../supabase/booking'
 
 export default function BookingList({ bookingList, isMobile = true, onBookingDeleted }) {
   const [sortOrder, setSortOrder] = useState('asc') // 'asc' or 'desc'
@@ -68,14 +68,19 @@ export default function BookingList({ bookingList, isMobile = true, onBookingDel
   }
 
   const handleStatusToggle = (booking, status) => {
-    updateBooking(booking.id, {
-      status: status,
-    }).then(() => {
+    setBookingStatus(booking.id, status).then(() => {
       toaster.create({
         title: 'Statut mis à jour',
-        description: `La réservation de ${booking.title} est maintenant Confirmée.`,
+        description: `La réservation de ${booking.title} est maintenant ${status === 'CONFIRMED' ? 'Confirmée' : 'Provisoire'}.`,
         type: 'success',
       })
+    }).catch((error) => {
+      toaster.create({
+        title: 'Erreur',
+        description: error.message || `Le statut n'a pas pu être modifié. Veuillez réessayer.`,
+        type: 'error',
+      })
+    }).finally(() => {
       refetch()
     })
   }

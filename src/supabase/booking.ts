@@ -139,6 +139,26 @@ export async function updateBooking(
 }
 
 /**
+ * Set a booking's status. Unlike updateBooking, which RLS limits to the
+ * booker, any member may do this, so it goes through a definer RPC.
+ */
+export async function setBookingStatus(
+  id: number,
+  status: string
+): Promise<Booking> {
+  const { data, error } = await supabase
+    .rpc('set_booking_status', { booking_id: id, new_status: status })
+    .single();
+
+  if (error) {
+    console.error('Error setting booking status:', error);
+    throw error;
+  }
+
+  return data;
+}
+
+/**
  * Delete a booking
  */
 export async function deleteBooking(id: number): Promise<void> {
