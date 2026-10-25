@@ -1,0 +1,18 @@
+{
+  // The server runs as `.ts` directly on Node 24 (native type stripping), so only
+  // erasable syntax is allowed and relative imports keep their `.ts` extension.
+  "compilerOptions": {
+    "target": "ESNext",
+    "lib": ["ESNext"],
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "types": ["node"],
+    "strict": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "erasableSyntaxOnly": true,
+    "verbatimModuleSyntax": true
+  },
+  "include": ["."]
+}

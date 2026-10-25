@@ -1,0 +1,12 @@
+node_modules
+dist
+data
+.git
+.env*
+.vercel
+.vscode
+.agents
+supabase/.temp
+supabase/.branches
+*.log
+server/**/*.test.ts

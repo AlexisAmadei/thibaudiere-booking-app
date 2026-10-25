@@ -1,0 +1,17 @@
+{
+  // Type-checks the SPA only (`pnpm typecheck`). Vite's esbuild also reads this when
+  // transpiling `src/`, so keep it to options that don't change emitted code.
+  // The server has its own config in `server/tsconfig.json`.
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "types": ["vite/client"],
+    "strict": true,
+    "skipLibCheck": true,
+    "noEmit": true
+  },
+  "include": ["src"]
+}
