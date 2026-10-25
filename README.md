@@ -39,7 +39,7 @@ A modern web application for managing shared bookings and reservations, built wi
 
 2. **Install dependencies**
    ```bash
-   pnpm install
+   bun install
    ```
 
 3. **Configure environment variables**
@@ -61,7 +61,7 @@ A modern web application for managing shared bookings and reservations, built wi
 
 4. **Start development server**
    ```bash
-   pnpm run dev
+   bun run dev
    ```
 
 ## Project Structure
@@ -172,16 +172,16 @@ route, which detects an `invite` type to show tailored messaging.
 
 ```bash
 # Development
-pnpm run dev
+bun run dev
 
 # Build for production
-pnpm run build
+bun run build
 
 # Preview production build
-pnpm run preview
+bun run preview
 
 # Run ESLint
-pnpm run lint
+bun run lint
 ```
 
 ## 👨‍💻 Author

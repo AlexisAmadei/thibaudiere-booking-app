@@ -30,8 +30,8 @@ any-member delete (#20), is ported as-is, and app-logic changes are tracked sepa
 - **Backups are ours to run.** R2 is off the Dokploy host on purpose, so a lost server does not
   take the backups with it. The backup job keeps the newest 30 snapshots; restoring is a
   documented manual procedure.
-- **Local dev needs no Docker.** `pnpm db:seed && pnpm dev` runs against a local file, and
-  `pnpm db:pull` can fetch a real backup (which contains real emails and password hashes).
+- **Local dev needs no Docker.** `bun run db:seed && bun run dev` runs against a local file, and
+  `bun run db:pull` can fetch a real backup (which contains real emails and password hashes).
 
 ## Considered options
 

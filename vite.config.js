@@ -7,7 +7,7 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig({
   plugins: [react(), tsconfig(), tailwindcss()],
   server: {
-    // The Hono server (`pnpm dev:server`) answers `/api` in dev.
+    // The Hono server (`bun run dev:server`) answers `/api` in dev.
     proxy: {
       '/api': `http://localhost:${process.env.PORT ?? 3000}`,
     },

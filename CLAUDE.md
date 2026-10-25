@@ -4,7 +4,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Commands
 
-Package manager is **pnpm**.
+Package manager is **Bun** (`bun install`, `bun run <script>`). Bun is only the package manager: the
+server and Vite still run on Node 24.
 
 There is no test framework and no type-check script in this project.
 
