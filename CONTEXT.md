@@ -20,6 +20,20 @@ Whether a booking is firm (`CONFIRMED`, shown as *Confirmée*) or provisional
 booking is a real hold, not a request awaiting approval.
 _Avoid_: state, kind, type
 
+**Member**:
+A person allowed to sign in and book the house. The set of members is closed: nobody
+becomes one on their own.
+_Avoid_: user, account, guest
+
+**Display name**:
+The name other members see for a member, for example on the bookings they made.
+_Avoid_: username, profile, pseudo
+
+**Invitation**:
+The only way someone becomes a member: they receive an emailed link and choose a
+password. Displayed as *invitation*.
+_Avoid_: sign-up, registration, inscription
+
 **Booker**:
 The member who created a booking. Every booking has exactly one.
 _Avoid_: user, owner, guest, author
