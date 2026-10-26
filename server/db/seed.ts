@@ -1,6 +1,6 @@
-import bcrypt from 'bcryptjs'
 import { sql } from 'drizzle-orm'
 import { randomUUID } from 'node:crypto'
+import { hashPassword } from '../auth.ts'
 import { migrateDatabase, openDatabase } from './index.ts'
 import { account, bookings, session, user, verification } from './schema.ts'
 
@@ -13,9 +13,8 @@ if (process.env.NODE_ENV === 'production') {
   process.exit(1)
 }
 
-// Bcrypt at cost 10 with the `$2a$` prefix, exactly like the hashes imported from Supabase
-// (see ADR 0001). bcryptjs defaults to `$2b$`, which computes the same hash.
-const passwordHash = bcrypt.hashSync(DEV_PASSWORD, bcrypt.genSaltSync(10).replace(/^\$2b\$/, '$2a$'))
+// The hash Better Auth would store, in the same `$2a$10$` format as Supabase's (ADR 0001).
+const passwordHash = await hashPassword(DEV_PASSWORD)
 
 const members = [
   { name: 'Camille', email: 'camille@example.test' },

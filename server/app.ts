@@ -1,5 +1,6 @@
 import { serveStatic } from '@hono/node-server/serve-static'
 import { Hono } from 'hono'
+import type { Auth } from './auth.ts'
 
 // Carried over unchanged from `vercel.json`. The CSP still allows Supabase and Vercel
 // Analytics because the SPA talks to them until the switch-over (#16).
@@ -15,9 +16,12 @@ const SECURITY_HEADERS = {
 type AppOptions = {
   // Built SPA (`dist/`). Omitted in dev, where Vite serves the SPA and proxies `/api` here.
   staticRoot?: string
+  // Answers `/api/auth/*` (sign-in, sign-out, session, password reset). Omitted only by
+  // tests that don't touch auth.
+  auth?: Auth
 }
 
-export function createApp({ staticRoot }: AppOptions = {}) {
+export function createApp({ staticRoot, auth }: AppOptions = {}) {
   const app = new Hono()
 
   app.use(async (c, next) => {
@@ -27,6 +31,7 @@ export function createApp({ staticRoot }: AppOptions = {}) {
 
   const api = new Hono()
   api.get('/health', (c) => c.json({ ok: true }))
+  if (auth) api.on(['GET', 'POST'], '/auth/*', (c) => auth.handler(c.req.raw))
   // Must stay last: an unmatched `/api` call is a 404, never the SPA fallback below.
   api.all('*', (c) => c.json({ error: 'Not found' }, 404))
   app.route('/api', api)
