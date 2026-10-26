@@ -1,38 +1,17 @@
 import assert from 'node:assert/strict'
-import { randomUUID } from 'node:crypto'
-import { mkdtempSync } from 'node:fs'
-import { tmpdir } from 'node:os'
-import { join } from 'node:path'
 import { test } from 'node:test'
 import { createApp } from './app.ts'
 import { createAuth, hashPassword, inviteMember } from './auth.ts'
-import { migrateDatabase, openDatabase, type Db } from './db/index.ts'
 import type { Email } from './email.ts'
-
-const APP_URL = 'https://thibaudiere.example.test'
-
-// A hash as Supabase Auth stores it (golang.org/x/crypto/bcrypt: `$2a$`, cost 10) for the
-// password below, checked with Apache's `htpasswd -vb`: an implementation other than bcryptjs,
-// so this proves imported hashes verify rather than that bcryptjs agrees with itself.
-const SUPABASE_PASSWORD = 'motdepasse-supabase'
-const SUPABASE_HASH = '$2a$10$E.P7oEgovjo2v1dI/rpbQeYoqgyuvzeUIjtZT0YGohNpOskt0vNXe'
-
-// Better Auth's in-memory rate limiter is shared by the whole process and keyed by client IP,
-// so each request helper gets its own address to keep the tests independent.
-let lastIp = 0
-function nextIp() {
-  lastIp += 1
-  return `192.0.2.${lastIp}`
-}
+import { addMember, APP_URL, browser, freshDatabase, nextIp, SECRET, SUPABASE_HASH, SUPABASE_PASSWORD } from './test-support.ts'
 
 // The app over a freshly migrated database, with every email captured instead of sent.
 function setup() {
-  const db = openDatabase(join(mkdtempSync(join(tmpdir(), 'thibaudiere-auth-')), 'test.sqlite'))
-  migrateDatabase(db)
+  const db = freshDatabase()
   const emails: Email[] = []
   const authOptions = {
     appUrl: APP_URL,
-    secret: 'test-secret-that-is-at-least-32-characters-long',
+    secret: SECRET,
     sendEmail: async (email: Email) => {
       emails.push(email)
     },
@@ -41,37 +20,15 @@ function setup() {
   return { db, authOptions, app, emails, client: client(app) }
 }
 
-// A browser on one IP: same-origin JSON requests that keep the session cookie between calls.
+// A browser talking to Better Auth: GET without a body, POST with one.
 function client(app: ReturnType<typeof createApp>) {
-  const ip = nextIp()
-  let cookie = ''
-  return async function request(path: string, body?: unknown) {
-    const headers: Record<string, string> = { origin: APP_URL, 'x-forwarded-for': ip }
-    if (cookie) headers.cookie = cookie
-    if (body !== undefined) headers['content-type'] = 'application/json'
-    const res = await app.request(`/api/auth${path}`, {
-      method: body === undefined ? 'GET' : 'POST',
-      headers,
-      body: body === undefined ? undefined : JSON.stringify(body),
-    })
-    const setCookie = res.headers.getSetCookie()
-    if (setCookie.length) cookie = setCookie.map((c) => c.split(';')[0]).join('; ')
-    return res
-  }
+  const request = browser(app)
+  return (path: string, body?: unknown) => request(body === undefined ? 'GET' : 'POST', `/api/auth${path}`, body)
 }
 
 // The signed-in member as Better Auth reports them, or null when signed out.
 async function sessionOf(request: ReturnType<typeof client>) {
   return (await (await request('/get-session')).json()) as { user: { id: string; email: string; name: string } } | null
-}
-
-// A member as the import (#18) writes them: a user row and a credential account holding the hash.
-function addMember(db: Db, email: string, passwordHash: string) {
-  const id = randomUUID()
-  db.$client.prepare('insert into user (id, name, email) values (?, ?, ?)').run(id, 'Camille', email)
-  db.$client
-    .prepare("insert into account (id, account_id, provider_id, user_id, password, updated_at) values (?, ?, 'credential', ?, ?, ?)")
-    .run(randomUUID(), id, id, passwordHash, Date.now())
 }
 
 test('a member signs in with a bcrypt hash generated the way Supabase does', async () => {

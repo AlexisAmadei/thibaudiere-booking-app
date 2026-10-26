@@ -1,5 +1,6 @@
 import { serve } from '@hono/node-server'
 import { fileURLToPath } from 'node:url'
+import { createApi } from './api.ts'
 import { createApp } from './app.ts'
 import { createAuth } from './auth.ts'
 import { migrateDatabase, openDatabase } from './db/index.ts'
@@ -16,7 +17,10 @@ const staticRoot =
     ? fileURLToPath(new URL('../dist', import.meta.url))
     : undefined
 
-const server = serve({ fetch: createApp({ staticRoot, auth: createAuth(db) }).fetch, port }, (info) => {
+const auth = createAuth(db)
+const app = createApp({ staticRoot, auth, api: createApi(db, auth) })
+
+const server = serve({ fetch: app.fetch, port }, (info) => {
   const mode = staticRoot ? `serving the SPA from ${staticRoot}` : 'API only (NODE_ENV is not production)'
   console.log(`Server listening on port ${info.port}, ${mode}`)
 })

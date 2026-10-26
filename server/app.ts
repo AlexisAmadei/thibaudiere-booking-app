@@ -1,5 +1,6 @@
 import { serveStatic } from '@hono/node-server/serve-static'
 import { Hono } from 'hono'
+import type { createApi } from './api.ts'
 import type { Auth } from './auth.ts'
 
 // Carried over unchanged from `vercel.json`. The CSP still allows Supabase and Vercel
@@ -19,9 +20,11 @@ type AppOptions = {
   // Answers `/api/auth/*` (sign-in, sign-out, session, password reset). Omitted only by
   // tests that don't touch auth.
   auth?: Auth
+  // The bookings and member API, from `createApi`. Omitted only by tests that don't touch it.
+  api?: ReturnType<typeof createApi>
 }
 
-export function createApp({ staticRoot, auth }: AppOptions = {}) {
+export function createApp({ staticRoot, auth, api: dataApi }: AppOptions = {}) {
   const app = new Hono()
 
   app.use(async (c, next) => {
@@ -32,6 +35,7 @@ export function createApp({ staticRoot, auth }: AppOptions = {}) {
   const api = new Hono()
   api.get('/health', (c) => c.json({ ok: true }))
   if (auth) api.on(['GET', 'POST'], '/auth/*', (c) => auth.handler(c.req.raw))
+  if (dataApi) api.route('/', dataApi)
   // Must stay last: an unmatched `/api` call is a 404, never the SPA fallback below.
   api.all('*', (c) => c.json({ error: 'Not found' }, 404))
   app.route('/api', api)

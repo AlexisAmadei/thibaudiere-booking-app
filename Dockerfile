@@ -30,8 +30,9 @@ ENV NODE_ENV=production
 ENV PORT=3000
 # Mount the Dokploy volume at /app/data. The server creates the schema on first start.
 ENV DATABASE_PATH=/app/data/thibaudiere.sqlite
-# Set in Dokploy, not here: APP_URL, BETTER_AUTH_SECRET, RESEND_API_KEY. The server refuses
-# to start without the first two. Invite a member with `docker exec <container> bun run invite <email>`.
+# Set in Dokploy, not here: APP_URL, BETTER_AUTH_SECRET, RESEND_API_KEY and ADMIN_EMAIL (who
+# receives the new-booking notification). The server refuses to start without the first two.
+# Invite a member with `docker exec <container> bun run invite <email>`.
 COPY package.json ./
 COPY --from=prod-deps /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist

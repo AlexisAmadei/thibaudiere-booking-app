@@ -99,7 +99,7 @@ export async function inviteMember(db: Db, email: string, options: AuthOptions =
   return email
 }
 
-function defaultAppUrl() {
+export function defaultAppUrl() {
   if (process.env.APP_URL) return process.env.APP_URL
   if (process.env.NODE_ENV === 'production') throw new Error('APP_URL is not set')
   // Vite, which proxies `/api` to this server in dev.
