@@ -184,6 +184,85 @@ bun run preview
 bun run lint
 ```
 
+## Backups
+
+The database is one SQLite file on the Dokploy volume. A nightly job snapshots it to a
+Cloudflare R2 bucket, which lives off the Dokploy host so that losing the server does not lose
+the backups (`docs/adr/0001-sqlite-node-server-on-dokploy.md`).
+
+Both commands read the bucket from the environment (`db:pull` also from a local `.env`):
+
+```env
+S3_ENDPOINT=https://<account id>.r2.cloudflarestorage.com
+S3_BUCKET=thibaudiere-backups
+S3_ACCESS_KEY_ID=...
+S3_SECRET_ACCESS_KEY=...
+```
+
+### `bun run db:backup`
+
+Takes a consistent copy of the live database with `VACUUM INTO` (safe while the server is
+writing: it holds every committed change, including those still in the WAL file, and nothing
+half-written), checks its integrity, gzips it and uploads it as
+`backups/YYYY-MM-DDTHHMMSSZ.sqlite.gz` (UTC). It then deletes all but the newest 30 backups.
+Only keys of exactly that shape are counted or deleted; anything else in the bucket is left
+alone. Exits non-zero on any failure.
+
+Retention is by count, done by the job itself, so if backups stop being taken the last 30 are
+kept for as long as it takes to notice. Do not add an R2 lifecycle rule that expires
+`backups/` by age: it would delete those too.
+
+### Nightly schedule in Dokploy
+
+In the application's **Schedules** tab, add a job that runs inside the app container:
+
+- Schedule: `0 3 * * *` (every night at 03:00, in the server's timezone)
+- Command: `bun run db:backup`
+
+The job inherits the application's environment, so the `S3_*` variables go in the
+application's **Environment** next to `APP_URL` and the others. Run it once by hand after
+setting it up and check that the backup appears in the bucket. Its log shows the uploaded key,
+or why it failed.
+
+### `bun run db:pull [--force]`
+
+Downloads the newest backup to the local database (`DATABASE_PATH`, by default
+`./data/dev.sqlite`), checks its integrity, and replaces the file only with `--force`. Stop the
+dev server first. The `S3_*` variables can go in a local `.env`; a read-only R2 token is enough.
+It refuses to run with `NODE_ENV=production`: restore the live database with the procedure
+below instead.
+
+**The pulled file contains the real members' email addresses and password hashes.** Keep it
+on your machine (`data/` is git-ignored) and delete it when you are done. Members sign in with
+their real passwords.
+
+### Restoring production
+
+1. **Pick the backup.** In the R2 dashboard, open the bucket's `backups/` folder and download
+   the one to restore. To check it first, `bun run db:pull --force` fetches the newest one
+   locally, and `bun run dev` runs the app on it.
+2. **Unpack and check it:** `gunzip 2026-10-26T030000Z.sqlite.gz`, then
+   `sqlite3 2026-10-26T030000Z.sqlite 'pragma integrity_check'` must print `ok` (`db:pull`
+   has already checked the newest one). Copy the file to the Dokploy host, for example with
+   `scp`, into the directory you run step 5 from.
+3. **Keep the current state**, if the server still runs:
+   `docker exec <container> bun run db:backup`. (It counts toward the 30.)
+4. **Stop the application** in Dokploy, so nothing writes while the file is replaced.
+5. **Replace the file in the volume**, on the Dokploy host. Find the volume mounted at
+   `/app/data` in the application's settings, then:
+
+   ```bash
+   docker run --rm -v <volume>:/data -v "$PWD":/restore node:24-slim sh -c '
+     rm -f /data/thibaudiere.sqlite-wal /data/thibaudiere.sqlite-shm &&
+     cp /restore/2026-10-26T030000Z.sqlite /data/thibaudiere.sqlite &&
+     chown node:node /data/thibaudiere.sqlite'
+   ```
+
+   The `-wal` and `-shm` files must go: SQLite would replay a WAL left by the old database onto
+   the restored one.
+6. **Start the application.** It applies any migration newer than the backup on start. Sign in
+   and check the bookings.
+
 ## 👨‍💻 Author
 
 Created by [Alexis Amadei](https://github.com/AlexisAmadei)

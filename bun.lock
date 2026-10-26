@@ -6,6 +6,7 @@
       "name": "thibaudiere",
       "dependencies": {
         "@hono/node-server": "^2.1.5",
+        "aws4fetch": "^1.0.20",
         "bcryptjs": "^3.0.3",
         "better-auth": "^1.7.13",
         "better-sqlite3": "^13.0.3",
@@ -613,6 +614,8 @@
     "argparse": ["argparse@2.0.1", "", {}, "sha512-8+9WqebbFzpX9OR+Wa6O29asIogeRMzcGtAINdpMHHyAg10f05aSFVBbcEqGf/PXw1EjAZ+q2/bEBg3DvurK3Q=="],
 
     "auth": ["auth@1.7.13", "", { "dependencies": { "@babel/core": "^7.29.7", "@babel/preset-react": "^7.28.5", "@babel/preset-typescript": "^7.28.5", "@better-auth/core": "1.7.13", "@better-auth/telemetry": "1.7.13", "@better-auth/utils": "0.5.1", "@clack/prompts": "^1.6.0", "@mrleebo/prisma-ast": "^0.16.0", "better-auth": "1.7.13", "c12": "^4.0.0-beta.5", "chalk": "^5.6.2", "commander": "^15.0.0", "dotenv": "^17.3.1", "get-tsconfig": "^4.14.0", "jiti": "^2.7.0", "open": "^11.0.0", "prettier": "^3.8.1", "prompts": "^2.4.2", "semver": "^7.8.4", "yocto-spinner": "^1.2.0", "zod": "^4.5.4" }, "bin": { "auth": "./dist/index.mjs", "better-auth": "./dist/index.mjs" } }, "sha512-PrcN/ga2nXJYG1EBiUirRn757M6L7MU4VMKY49HEIg4F/5eo69QGRRpNYLczuaiAuPr9yzmnIxn0YPAKOIthNw=="],
+
+    "aws4fetch": ["aws4fetch@1.0.20", "", {}, "sha512-/djoAN709iY65ETD6LKCtyyEI04XIBP5xVvfmNxsEP0uJB5tyaGBztSryRr4HqMStr9R06PisQE7m9zDTXKu6g=="],
 
     "babel-plugin-macros": ["babel-plugin-macros@3.1.0", "", { "dependencies": { "@babel/runtime": "7.29.2", "cosmiconfig": "7.1.0", "resolve": "1.22.12" } }, "sha512-Cg7TFGpIr01vOQNODXOOaGz2NpCU5gl8x1qJFbb6hbZxR7XrcE2vtbAsTAbJ7/xwJtUuJEw8K8Zr/AE0LHlesg=="],
 

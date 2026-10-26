@@ -8,7 +8,12 @@ import * as schema from './schema.ts'
 
 const MIGRATIONS_FOLDER = fileURLToPath(new URL('./migrations', import.meta.url))
 
-export function openDatabase(path = process.env.DATABASE_PATH ?? './data/dev.sqlite') {
+// The production volume's file (Dockerfile), or a local one for development.
+export function databasePath() {
+  return process.env.DATABASE_PATH ?? './data/dev.sqlite'
+}
+
+export function openDatabase(path = databasePath()) {
   if (path !== ':memory:') mkdirSync(dirname(path), { recursive: true })
   const sqlite = new Database(path)
   sqlite.pragma('journal_mode = WAL')

@@ -32,6 +32,8 @@ ENV PORT=3000
 ENV DATABASE_PATH=/app/data/thibaudiere.sqlite
 # Set in Dokploy, not here: APP_URL, BETTER_AUTH_SECRET, RESEND_API_KEY and ADMIN_EMAIL (who
 # receives the new-booking notification). The server refuses to start without the first two.
+# Also S3_ENDPOINT, S3_BUCKET, S3_ACCESS_KEY_ID and S3_SECRET_ACCESS_KEY for the nightly
+# `bun run db:backup` to R2, scheduled in Dokploy (README).
 # Invite a member with `docker exec <container> bun run invite <email>`.
 COPY package.json ./
 COPY --from=prod-deps /app/node_modules ./node_modules

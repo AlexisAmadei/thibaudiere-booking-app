@@ -15,12 +15,15 @@
     "db:generate": "drizzle-kit generate",
     "db:auth-schema": "auth generate --config server/auth.cli.ts --output server/db/auth-schema.ts --yes",
     "db:seed": "node server/db/seed.ts",
+    "db:backup": "node server/db/backup.ts",
+    "db:pull": "node --env-file-if-exists=.env server/db/pull.ts",
     "invite": "node server/invite.ts",
     "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
     "@hono/node-server": "^2.1.5",
+    "aws4fetch": "^1.0.20",
     "bcryptjs": "^3.0.3",
     "better-auth": "^1.7.13",
     "better-sqlite3": "^13.0.3",
