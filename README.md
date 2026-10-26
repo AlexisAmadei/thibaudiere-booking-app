@@ -263,6 +263,54 @@ their real passwords.
 6. **Start the application.** It applies any migration newer than the backup on start. Sign in
    and check the bookings.
 
+## Importing from Supabase
+
+`bun run db:import [path]` copies the members and bookings from the Supabase project into the
+SQLite file at `path` (by default `DATABASE_PATH`, or `./data/dev.sqlite`). It is for the move
+off Supabase (#19) and can be rehearsed as often as needed.
+
+- Members keep their Supabase id, email (in lower case), display name and **password**: the
+  bcrypt hash is copied unchanged. A member invited on Supabase who never chose a password comes
+  across as a pending invitation; `bun run invite <email>` sends them a new link.
+- Bookings keep their ids, calendar days, status, `created_at` and booker. New bookings continue
+  after the largest id.
+- It migrates the file first and refuses one that already has members or bookings. It is all or
+  nothing: on a problem (a booker who is not a member, a row the app cannot read, a user Supabase
+  has banned or deleted, a count that differs once written) it lists every problem and imports
+  nothing, so fix them in Supabase and run it again.
+- It prints the members (with and without a password) and bookings (count, first and last day)
+  it counted back. It warns about bookings with no start or end date, which Supabase allowed
+  but the app cannot show correctly.
+
+It reads `SUPABASE_DB_URL`, which can go in a local `.env`: in the Supabase dashboard, **Connect**,
+the **Direct connection** or **Session pooler** string (not the transaction pooler), with the
+database password filled in and URL-encoded. The direct one is IPv6-only on the free plan, so use
+the session pooler if it cannot connect. The connection uses TLS unless the URL sets `sslmode`.
+Resume the project first if Supabase has paused it.
+
+**Rehearse** locally, into a new file each time:
+
+```bash
+bun run db:import data/rehearsal.sqlite
+DATABASE_PATH=data/rehearsal.sqlite bun run dev
+```
+
+Sign in with your real password and compare with Supabase's SQL editor:
+`select count(*), min(start_date), max(end_date) from bookings;` and
+`select count(*), count(nullif(encrypted_password, '')) from auth.users;`. The file holds the
+real members' emails and password hashes: delete it afterwards.
+
+**At cutover**, once members have stopped booking on the old app, start the application in
+Dokploy (it creates the empty schema), then import into its volume:
+
+```bash
+docker exec -e SUPABASE_DB_URL='postgresql://…' <container> bun run db:import
+```
+
+Nobody can sign in until it has run, since there are no members before. To start over after a
+successful import, stop the application, delete `thibaudiere.sqlite` and its `-wal` and `-shm`
+files from the volume (as in step 5 of the restore above), start it and import again.
+
 ## 👨‍💻 Author
 
 Created by [Alexis Amadei](https://github.com/AlexisAmadei)

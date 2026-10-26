@@ -34,7 +34,8 @@ ENV DATABASE_PATH=/app/data/thibaudiere.sqlite
 # receives the new-booking notification). The server refuses to start without the first two.
 # Also S3_ENDPOINT, S3_BUCKET, S3_ACCESS_KEY_ID and S3_SECRET_ACCESS_KEY for the nightly
 # `bun run db:backup` to R2, scheduled in Dokploy (README).
-# Invite a member with `docker exec <container> bun run invite <email>`.
+# Invite a member with `docker exec <container> bun run invite <email>`. The one-off import from
+# Supabase is `docker exec -e SUPABASE_DB_URL=… <container> bun run db:import` (README).
 COPY package.json ./
 COPY --from=prod-deps /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist

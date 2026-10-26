@@ -17,6 +17,7 @@
     "db:seed": "node server/db/seed.ts",
     "db:backup": "node server/db/backup.ts",
     "db:pull": "node --env-file-if-exists=.env server/db/pull.ts",
+    "db:import": "node --env-file-if-exists=.env server/db/import.ts",
     "invite": "node server/invite.ts",
     "lint": "eslint .",
     "preview": "vite preview"
@@ -29,6 +30,7 @@
     "better-sqlite3": "^13.0.3",
     "drizzle-orm": "^0.45.4",
     "hono": "^4.13.13",
+    "postgres": "^3.4.9",
     "resend": "^6.12.3"
   },
   "devDependencies": {
