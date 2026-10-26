@@ -27,3 +27,6 @@ dist-ssr
 # supabase
 supabase/.temp/
 supabase/.branches/
+
+# Local SQLite database (DATABASE_PATH default)
+data/

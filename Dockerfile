@@ -20,20 +20,22 @@ COPY . .
 RUN bun run build
 
 FROM base AS prod-deps
-# Toolchain for native modules (better-sqlite3) when no prebuilt binary matches.
-RUN apt-get update \
-  && apt-get install -y --no-install-recommends python3 make g++ \
-  && rm -rf /var/lib/apt/lists/*
 COPY package.json bun.lock ./
+# No compiler toolchain: better-sqlite3 loads its bundled N-API prebuild, and its
+# `node-gyp rebuild` is left out of `trustedDependencies` in package.json.
 RUN --mount=type=cache,target=/root/.bun/install/cache bun install --frozen-lockfile --production
 
 FROM base AS runtime
 ENV NODE_ENV=production
 ENV PORT=3000
+# Mount the Dokploy volume at /app/data. The server creates the schema on first start.
+ENV DATABASE_PATH=/app/data/thibaudiere.sqlite
 COPY package.json ./
 COPY --from=prod-deps /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist
 COPY server ./server
+# Owned by `node` so a fresh named volume mounted here inherits a writable directory.
+RUN mkdir -p /app/data && chown node:node /app/data
 USER node
 EXPOSE 3000
 CMD ["node", "server/index.ts"]

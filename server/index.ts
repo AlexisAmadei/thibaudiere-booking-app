@@ -1,8 +1,13 @@
 import { serve } from '@hono/node-server'
 import { fileURLToPath } from 'node:url'
 import { createApp } from './app.ts'
+import { migrateDatabase, openDatabase } from './db/index.ts'
 
 const port = Number(process.env.PORT ?? 3000)
+
+// Creates the schema on an empty volume and applies any new migration before serving.
+const db = openDatabase()
+migrateDatabase(db)
 
 // In dev the SPA comes from Vite, which proxies `/api` to this server.
 const staticRoot =
@@ -17,5 +22,10 @@ const server = serve({ fetch: createApp({ staticRoot }).fetch, port }, (info) =>
 
 // Node as PID 1 in the container ignores SIGTERM by default; close cleanly on `docker stop`.
 for (const signal of ['SIGTERM', 'SIGINT']) {
-  process.on(signal, () => server.close(() => process.exit(0)))
+  process.on(signal, () =>
+    server.close(() => {
+      db.$client.close()
+      process.exit(0)
+    }),
+  )
 }
