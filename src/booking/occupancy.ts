@@ -1,4 +1,4 @@
-import type { Booking } from '../supabase/booking';
+import type { Booking } from '../api/booking.ts';
 
 /**
  * A civil date: `YYYY-MM-DD`, no time and no timezone.

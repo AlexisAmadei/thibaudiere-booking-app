@@ -217,6 +217,17 @@ test('a member changes their own display name, which the others then see', async
   assert.equal(((await (await louis.request('GET', '/api/me')).json()) as { name: string }).name, 'Louis')
 })
 
+// What BookingCard showed under Supabase for a member who has not chosen a display name yet.
+test('a booker with no display name is shown by the start of their email, never all of it', async () => {
+  const { camille, louis } = await setup()
+  const noel = await booked(camille)
+
+  await camille.request('PATCH', '/api/me', { name: '' })
+  const shown = await listed(louis, noel.id)
+  assert.equal(shown?.booker_name, 'camille')
+  assert.ok(!JSON.stringify(shown).includes('@'))
+})
+
 test('/api/me changes the display name and nothing else', async () => {
   const { camille } = await setup()
   for (const body of [{ name: 'Cam', email: 'cam@example.test' }, { id: 'autre' }, { name: 42 }, {}]) {

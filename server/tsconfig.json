@@ -14,5 +14,6 @@
     "erasableSyntaxOnly": true,
     "verbatimModuleSyntax": true
   },
-  "include": ["."]
+  // Also the SPA's tests (`src/**/*.test.ts`), which run its `src/api` client against this server.
+  "include": [".", "../src/**/*.test.ts"]
 }

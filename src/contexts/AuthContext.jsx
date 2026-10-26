@@ -1,8 +1,8 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { toaster } from '../components/ui/toaster';
-import { supabase } from '../supabase/client';
-import { checkIfDisplayNameExists, getCurrentUserProfile } from '../supabase/user';
+import * as auth from '../api/auth';
+import { checkIfDisplayNameExists, getCurrentUserProfile } from '../api/user';
 
 const AuthContext = createContext({});
 
@@ -15,41 +15,25 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [session, setSession] = useState(null);
+  // The session lives in an httpOnly cookie; Better Auth's client reads it from the server and
+  // refreshes it after signing in or out.
+  const { data, isPending } = auth.authClient.useSession();
+  const user = data?.user ?? null;
+  const session = data?.session ?? null;
+  // Only the first read counts as loading: the client goes back to pending while it rereads
+  // the session after a sign-in, and the layout must not blank the form meanwhile.
   const [loading, setLoading] = useState(true);
-  const [isPasswordRecovery, setIsPasswordRecovery] = useState(false);
+  if (loading && !isPending) setLoading(false);
   const hasCheckedDisplayName = useRef(false);
   const [profile, setProfile] = useState(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const hashParams = new URLSearchParams(window.location.hash.slice(1));
-    const isInvite = hashParams.get('type') === 'invite';
-
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
-      if (event === 'PASSWORD_RECOVERY' || (event === 'SIGNED_IN' && isInvite)) {
-        navigate('/reset-password');
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
-
+  const userId = user?.id;
   useEffect(() => {
     const checkDisplayName = async () => {
-      if (user && !hasCheckedDisplayName.current) {
+      if (userId && !hasCheckedDisplayName.current) {
         hasCheckedDisplayName.current = true;
-        const exists = await checkIfDisplayNameExists(user.id);
+        const exists = await checkIfDisplayNameExists();
         if (!exists) {
           toaster.create({
             title: 'Profil incomplet',
@@ -68,15 +52,12 @@ export const AuthProvider = ({ children }) => {
       }
     };
     checkDisplayName();
-  }, [user, navigate]);
+  }, [userId, navigate]);
 
   const signIn = async (email, password) => {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    if (error) {
+    try {
+      return await auth.signIn(email, password);
+    } catch (error) {
       toaster.create({
         title: 'Erreur de connexion',
         description: error.message,
@@ -84,37 +65,24 @@ export const AuthProvider = ({ children }) => {
       });
       throw error;
     }
-    return data;
   };
 
-  const signOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) throw error;
-  };
+  const signOut = () => auth.signOut();
 
-  const resetPassword = async (email) => {
-    const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset-password`,
-    });
-    if (error) throw error;
-    return data;
-  };
+  // Emails a link to /reset-password (an invitation, to a member who has no password yet).
+  const resetPassword = (email) => auth.requestPasswordReset(email);
 
-  const updatePassword = async (newPassword) => {
-    const { data, error } = await supabase.auth.updateUser({
-      password: newPassword,
-    });
-    if (error) throw error;
-    setIsPasswordRecovery(false);
-    return data;
-  };
+  // From an emailed link, pass its `token`; signed in, pass the `currentPassword`.
+  const updatePassword = (newPassword, { token, currentPassword } = {}) =>
+    token !== undefined
+      ? auth.resetPassword(token, newPassword)
+      : auth.changePassword(currentPassword, newPassword);
 
   const value = {
     user,
     profile,
     session,
     loading,
-    isPasswordRecovery,
     signIn,
     signOut,
     resetPassword,

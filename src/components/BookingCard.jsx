@@ -1,34 +1,21 @@
 import { Badge, Box, Card, Flex, Heading, IconButton, Menu, Portal, Text } from '@chakra-ui/react';
 import { Calendar, CalendarArrowUp, Clock, MoreVertical, Pencil, Trash } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { getProfileWithId } from '../supabase/user';
 import EditBookingDialog from './Custom/EditBookingDialog';
 
 export default function BookingCard({ booking, isMobile, handleDeleteBooking, handleStatusToggle, deletingId, formatDate }) {
-  const [bookerProfile, setBookerProfile] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const { user } = useAuth();
   const isOwnBooking = user?.id === booking.booker;
 
   const formatDateWithoutYear = (date) => formatDate(date).replace(/\s+\d{4}\b/, '');
 
+  // Joined in by the server: the display name, or the start of the email when there is none.
   function setBookerInfos() {
-    if (bookerProfile?.display_name) {
-      return <Text fontSize={'sm'} color="teal">par {bookerProfile.display_name}</Text>;
-    } else if (bookerProfile?.email) {
-      return <Text fontSize={'sm'} color="teal">par {bookerProfile.email.split('@')[0]}</Text>;
-    } else {
-      return null;
-    }
+    if (!booking.booker_name) return null;
+    return <Text fontSize={'sm'} color="teal">par {booking.booker_name}</Text>;
   }
-
-  useEffect(() => {
-    async function getData() {
-      setBookerProfile(await getProfileWithId(booking.booker));
-    }
-    getData();
-  }, [booking]);
 
   return (
     <Card.Root key={booking.id}

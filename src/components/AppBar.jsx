@@ -22,8 +22,8 @@ export default function AppBar() {
         {isMobile ? null : (
           <Text>
             Connecté en tant que{' '}
-            <Highlight query={profile?.display_name || user?.email} styles={{ color: 'teal' }}>
-              {profile?.display_name || user?.email}
+            <Highlight query={profile?.name || user?.email} styles={{ color: 'teal' }}>
+              {profile?.name || user?.email}
             </Highlight>
           </Text>
         )}

@@ -11,7 +11,11 @@
     "types": ["vite/client"],
     "strict": true,
     "skipLibCheck": true,
-    "noEmit": true
+    "noEmit": true,
+    // `src/api` and what it imports keep `.ts` on relative imports so the tests run them on Node.
+    "allowImportingTsExtensions": true
   },
-  "include": ["src"]
+  "include": ["src"],
+  // Tests run on Node against the server, so `server/tsconfig.json` checks them.
+  "exclude": ["src/**/*.test.ts"]
 }

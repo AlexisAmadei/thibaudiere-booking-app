@@ -30,18 +30,29 @@ export function nextIp() {
   return `192.0.2.${lastIp}`
 }
 
-// A browser on one IP: same-origin JSON requests that keep the session cookie between calls.
-export function browser(app: ReturnType<typeof createApp>) {
+// A browser on one IP, as a `fetch`: same-origin requests that keep the session cookie
+// between calls. Stands in for the global `fetch` when testing the SPA's `src/api` client.
+export function browserFetch(app: ReturnType<typeof createApp>) {
   const ip = nextIp()
   let cookie = ''
-  return async function request(method: string, path: string, body?: unknown) {
-    const headers: Record<string, string> = { origin: APP_URL, 'x-forwarded-for': ip }
-    if (cookie) headers.cookie = cookie
-    if (body !== undefined) headers['content-type'] = 'application/json'
-    const res = await app.request(path, { method, headers, body: body === undefined ? undefined : JSON.stringify(body) })
+  return async function fetch(input: string, init: RequestInit = {}) {
+    const headers = new Headers(init.headers)
+    headers.set('origin', APP_URL)
+    headers.set('x-forwarded-for', ip)
+    if (cookie) headers.set('cookie', cookie)
+    const res = await app.request(input, { ...init, headers })
     const setCookie = res.headers.getSetCookie()
     if (setCookie.length) cookie = setCookie.map((c) => c.split(';')[0]).join('; ')
     return res
+  }
+}
+
+// A browser on one IP: same-origin JSON requests that keep the session cookie between calls.
+export function browser(app: ReturnType<typeof createApp>) {
+  const fetch = browserFetch(app)
+  return function request(method: string, path: string, body?: unknown) {
+    if (body === undefined) return fetch(path, { method })
+    return fetch(path, { method, headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) })
   }
 }
 

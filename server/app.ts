@@ -3,15 +3,15 @@ import { Hono } from 'hono'
 import type { createApi } from './api.ts'
 import type { Auth } from './auth.ts'
 
-// Carried over unchanged from `vercel.json`. The CSP still allows Supabase and Vercel
-// Analytics because the SPA talks to them until the switch-over (#16).
+// Carried over from `vercel.json`, less Supabase and Vercel Analytics, which the SPA no
+// longer talks to. Open-Meteo serves the weather forecast.
 const SECURITY_HEADERS = {
   'X-Frame-Options': 'DENY',
   'X-Content-Type-Options': 'nosniff',
   'Referrer-Policy': 'strict-origin-when-cross-origin',
   'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
   'Content-Security-Policy-Report-Only':
-    "default-src 'self'; script-src 'self' https://va.vercel-scripts.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.open-meteo.com https://vitals.vercel-insights.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'",
+    "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://api.open-meteo.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'",
 }
 
 type AppOptions = {

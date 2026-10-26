@@ -1,20 +1,22 @@
 import { Box, Button, Card, Field, Heading, Stack, Text } from '@chakra-ui/react'
 import { useState } from 'react'
-import { useNavigate } from 'react-router'
+import { useNavigate, useSearchParams } from 'react-router'
 import { PasswordInput } from '../components/ui/password-input'
 import { Toaster, toaster } from '../components/ui/toaster'
 import { useAuth } from '../contexts/AuthContext'
 
 export default function ResetPassword() {
-  const { updatePassword } = useAuth()
+  const { user, updatePassword } = useAuth()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [errors, setErrors] = useState({})
 
-  const hashParams = new URLSearchParams(window.location.hash.slice(1))
-  const isInvite = hashParams.get('type') === 'invite'
+  // The emailed link is /reset-password?token=…, with &type=invite for a new member.
+  const token = searchParams.get('token') ?? ''
+  const isInvite = searchParams.get('type') === 'invite'
 
   const validate = () => {
     const newErrors = {}
@@ -37,10 +39,13 @@ export default function ResetPassword() {
     if (!validate()) return
     setIsLoading(true)
     try {
-      await updatePassword(password)
+      await updatePassword(password, { token })
+      // The link does not sign the member in.
       toaster.create({
         title: 'Mot de passe mis à jour',
-        description: 'Votre mot de passe a été modifié avec succès.',
+        description: user
+          ? 'Votre mot de passe a été modifié avec succès.'
+          : 'Votre mot de passe a été modifié avec succès. Vous pouvez maintenant vous connecter.',
         type: 'success',
       })
       navigate('/')

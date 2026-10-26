@@ -4,8 +4,9 @@ import { useEffect, useRef, useState } from 'react'
 import DateRangePicker from '../components/Custom/DateRangePicker'
 import OpenMeteo from '../components/OpenMeteo'
 import { Toaster, toaster } from '../components/ui/toaster'
+import { createBooking } from '../api/booking'
+import { localDayKey } from '../booking/occupancy'
 import { useBooking } from '../contexts/BookingContext'
-import { createBooking } from '../supabase/booking'
 
 export default function AddBooking({ isMobile = true }) {
   const [canValidate, setCanValidate] = useState(false)
@@ -21,28 +22,15 @@ export default function AddBooking({ isMobile = true }) {
   const handleAddBooking = async (status) => {
     if (!canValidate || isLoading) return;
 
-    const startDateUTC = new Date(Date.UTC(startDate.getFullYear(), startDate.getMonth(), startDate.getDate()));
-    const endDateUTC = new Date(Date.UTC(endDate.getFullYear(), endDate.getMonth(), endDate.getDate()));
-
     setIsLoading(true);
     try {
+      // The picker's local dates, as the calendar days they mean. The server emails the admin.
       const data = await createBooking({
         title: title,
-        start_date: startDateUTC,
-        end_date: endDateUTC,
+        start_date: localDayKey(startDate),
+        end_date: localDayKey(endDate),
         status: status,
       });
-
-      fetch('/api/send-booking-email', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title: data.title,
-          start_date: data.start_date,
-          end_date: data.end_date,
-          status: data.status,
-        }),
-      }).catch(err => console.error('Failed to send booking email:', err));
 
       // Reset form
       setTitle('');

@@ -1,4 +1,4 @@
-import { asc, eq, gte } from 'drizzle-orm'
+import { asc, eq, gte, sql } from 'drizzle-orm'
 import { Hono, type Context } from 'hono'
 import { csrf } from 'hono/csrf'
 import { defaultAppUrl, type Auth } from './auth.ts'
@@ -18,7 +18,9 @@ type Member = { id: string; name: string; email: string }
 type Env = { Variables: { member: Member } }
 
 // A booking as the API returns it: the columns under their Supabase names, which the SPA
-// already reads, and the booker's display name joined in.
+// already reads, and the booker's display name joined in. A booker who has not chosen a
+// display name yet is shown by the part of their email before the `@`, as BookingCard did
+// under Supabase; the address itself never leaves the server. Null once the booker is deleted.
 const BOOKING_COLUMNS = {
   id: bookings.id,
   title: bookings.title,
@@ -27,7 +29,7 @@ const BOOKING_COLUMNS = {
   status: bookings.status,
   created_at: bookings.createdAt,
   booker: bookings.booker,
-  booker_name: user.name,
+  booker_name: sql<string | null>`coalesce(nullif(${user.name}, ''), substr(${user.email}, 1, instr(${user.email}, '@') - 1))`,
 }
 
 // The bookings and member API. Authorization lived in Supabase's RLS policies; the database

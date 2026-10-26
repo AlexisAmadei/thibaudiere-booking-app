@@ -6,7 +6,7 @@ import { PasswordInput } from "../components/ui/password-input";
 import { Toaster, toaster } from "../components/ui/toaster";
 import { useAuth } from "../contexts/AuthContext";
 import useIsMobile from "../hooks/useIsMobile";
-import { editDisplayName, getCurrentUserProfile } from "../supabase/user";
+import { editDisplayName, getCurrentUserProfile } from "../api/user";
 
 export default function Profile() {
   const { user, updatePassword } = useAuth();
@@ -15,6 +15,7 @@ export default function Profile() {
   const [profile, setProfile] = useState(null);
   const [editField, setEditField] = useState("");
   const [newDisplayName, setNewDisplayName] = useState("");
+  const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordErrors, setPasswordErrors] = useState({});
@@ -22,6 +23,9 @@ export default function Profile() {
 
   const validatePassword = () => {
     const errors = {};
+    if (!currentPassword) {
+      errors.currentPassword = 'Le mot de passe actuel est requis';
+    }
     if (!newPassword) {
       errors.newPassword = 'Le mot de passe est requis';
     } else if (newPassword.length < 6) {
@@ -52,13 +56,14 @@ export default function Profile() {
         if (!validatePassword()) return;
         setIsLoading(true);
         try {
-          await updatePassword(newPassword);
+          await updatePassword(newPassword, { currentPassword });
           toaster.create({
             title: 'Mot de passe mis à jour',
             description: 'Votre mot de passe a été modifié avec succès.',
             type: 'success',
           });
           setEditField("");
+          setCurrentPassword("");
           setNewPassword("");
           setConfirmPassword("");
           setPasswordErrors({});
@@ -118,7 +123,7 @@ export default function Profile() {
           </Avatar.Root>
         </AvatarGroup>
 
-        <Heading as="h2" size="2xl" mt={4} mb={2} fontWeight={'bold'}>{profile?.display_name || '...'}</Heading>
+        <Heading as="h2" size="2xl" mt={4} mb={2} fontWeight={'bold'}>{profile?.name || '...'}</Heading>
 
         <Flex width={!isMobile ? '500px' : '100%'} direction={'column'} gap={1} alignItems="flex-start">
           <Heading as="h3" size="lg" mt={4} fontWeight={'bold'}>Connexion</Heading>
@@ -145,6 +150,17 @@ export default function Profile() {
 
           {editField === 'password' ? (
             <Stack width={'100%'} gap={2}>
+              <Field.Root invalid={!!passwordErrors.currentPassword}>
+                <PasswordInput
+                  placeholder="Mot de passe actuel"
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  disabled={isLoading}
+                />
+                {passwordErrors.currentPassword && (
+                  <Field.ErrorText>{passwordErrors.currentPassword}</Field.ErrorText>
+                )}
+              </Field.Root>
               <Field.Root invalid={!!passwordErrors.newPassword}>
                 <PasswordInput
                   placeholder="Nouveau mot de passe"
@@ -189,7 +205,7 @@ export default function Profile() {
           <Box display="inline-flex" width={'100%'} justifyContent={'center'} gap={4} alignItems="center" mb={2}>
             <Input
               placeholder={"Nom d'affichage"}
-              value={newDisplayName || profile?.display_name || ''}
+              value={newDisplayName || profile?.name || ''}
               onChange={(e) => {
                 setNewDisplayName(e.target.value);
               }}

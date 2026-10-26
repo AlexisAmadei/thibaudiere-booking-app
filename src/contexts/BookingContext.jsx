@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useMemo, useState } from 'react';
 import { occupancyOf } from '../booking/occupancy';
-import { getAllBookings } from '../supabase/booking';
+import { getAllBookings } from '../api/booking';
 
 const BookingContext = createContext({});
 

@@ -1,9 +1,9 @@
 import { Button, CloseButton, Dialog, Input, InputGroup, Portal, Stack, Text } from '@chakra-ui/react'
 import { Tag } from 'lucide-react'
 import { useMemo, useState } from 'react'
-import { occupancyExcluding, storedLocalDate } from '../../booking/occupancy'
+import { updateBooking } from '../../api/booking'
+import { localDayKey, occupancyExcluding, storedLocalDate } from '../../booking/occupancy'
 import { useBooking } from '../../contexts/BookingContext'
-import { updateBooking } from '../../supabase/booking'
 import { toaster } from '../ui/toaster'
 import DateRangePicker from './DateRangePicker'
 
@@ -42,8 +42,8 @@ export default function EditBookingDialog({ booking, onOpenChange }) {
     try {
       await updateBooking(booking.id, {
         title: title.trim(),
-        start_date: new Date(Date.UTC(startDate.getFullYear(), startDate.getMonth(), startDate.getDate())),
-        end_date: new Date(Date.UTC(endDate.getFullYear(), endDate.getMonth(), endDate.getDate())),
+        start_date: localDayKey(startDate),
+        end_date: localDayKey(endDate),
       })
       toaster.create({
         title: 'Réservation modifiée',

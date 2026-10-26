@@ -3,7 +3,7 @@ import { ChevronDown, ChevronLeft, ChevronRight, Cloud, CloudLightning, CloudRai
 import React, { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { EMPTY_OCCUPANCY, localDayKey } from '../../booking/occupancy';
 import type { DayKey, Occupancy } from '../../booking/occupancy';
-import type { Booking } from '../../supabase/booking';
+import type { Booking } from '../../api/booking';
 
 function getWeatherIcon(code: number) {
   if (code === 0 || code === 1) return <Sun size={10} />;

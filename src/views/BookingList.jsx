@@ -6,7 +6,7 @@ import BookingFilters from '../components/BookingFilters'
 import WeeklyForecast from '../components/WeeklyForecast'
 import { toaster } from '../components/ui/toaster'
 import { useBooking } from '../contexts/BookingContext'
-import { deleteBooking, setBookingStatus } from '../supabase/booking'
+import { deleteBooking, setBookingStatus } from '../api/booking'
 
 export default function BookingList({ bookingList, isMobile = true, onBookingDeleted }) {
   const [sortOrder, setSortOrder] = useState('asc') // 'asc' or 'desc'
