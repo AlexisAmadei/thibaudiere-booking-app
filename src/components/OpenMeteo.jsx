@@ -36,7 +36,7 @@ export default function OpenMeteo() {
           gap={4}
           px={4} py={2}
           boxShadow="md"
-          borderRadius={'lg'}
+          borderRadius={'md'}
           backgroundImage={meteoData.current.is_day ? GRADIENT_DAY : GRADIENT_NIGHT}
         >
           <Box>

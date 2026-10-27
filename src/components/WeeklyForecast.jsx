@@ -42,7 +42,7 @@ export default function WeeklyForecast() {
       overflowX="auto"
       css={{ scrollbarWidth: 'none', '&::-webkit-scrollbar': { display: 'none' } }}
       backgroundImage={GRADIENT_DAY}
-      borderRadius="lg"
+      borderRadius="md"
       px={2}
       py={2}
     >

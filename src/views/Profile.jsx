@@ -113,7 +113,7 @@ export default function Profile() {
         width={"100%"}
         height={'100%'}
         p={isMobile ? 2 : 6}
-        borderRadius="lg"
+        borderRadius="md"
         gap={2}
       >
         <AvatarGroup>
@@ -137,15 +137,6 @@ export default function Profile() {
               }}
               disabled={editField !== 'email'}
             />
-            {/* {editField === 'email' ? (
-              <IconButton colorPalette={'teal'} borderRadius={"full"} onClick={handleSaveProfile}>
-                <Send />
-              </IconButton>
-            ) : (
-              <IconButton colorPalette={'teal'} borderRadius={"full"} onClick={() => setEditField(editField === 'email' ? '' : 'email')}>
-                <SquarePen />
-              </IconButton>
-            )} */}
           </Box>
 
           {editField === 'password' ? (

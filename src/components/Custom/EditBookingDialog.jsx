@@ -76,7 +76,7 @@ export default function EditBookingDialog({ booking, onOpenChange }) {
       <Portal>
         <Dialog.Backdrop />
         <Dialog.Positioner>
-          <Dialog.Content borderRadius="lg">
+          <Dialog.Content borderRadius="md">
             <Dialog.Header>
               <Dialog.Title>Modifier la réservation</Dialog.Title>
             </Dialog.Header>

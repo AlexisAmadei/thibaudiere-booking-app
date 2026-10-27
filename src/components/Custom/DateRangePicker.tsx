@@ -324,7 +324,7 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = forwardRef<DateRa
   };
 
   return (
-    <VStack gap={4} align="stretch" p={4} borderWidth="1px" borderRadius="lg">
+    <VStack gap={4} align="stretch" p={4} borderWidth="1px" borderRadius="md">
       {/* Header with month navigation */}
       <HStack justify="space-between">
         <IconButton
@@ -557,32 +557,6 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = forwardRef<DateRa
           </Button>
         )}
       </VStack>
-
-      {/* Legend */}
-      {/* <Stack gap={2} fontSize="xs" color="gray.600">
-        <HStack gap={2}>
-          <Box w="16px" h="16px" bg="brand.solid" borderRadius="sm" />
-          <Text>Selected date</Text>
-        </HStack>
-        <HStack gap={2}>
-          <Box w="16px" h="16px" bg="brand.subtle" borderRadius="sm" />
-          <Text>In range</Text>
-        </HStack>
-        <HStack gap={2}>
-          <Box w="16px" h="16px" bg="gray.200" borderRadius="sm" position="relative">
-            <Box
-              position="absolute"
-              top="50%"
-              left="50%"
-              width="2px"
-              height="120%"
-              bg="red.500"
-              transform="translate(-50%, -50%) rotate(45deg)"
-            />
-          </Box>
-          <Text>Unavailable</Text>
-        </HStack>
-      </Stack> */}
     </VStack>
   );
 });

@@ -22,7 +22,7 @@ export default function BookingCard({ booking, isMobile, handleDeleteBooking, ha
       width={'100%'}
       size="sm"
       variant={'outline'}
-      borderRadius={'lg'}
+      borderRadius={'md'}
       flexShrink={0}
       position="relative"
       border={
