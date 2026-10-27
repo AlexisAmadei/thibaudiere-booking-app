@@ -3,7 +3,13 @@ import { Resend } from 'resend'
 export type Email = { to: string; subject: string; html: string; text: string }
 export type SendEmail = (email: Email) => Promise<void>
 
-const FROM = 'La Thibaudière <la-thibaudiere.fr@kiwidev.fr>'
+// RESEND_FROM may be a bare address or a full `Name <address>`. Read per call, like
+// RESEND_API_KEY, so it does not depend on when the environment is loaded.
+function sender() {
+  const from = process.env.RESEND_FROM?.trim()
+  if (!from) throw new Error('RESEND_FROM is not set')
+  return from.includes('<') ? from : `La Thibaudière <${from}>`
+}
 
 // Sends through Resend when RESEND_API_KEY is set. Without it, outside production, the
 // email is printed instead, so invitations and resets can be followed locally.
@@ -14,7 +20,7 @@ export const sendEmail: SendEmail = async (email) => {
     console.log(`[email] To: ${email.to}\n[email] Subject: ${email.subject}\n\n${email.text}\n`)
     return
   }
-  const { error } = await new Resend(apiKey).emails.send({ from: FROM, ...email })
+  const { error } = await new Resend(apiKey).emails.send({ from: sender(), ...email })
   if (error) throw new Error(`Resend refused the email to ${email.to}: ${error.message}`)
 }
 
