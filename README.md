@@ -1,10 +1,10 @@
 # La Thibaudiere - Shared Booking Calendar
 
-A modern web application for managing shared bookings and reservations, built with React, Vite, and Supabase.
+A modern web application for managing shared bookings and reservations, built with React, Vite, a Hono server and SQLite, self-hosted on Dokploy.
 
 ## Features
 
-- **User Authentication**: Secure sign-in/sign-out with Supabase Auth
+- **User Authentication**: Secure sign-in/sign-out with Better Auth (members join by invitation only)
 - **Password Reset & Invites**: Email-based password reset, with a tailored onboarding flow for invited users
 - **Booking Management**: Create, view, update, and delete reservations
 - **Date Range Picker**: Interactive calendar with unavailable date detection and conflict prevention
@@ -22,12 +22,14 @@ A modern web application for managing shared bookings and reservations, built wi
 - **UI Framework**: Chakra UI 3
 - **Routing**: React Router 7
 - **Icons**: lucide-react + react-icons
-- **Authentication**: Supabase Auth
-- **Database**: Supabase PostgreSQL
+- **Server**: Hono on Node 24, serving the built SPA and `/api` from one process
+- **Authentication**: Better Auth (cookie sessions, bcrypt passwords)
+- **Database**: SQLite via Drizzle ORM (nightly backups to Cloudflare R2)
 - **Styling**: Chakra UI + Tailwind CSS 4
 - **Email**: Resend (transactional emails)
-- **Serverless**: Vercel Functions (`api/`)
-- **Deployment**: Vercel
+- **Tooling**: Bun as package manager only; `node --test` for tests, `tsc` for type checking
+- **Deployment**: one Docker image on Dokploy, with the SQLite file on a mounted volume
+  ([ADR 0001](docs/adr/0001-sqlite-node-server-on-dokploy.md))
 
 ## Installation
 
@@ -47,7 +49,12 @@ A modern web application for managing shared bookings and reservations, built wi
    Copy [.env.example](.env.example) to `.env` and fill it in. `APP_URL` and `BETTER_AUTH_SECRET`
    are required; the `S3_*` and `SUPABASE_DB_URL` variables are only needed for backups and the import.
 
-4. **Start development server**
+4. **Seed a local database** (no Docker needed; the file is `./data/dev.sqlite`)
+   ```bash
+   bun run db:seed
+   ```
+
+5. **Start development server** (Vite client and Hono server together)
    ```bash
    bun run dev
    ```
@@ -55,8 +62,14 @@ A modern web application for managing shared bookings and reservations, built wi
 ## Project Structure
 
 ```
-api/                         # Vercel serverless functions
-└── send-booking-email.js     # Sends a Resend email on new bookings
+server/                      # Hono server (Node 24)
+├── index.ts                  # Entry point: serves the SPA and /api
+├── app.ts                    # App assembly
+├── api.ts                    # Bookings and member routes (authorization lives here)
+├── auth.ts                   # Better Auth setup, invitations, password reset
+├── email.ts                  # Resend emails (French HTML)
+├── invite.ts                 # `bun run invite <email>`
+└── db/                       # Drizzle schema, migrations, seed, backup, pull, import
 
 src/
 ├── components/               # Reusable UI components
@@ -83,10 +96,13 @@ src/
 ├── hooks/                    # Custom React hooks
 │   ├── useIsMobile.js
 │   └── useWindowSize.js
-├── supabase/                 # Database functions
-│   ├── client.ts
+├── api/                      # Client for the /api routes
+│   ├── auth.ts
 │   ├── booking.ts
+│   ├── http.ts
 │   └── user.ts
+├── booking/
+│   └── occupancy.ts          # Which booking sits on which calendar day
 ├── views/                    # Page components
 │   ├── App.jsx
 │   ├── AddBooking.jsx
@@ -129,47 +145,60 @@ Displays all bookings with sorting and filtering capabilities.
 
 ## Email Notifications
 
-When a booking is created, the client calls the `/api/send-booking-email`
-serverless function, which uses [Resend](https://resend.com) to send a formatted
-notification email to `ADMIN_EMAIL`. Weather is decorative and fails silently;
-email failures are logged but do not block booking creation.
+When a booking is created, the server uses [Resend](https://resend.com) to send a
+formatted notification email to `ADMIN_EMAIL`. Weather is decorative and fails
+silently; email failures are logged but do not block booking creation.
 
 ## Authentication
 
-Uses Supabase Authentication with email/password. Profile data is stored in a `profiles` table with:
-- `id` (UUID, user ID)
-- `display_name` (optional)
-- `email` (from auth)
+Uses [Better Auth](https://www.better-auth.com) with email/password and cookie sessions.
+Members are stored in the `user` table (`id`, `email`, `name` as display name); nobody can
+sign up on their own. An admin invites a member with `bun run invite <email>`
+(`docker exec <container> bun run invite <email>` in production).
 
-Password resets and invited-user onboarding are handled on the `/reset-password`
-route, which detects an `invite` type to show tailored messaging.
+Password resets and invitations are handled on the `/reset-password` route, which
+detects an `invite` type to show tailored messaging. Links are valid for one hour.
 
 ## Database Schema
+
+SQLite, managed with Drizzle (`bun run db:generate` for migrations; they are applied on server start).
 
 ### bookings table
 - `id` (int, primary key)
 - `title` (text)
-- `start_date` (date)
-- `end_date` (date)
+- `start_date` (text, civil date `YYYY-MM-DD`)
+- `end_date` (text, civil date `YYYY-MM-DD`)
 - `status` ('CONFIRMED' | 'PENDING')
-- `created_at` (timestamp)
-- `booker` (UUID, user ID)
+- `created_at` (ISO timestamp)
+- `booker` (text, `user.id`; set to null if the member is deleted)
+
+Better Auth's own tables (`user`, `session`, ...) are in `server/db/auth-schema.ts`.
 
 
 ## Available Scripts
 
 ```bash
-# Development
+# Development (client + server)
 bun run dev
 
-# Build for production
+# Build the SPA, then run the server in production mode
 bun run build
+bun run start
 
-# Preview production build
-bun run preview
+# Tests and type checking
+bun run test
+bun run typecheck
 
 # Run ESLint
 bun run lint
+
+# Database
+bun run db:seed      # local sample data
+bun run db:backup    # snapshot to R2
+bun run db:pull      # fetch newest backup locally
+
+# Invite a member
+bun run invite <email>
 ```
 
 ## Backups
