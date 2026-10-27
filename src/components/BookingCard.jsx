@@ -14,21 +14,33 @@ export default function BookingCard({ booking, isMobile, handleDeleteBooking, ha
   // Joined in by the server: the display name, or the start of the email when there is none.
   function setBookerInfos() {
     if (!booking.booker_name) return null;
-    return <Text fontSize={'sm'} color="teal">par {booking.booker_name}</Text>;
+    return <Text fontSize={'xs'} color="teal">par {booking.booker_name}</Text>;
   }
 
   return (
     <Card.Root key={booking.id}
       width={'100%'}
       size="sm"
+      variant={'outline'}
       borderRadius={'lg'}
       flexShrink={0}
       position="relative"
-      border={booking.status === 'CONFIRMED' ? '1px solid var(--chakra-colors-green-300)' : '1px solid var(--chakra-colors-yellow-300)'}
-      backgroundColor={"#f8f8f8"}
+      border={
+        booking.status === 'CONFIRMED'
+          ?'1px solid var(--chakra-colors-green-300)'
+          : '1px solid var(--chakra-colors-yellow-300)'
+        }
+      backgroundColor={
+        booking.status === 'CONFIRMED'
+          ? 'var(--chakra-colors-green-50)'
+          : 'var(--chakra-colors-yellow-50)'
+      }
+      background={
+        booking.status === 'CONFIRMED'
+          ? 'linear-gradient(135deg,rgba(87, 199, 133, 0) 50%, rgba(87, 199, 133, 0.2) 100%)'
+          : 'linear-gradient(135deg,rgba(250, 204, 21, 0) 50%, rgba(250, 204, 21, 0.2) 100%)'
+      }
       _dark={{ backgroundColor: "#222222", border: booking.status === 'CONFIRMED' ? '1px solid var(--chakra-colors-green-700)' : '1px solid var(--chakra-colors-yellow-700)' }}
-    // backgroundColor={booking.status === 'CONFIRMED' ? 'green.50' : 'yellow.50'}
-    // _dark={{ backgroundColor: booking.status === 'CONFIRMED' ? 'green.900' : 'yellow.900' }}
     >
       <Menu.Root>
         <Menu.Trigger asChild>
@@ -95,7 +107,7 @@ export default function BookingCard({ booking, isMobile, handleDeleteBooking, ha
         <EditBookingDialog booking={booking} onOpenChange={setIsEditing} />
       )}
 
-      <Card.Header display={'flex'} flexDirection={'row'} alignItems={'center'}>
+      <Card.Header display={'flex'} flexDirection={'row'} alignItems={'flex-start'} py={2} justifyContent={'space-between'} mr={4}>
         <Heading size="md">{booking.title.toUpperCase()}</Heading>
         <Box id='badges'>
           {booking.status === 'CONFIRMED' ? (
@@ -105,22 +117,25 @@ export default function BookingCard({ booking, isMobile, handleDeleteBooking, ha
           )}
         </Box>
       </Card.Header>
-      <Card.Body py={2}>
+
+      <Card.Body py={0}>
         <Flex align="center" gap={1}>
-          <Calendar size={"18px"} />
-          <Text fontSize={isMobile ? 'sm' : 'md'} fontWeight={'bold'}>
-            Du {formatDateWithoutYear(booking.start_date)} au {formatDate(booking.end_date)}
+          {/* <Calendar size={"18px"} /> */}
+          <Text fontSize={isMobile ? 'sm' : 'md'}>
+            {formatDateWithoutYear(booking.start_date)} - {formatDate(booking.end_date)}
           </Text>
         </Flex>
       </Card.Body>
+
       <Card.Footer justifyContent="space-between" alignItems={isMobile ? 'stretch' : 'center'} flexDirection={isMobile ? 'column' : 'row'} gap={isMobile ? 2 : 0}>
         <Box display={'inline-flex'} gap={1}>
-          <Text fontSize={'sm'} color="fg.muted">
+          <Text fontSize={'xs'} color="fg.muted">
             Ajoutée le {formatDate(booking.created_at)}
           </Text>
           {setBookerInfos()}
         </Box>
       </Card.Footer>
+
     </Card.Root>
   )
 }
