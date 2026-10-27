@@ -30,3 +30,4 @@ supabase/.branches/
 
 # Local SQLite database (DATABASE_PATH default)
 data/
+!.env.example

@@ -44,20 +44,8 @@ A modern web application for managing shared bookings and reservations, built wi
 
 3. **Configure environment variables**
 
-   Create a `.env` file in the root directory.
-
-   Client-side (exposed to the browser, must be prefixed with `VITE_`):
-   ```env
-   VITE_SUPABASE_URL=your_supabase_url
-   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-   ```
-
-   Server-side (used by the Vercel serverless function, set in the Vercel project settings for deployments):
-   ```env
-   RESEND_API_KEY=your_resend_api_key
-   ADMIN_EMAIL=email_that_receives_booking_notifications
-   APP_URL=public_url_of_the_app
-   ```
+   Copy [.env.example](.env.example) to `.env` and fill it in. `APP_URL` and `BETTER_AUTH_SECRET`
+   are required; the `S3_*` and `SUPABASE_DB_URL` variables are only needed for backups and the import.
 
 4. **Start development server**
    ```bash
